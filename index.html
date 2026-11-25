@@ -124,6 +124,7 @@
     #studio-bar button.red { background: #dc2626; border-color: #ef4444; }
     #studio-bar button.gray { background: #4b5563; border-color: #6b7280; }
     #studio-bar button.purple { background: #7c3aed; border-color: #a78bfa; }
+    #studio-bar button.cyan { background: #0891b2; border-color: #22d3ee; }
 
     .studio-badge {
       background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8;
@@ -191,7 +192,7 @@
   <div id="toast"></div>
 
   <div id="games-screen" class="screen active">
-    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب عالماً من صنعك</h2>
+    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب ماباً منشوراً</h2>
     <div class="games-grid" id="games-grid">
       <div class="game-card" onclick="enterGame('obby')">
         <div class="game-banner" style="background: linear-gradient(45deg, #0284c7, #38bdf8);">🏃‍♂️</div>
@@ -388,9 +389,10 @@
         <input type="file" id="studio-import-input" accept=".json" style="display:none" onchange="importStudioJson(event)" />
       </div>
       <div class="studio-controls" style="flex:1; min-width:250px;">
-        <input type="text" id="custom-game-title" placeholder="اسم لعبتك المخصصة..." maxlength="32" style="flex:1;" />
+        <input type="text" id="custom-game-title" placeholder="اسم الماب..." maxlength="32" style="flex:1;" />
         <input type="text" id="custom-game-desc" placeholder="وصف قصير..." maxlength="90" style="flex:1.2;" />
-        <button class="green" onclick="publishCustomGame()">نشر في القائمة</button>
+        <button class="green" onclick="publishCustomGame()">نشر الماب</button>
+        <button class="cyan" onclick="copyShareableMapLink()">نسخ رابط الماب</button>
         <button class="amber" onclick="enterGame('custom')">تجربة الآن</button>
       </div>
     </div>
@@ -458,6 +460,29 @@
       try {
         localStorage.setItem(STORAGE_KEYS.customGame, JSON.stringify(publishedGameMeta));
       } catch (_) {}
+    }
+
+    function encodeMapPayload(payloadObj) {
+      const jsonStr = JSON.stringify(payloadObj);
+      const bytes = new TextEncoder().encode(jsonStr);
+      let binary = '';
+      for (let i = 0; i < bytes.length; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    }
+
+    function decodeMapPayload(encodedStr) {
+      if (!encodedStr) return null;
+      const base64 = encodedStr.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+      const binary = atob(padded);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      const jsonStr = new TextDecoder().decode(bytes);
+      return JSON.parse(jsonStr);
     }
 
     const initialSaved = loadSavedState();
@@ -535,7 +560,6 @@
     let studioPlatforms = [];
     let coins = [];
 
-    // Mobile joystick & touch camera state
     let joyVector = { x: 0, z: 0 };
     let joyTouchId = null;
     let camYaw = 0;
@@ -549,7 +573,7 @@
       el.textContent = msg;
       el.style.display = 'block';
       clearTimeout(el._timer);
-      el._timer = setTimeout(() => { el.style.display = 'none'; }, 2600);
+      el._timer = setTimeout(() => { el.style.display = 'none'; }, 2800);
     }
 
     function addPlayerScore(pts) {
@@ -610,7 +634,7 @@
       const banner = document.createElement('div');
       banner.className = 'game-banner';
       banner.style.background = 'linear-gradient(45deg, #7c3aed, #ec4899)';
-      banner.textContent = '🛠️';
+      banner.textContent = '🗺️';
 
       const info = document.createElement('div');
       info.className = 'game-info';
@@ -623,7 +647,7 @@
 
       const btn = document.createElement('button');
       btn.className = 'play-btn';
-      btn.textContent = 'دخول اللعبة المصنوعة';
+      btn.textContent = 'دخول الماب المنشور';
       btn.onclick = (e) => {
         e.stopPropagation();
         enterGame('custom');
@@ -635,12 +659,54 @@
     }
 
     function publishCustomGame() {
-      const title = document.getElementById('custom-game-title').value.trim() || `عالم ${myName}`;
-      const description = document.getElementById('custom-game-desc').value.trim() || 'لعبة ثلاثية الأبعاد صُنعت في Studio.';
+      const title = document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`;
+      const description = document.getElementById('custom-game-desc').value.trim() || 'ماب ثلاثي الأبعاد منشور.';
+      const meta = { title, description, author: myName, updatedAt: Date.now() };
+      renderPublishedGameCard(meta);
+      persistCustomGame();
+      persistBlocks();
+      showToast('✅ تم نشر الماب في قائمة الألعاب وحفظه!');
+    }
+
+    function copyShareableMapLink() {
+      const title = document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`;
+      const description = document.getElementById('custom-game-desc').value.trim() || 'ماب ثلاثي الأبعاد مشترك.';
       const meta = { title, description, author: myName };
       renderPublishedGameCard(meta);
       persistCustomGame();
-      showToast('✅ تم نشر لعبتك في قائمة الألعاب!');
+      persistBlocks();
+
+      try {
+        const encoded = encodeMapPayload({ meta, blocks: savedStudioBlocks });
+        const shareUrl = `${window.location.origin}${window.location.pathname}#map=${encoded}`;
+        window.location.hash = `map=${encoded}`;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(shareUrl).catch(() => {});
+        }
+        showToast('🔗 تم تجهيز رابط الماب! أرسله لأي لاعب لفتحه مباشرة.');
+      } catch (_) {
+        showToast('⚠️ حجم الماب كبير للرابط، استخدم زر تصدير JSON.');
+      }
+    }
+
+    function loadMapFromUrlHash() {
+      const hash = window.location.hash || '';
+      const match = hash.match(/^#map=(.+)$/);
+      if (!match) return;
+      try {
+        const decoded = decodeMapPayload(match[1]);
+        if (decoded && Array.isArray(decoded.blocks)) {
+          savedStudioBlocks = decoded.blocks;
+          persistBlocks();
+          if (decoded.meta) {
+            renderPublishedGameCard(decoded.meta);
+            persistCustomGame();
+            document.getElementById('custom-game-title').value = decoded.meta.title || '';
+            document.getElementById('custom-game-desc').value = decoded.meta.description || '';
+            showToast(`🗺️ تم تحميل الماب المشترك: ${decoded.meta.title}`);
+          }
+        }
+      } catch (_) {}
     }
 
     function createCharacterMesh(avatarData) {
@@ -908,8 +974,8 @@
 
     function exportStudioJson() {
       const payload = {
-        title: document.getElementById('custom-game-title').value.trim() || `عالم ${myName}`,
-        description: document.getElementById('custom-game-desc').value.trim() || 'عالم Studio مخصص',
+        title: document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`,
+        description: document.getElementById('custom-game-desc').value.trim() || 'ماب Studio مخصص',
         blocks: savedStudioBlocks
       };
       const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -919,7 +985,7 @@
       a.download = 'studio_world.json';
       a.click();
       URL.revokeObjectURL(url);
-      showToast('📦 تم تصدير ملف العالم JSON');
+      showToast('📦 تم تصدير ملف الماب JSON');
     }
 
     function importStudioJson(event) {
@@ -932,10 +998,14 @@
           if (Array.isArray(parsed.blocks)) {
             savedStudioBlocks = parsed.blocks;
             persistBlocks();
-            if (parsed.title) document.getElementById('custom-game-title').value = parsed.title;
-            if (parsed.description) document.getElementById('custom-game-desc').value = parsed.description;
+            const title = parsed.title || `ماب ${myName}`;
+            const desc = parsed.description || 'ماب مستورد.';
+            document.getElementById('custom-game-title').value = title;
+            document.getElementById('custom-game-desc').value = desc;
+            renderPublishedGameCard({ title, description: desc, author: myName });
+            persistCustomGame();
             buildWorld(currentGame);
-            showToast('✅ تم استيراد العالم بنجاح!');
+            showToast('✅ تم استيراد الماب ونشره في القائمة!');
           }
         } catch (_) {
           showToast('⚠️ ملف JSON غير صالح');
@@ -1138,11 +1208,12 @@
       clearStudioSceneItems();
     }
 
+    loadMapFromUrlHash();
     if (publishedGameMeta) {
       renderPublishedGameCard(publishedGameMeta);
     }
+    window.addEventListener('hashchange', loadMapFromUrlHash);
 
-    // Joystick touch handling
     const joyZone = document.getElementById('joystick-zone');
     const joyKnob = document.getElementById('joystick-knob');
     const maxJoyRadius = 38;
@@ -1191,7 +1262,6 @@
       joyVector.z = dy / maxJoyRadius;
     }
 
-    // Touch camera orbit on canvas
     renderer.domElement.addEventListener('touchstart', (e) => {
       if (currentGame === 'lobby' || orbitTouchId !== null) return;
       const t = e.changedTouches[0];
