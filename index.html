@@ -22,6 +22,11 @@
       color: #111827; font-weight: 900; padding: 5px 12px;
       border-radius: 999px; font-size: 13px; white-space: nowrap;
     }
+    .room-pill {
+      background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8;
+      color: #7dd3fc; font-weight: 800; padding: 4px 10px;
+      border-radius: 999px; font-size: 12px; white-space: nowrap;
+    }
     .nav-btns { display: flex; flex-wrap: wrap; align-items: center; }
     .nav-btns button {
       background: #1f2937; color: #fff; border: 1px solid #374151;
@@ -36,9 +41,26 @@
     }
     .screen.active { display: block; }
 
+    .friend-room-bar {
+      max-width: 1120px; margin: 0 auto 14px;
+      background: #1f2937; border: 1px solid #374151; border-radius: 14px;
+      padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 10px;
+      align-items: center; justify-content: space-between;
+    }
+    .friend-room-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .friend-room-controls input {
+      padding: 8px 12px; border-radius: 8px; border: 1px solid #4b5563;
+      background: #111827; color: #fff; font-weight: bold; width: 150px; text-transform: uppercase;
+    }
+    .small-btn {
+      padding: 8px 12px; border-radius: 8px; border: none;
+      font-weight: bold; cursor: pointer; font-size: 13px; color: #fff; background: #0284c7;
+    }
+    .small-btn.alt { background: #4b5563; }
+
     .games-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px; max-width: 1120px; margin: 20px auto;
+      gap: 20px; max-width: 1120px; margin: 16px auto;
     }
     .game-card {
       background: #1f2937; border: 1px solid #374151; border-radius: 14px;
@@ -87,17 +109,17 @@
     .form-row input[type="color"] { width: 60px; height: 36px; border: none; background: none; cursor: pointer; }
 
     #hud {
-      position: fixed; top: 66px; right: 14px; background: rgba(17, 24, 39, 0.85);
+      position: fixed; top: 66px; right: 14px; background: rgba(17, 24, 39, 0.88);
       padding: 12px; border-radius: 10px; border: 1px solid #374151; z-index: 10;
-      min-width: 210px; display: none;
+      min-width: 225px; display: none;
     }
-    #hud h4 { margin: 0 0 8px; color: #38bdf8; font-size: 14px; }
+    #hud h4 { margin: 0 0 8px; color: #38bdf8; font-size: 13.5px; }
     #players-ul { list-style: none; padding: 0; margin: 0; font-size: 13px; }
-    #players-ul li { padding: 4px 0; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; }
+    #players-ul li { padding: 4px 0; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; gap: 8px; }
 
     #chat-box {
       position: fixed; top: 66px; left: 14px; width: 270px;
-      background: rgba(17, 24, 39, 0.82); border: 1px solid #374151;
+      background: rgba(17, 24, 39, 0.85); border: 1px solid #374151;
       border-radius: 10px; padding: 8px; z-index: 10; display: none;
       flex-direction: column; gap: 6px;
     }
@@ -163,6 +185,7 @@
     <div style="display:flex; align-items:center; gap:10px;">
       <div class="logo">ROBLOX WEB 3D</div>
       <div class="adam-badge">🪙 <span id="adam-balance">50</span> ADAM</div>
+      <div class="room-pill">غرفة: <span id="nav-room-code">PUBLIC</span></div>
     </div>
     <div class="nav-btns">
       <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
@@ -175,6 +198,18 @@
   <div id="toast"></div>
 
   <div id="games-screen" class="screen active">
+    <div class="friend-room-bar">
+      <div>
+        <strong style="color:#38bdf8;">غرفة الأصدقاء (Friend Room):</strong>
+        <span style="color:#9ca3af; font-size:13px;">شارك نفس الرمز مع أصدقائك للدخول إلى نفس اللعبة معاً</span>
+      </div>
+      <div class="friend-room-controls">
+        <input type="text" id="room-code-input" value="PUBLIC" maxlength="12" placeholder="رمز الغرفة..." />
+        <button class="small-btn" onclick="applyRoomCode()">تطبيق الرمز</button>
+        <button class="small-btn alt" onclick="generateFriendCode()">إنشاء رمز صديق</button>
+      </div>
+    </div>
+
     <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب عالماً من صنع المستخدمين</h2>
     <div class="games-grid" id="games-grid">
       <div class="game-card" onclick="enterGame('obby')">
@@ -326,15 +361,16 @@
   </div>
 
   <div id="hud">
-    <h4>حالة اللاعب في هذا العالم</h4>
+    <h4>الغرفة: <span id="hud-room-code">PUBLIC</span> (<span id="player-count">1</span>)</h4>
     <ul id="players-ul"></ul>
-    <button onclick="exitToMenu()" style="margin-top:8px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">خروج للقائمة</button>
+    <button onclick="respawn()" style="margin-top:8px; width:100%; background:#0284c7; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">إعادة إلى البداية</button>
+    <button onclick="exitToMenu()" style="margin-top:6px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">خروج للقائمة</button>
   </div>
 
   <div id="chat-box">
     <div id="chat-messages"></div>
     <form id="chat-form" onsubmit="sendChat(event)">
-      <input type="text" id="chat-input" placeholder="اكتب رسالة..." maxlength="120" autocomplete="off" />
+      <input type="text" id="chat-input" placeholder="اكتب رسالة للغرفة..." maxlength="120" autocomplete="off" />
       <button type="submit" id="chat-send">إرسال</button>
     </form>
   </div>
@@ -384,8 +420,9 @@
 
   <script>
     const isGitHubPages = window.location.hostname.endsWith('github.io');
-    const socket = (!isGitHubPages && typeof io === 'function')
-      ? io({ reconnectionAttempts: 2, timeout: 1500 })
+    const serverEndpoint = window.MULTIPLAYER_SERVER_URL || null;
+    const socket = ((!isGitHubPages || serverEndpoint) && typeof io === 'function')
+      ? io(serverEndpoint || undefined, { reconnectionAttempts: 3, timeout: 2000 })
       : null;
 
     const STORAGE_KEYS = {
@@ -393,6 +430,12 @@
       blocks: 'roblox_web_3d_blocks_v1',
       customGame: 'roblox_web_3d_custom_game_v1'
     };
+
+    function sanitizeRoomCode(raw) {
+      if (typeof raw !== 'string') return 'PUBLIC';
+      const cleaned = raw.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 12);
+      return cleaned || 'PUBLIC';
+    }
 
     function loadSavedState() {
       try {
@@ -412,7 +455,8 @@
           score: myScore,
           adam: myAdam,
           ownedHats: myOwnedHats,
-          avatar: myAvatar
+          avatar: myAvatar,
+          roomCode: myRoomCode
         }));
       } catch (_) {}
     }
@@ -432,6 +476,7 @@
     const initialSaved = loadSavedState();
     let myId = 'local_player';
     let currentGame = 'lobby';
+    let myRoomCode = sanitizeRoomCode((initialSaved.p && initialSaved.p.roomCode) || 'PUBLIC');
     let myName = (initialSaved.p && initialSaved.p.name) || 'لاعب';
     let myScore = (initialSaved.p && typeof initialSaved.p.score === 'number') ? initialSaved.p.score : 0;
     let myAdam = (initialSaved.p && typeof initialSaved.p.adam === 'number') ? initialSaved.p.adam : 50;
@@ -453,18 +498,47 @@
     document.getElementById('pants-color').value = myAvatar.pants;
     document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'none';
     document.getElementById('adam-balance').textContent = myAdam;
+    document.getElementById('room-code-input').value = myRoomCode;
+    document.getElementById('nav-room-code').textContent = myRoomCode;
+    document.getElementById('hud-room-code').textContent = myRoomCode;
+
+    function updateRoomUi(code) {
+      myRoomCode = sanitizeRoomCode(code);
+      document.getElementById('room-code-input').value = myRoomCode;
+      document.getElementById('nav-room-code').textContent = myRoomCode;
+      document.getElementById('hud-room-code').textContent = myRoomCode;
+      persistProfile();
+      syncRoomPlayers();
+      if (socket && socket.connected) {
+        socket.emit('updatePlayer', { roomCode: myRoomCode, game: currentGame });
+      }
+    }
+
+    function applyRoomCode() {
+      const inputVal = document.getElementById('room-code-input').value;
+      updateRoomUi(inputVal);
+      showToast(`🔑 تم الانضمام إلى الغرفة: ${myRoomCode}`);
+    }
+
+    function generateFriendCode() {
+      const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
+      updateRoomUi(`FR-${randomPart}`);
+      showToast(`🎟️ رمز غرفتك: ${myRoomCode} (شاركه مع أصدقائك)`);
+    }
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
+    scene.fog = new THREE.FogExp2(0x87ceeb, 0.008);
+
     const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 500);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x444444, 0.9);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x4b5563, 1.0);
     scene.add(hemiLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    dirLight.position.set(15, 30, 20);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(18, 32, 22);
     scene.add(dirLight);
 
     const worldGroup = new THREE.Group();
@@ -490,13 +564,13 @@
       myAdam = balance;
       document.getElementById('adam-balance').textContent = balance;
       persistProfile();
-      refreshLocalPlayerHud();
+      syncRoomPlayers();
     }
 
     function addPlayerScore(pts) {
       myScore += pts;
       persistProfile();
-      refreshLocalPlayerHud();
+      syncRoomPlayers();
       if (socket && socket.connected) socket.emit('addScore', pts);
     }
 
@@ -504,7 +578,21 @@
       const confirmed = window.confirm('تأكيد إتمام عملية الشراء الوهمية/التجريبية لحزمة ADAM؟ (اربطها ببوابة Stripe/PayPal في الإنتاج)');
       if (!confirmed) return;
 
-      if (!isGitHubPages && socket && socket.connected) {
+      if (socket && socket.connected && serverEndpoint) {
+        try {
+          const res = await fetch(`${serverEndpoint}/api/adam/purchase`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ socketId: socket.id, packId })
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            updateAdamUi(data.adam);
+            showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
+            return;
+          }
+        } catch (_) {}
+      } else if (!isGitHubPages && socket && socket.connected) {
         try {
           const res = await fetch('/api/adam/purchase', {
             method: 'POST',
@@ -548,7 +636,7 @@
         myScore += item.scoreBonus;
       }
       persistProfile();
-      refreshLocalPlayerHud();
+      syncRoomPlayers();
       showToast(`✅ تم شراء ${item.label}!`);
       if (socket && socket.connected) socket.emit('spendAdam', itemId);
     }
@@ -627,62 +715,109 @@
       input.blur();
     }
 
-    function createCharacterMesh(avatarData) {
+    function createNameTagSprite(labelText) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(17, 24, 39, 0.78)';
+      ctx.beginPath();
+      ctx.roundRect(12, 10, 232, 44, 14);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#f9fafb';
+      ctx.font = 'bold 22px Tahoma, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labelText.slice(0, 16), 128, 33);
+
+      const tex = new THREE.CanvasTexture(canvas);
+      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
+      const sprite = new THREE.Sprite(mat);
+      sprite.scale.set(2.4, 0.6, 1);
+      sprite.position.set(0, 3.65, 0);
+      return sprite;
+    }
+
+    function createCharacterMesh(avatarData, tagName = null) {
       const group = new THREE.Group();
+      const bodyRig = new THREE.Group();
+      group.add(bodyRig);
+
       const skinMat = new THREE.MeshLambertMaterial({ color: avatarData.skin || '#ffdbac' });
       const shirtMat = new THREE.MeshLambertMaterial({ color: avatarData.shirt || '#00a2ff' });
       const pantsMat = new THREE.MeshLambertMaterial({ color: avatarData.pants || '#2c3e50' });
+      const trimMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
 
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.5), shirtMat);
-      torso.position.y = 1.4;
-      group.add(torso);
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.04, 1.22, 0.54), shirtMat);
+      torso.position.y = 1.42;
+      bodyRig.add(torso);
 
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.75, 0.75, 0.75), skinMat);
-      head.position.y = 2.45;
-      group.add(head);
+      const belt = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.16, 0.56), trimMat);
+      belt.position.y = 0.88;
+      bodyRig.add(belt);
+
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.78, 0.78), skinMat);
+      head.position.y = 2.48;
+      bodyRig.add(head);
 
       const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-      const leftEye = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.05), eyeMat);
-      leftEye.position.set(-0.18, 2.5, 0.38);
-      const rightEye = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.1, 0.05), eyeMat);
-      rightEye.position.set(0.18, 2.5, 0.38);
-      group.add(leftEye, rightEye);
+      const leftEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.05), eyeMat);
+      leftEye.position.set(-0.19, 2.53, 0.4);
+      const rightEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.05), eyeMat);
+      rightEye.position.set(0.19, 2.53, 0.4);
+      const smile = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 0.05), eyeMat);
+      smile.position.set(0, 2.31, 0.4);
+      bodyRig.add(leftEye, rightEye, smile);
 
       if (avatarData.hat === 'cap') {
-        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.25, 0.85), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
-        cap.position.set(0, 2.9, 0.05);
-        group.add(cap);
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.24, 0.86), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
+        cap.position.set(0, 2.94, 0.02);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.08, 0.35), new THREE.MeshLambertMaterial({ color: 0xb91c1c }));
+        visor.position.set(0, 2.86, 0.52);
+        bodyRig.add(cap, visor);
       } else if (avatarData.hat === 'crown') {
-        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.35, 0.3, 6), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
-        crown.position.set(0, 2.95, 0);
-        group.add(crown);
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.36, 0.34, 7), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+        crown.position.set(0, 3.02, 0);
+        bodyRig.add(crown);
       } else if (avatarData.hat === 'tophat') {
-        const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.6, 12), new THREE.MeshLambertMaterial({ color: 0x111827 }));
-        hat.position.set(0, 3.1, 0);
-        group.add(hat);
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.07, 16), new THREE.MeshLambertMaterial({ color: 0x111827 }));
+        brim.position.set(0, 2.89, 0);
+        const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.56, 14), new THREE.MeshLambertMaterial({ color: 0x1f2937 }));
+        hat.position.set(0, 3.18, 0);
+        bodyRig.add(brim, hat);
       } else if (avatarData.hat === 'adam_halo') {
         const halo = new THREE.Mesh(
-          new THREE.TorusGeometry(0.45, 0.08, 10, 24),
+          new THREE.TorusGeometry(0.48, 0.08, 12, 28),
           new THREE.MeshLambertMaterial({ color: 0xfbbf24 })
         );
         halo.rotation.x = Math.PI / 2;
-        halo.position.set(0, 3.15, 0);
-        group.add(halo);
+        halo.position.set(0, 3.22, 0);
+        bodyRig.add(halo);
       }
 
-      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, 0.35), skinMat);
-      leftArm.position.set(-0.72, 1.4, 0);
-      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, 0.35), skinMat);
-      rightArm.position.set(0.72, 1.4, 0);
-      group.add(leftArm, rightArm);
+      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.36, 1.08, 0.36), skinMat);
+      leftArm.position.set(-0.74, 1.44, 0);
+      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.36, 1.08, 0.36), skinMat);
+      rightArm.position.set(0.74, 1.44, 0);
+      bodyRig.add(leftArm, rightArm);
 
-      const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.0, 0.42), pantsMat);
-      leftLeg.position.set(-0.26, 0.5, 0);
-      const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.0, 0.42), pantsMat);
-      rightLeg.position.set(0.26, 0.5, 0);
-      group.add(leftLeg, rightLeg);
+      const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.43, 0.96, 0.43), pantsMat);
+      leftLeg.position.set(-0.27, 0.48, 0);
+      const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.43, 0.96, 0.43), pantsMat);
+      rightLeg.position.set(0.27, 0.48, 0);
+      bodyRig.add(leftLeg, rightLeg);
 
-      group.userData = { leftArm, rightArm, leftLeg, rightLeg, walkTime: 0 };
+      let nameTag = null;
+      if (tagName) {
+        nameTag = createNameTagSprite(tagName);
+        group.add(nameTag);
+      }
+
+      group.userData = { bodyRig, leftArm, rightArm, leftLeg, rightLeg, nameTag, tagLabel: tagName, walkTime: 0 };
       return group;
     }
 
@@ -699,35 +834,97 @@
       scene.add(myChar);
     }
 
-    function animateLimbs(charMesh, isMoving, delta) {
-      const { leftArm, rightArm, leftLeg, rightLeg } = charMesh.userData;
-      if (isMoving) {
-        charMesh.userData.walkTime += delta * 10;
-        const swing = Math.sin(charMesh.userData.walkTime) * 0.6;
+    function animateLimbs(charMesh, isMoving, grounded, delta) {
+      const { bodyRig, leftArm, rightArm, leftLeg, rightLeg } = charMesh.userData;
+      if (!grounded) {
+        leftArm.rotation.x = -0.55;
+        rightArm.rotation.x = -0.55;
+        leftLeg.rotation.x = 0.35;
+        rightLeg.rotation.x = -0.25;
+        bodyRig.rotation.x = -0.06;
+      } else if (isMoving) {
+        charMesh.userData.walkTime += delta * 12;
+        const swing = Math.sin(charMesh.userData.walkTime) * 0.68;
         leftLeg.rotation.x = swing;
         rightLeg.rotation.x = -swing;
         leftArm.rotation.x = -swing;
         rightArm.rotation.x = swing;
+        bodyRig.rotation.x = 0.08;
       } else {
+        charMesh.userData.walkTime += delta * 2.2;
+        const breath = Math.sin(charMesh.userData.walkTime) * 0.04;
         leftLeg.rotation.x = 0;
         rightLeg.rotation.x = 0;
-        leftArm.rotation.x = 0;
-        rightArm.rotation.x = 0;
+        leftArm.rotation.x = breath;
+        rightArm.rotation.x = -breath;
+        bodyRig.rotation.x = 0;
       }
     }
 
-    function refreshLocalPlayerHud() {
-      const ul = document.getElementById('players-ul');
+    function clearRemotePlayers() {
+      Object.keys(remotePlayers).forEach(id => {
+        scene.remove(remotePlayers[id].mesh);
+        delete remotePlayers[id];
+      });
+    }
+
+    function isSameSession(p) {
+      const pRoom = sanitizeRoomCode(p.roomCode || 'PUBLIC');
+      return (p.game || 'lobby') === currentGame && pRoom === myRoomCode;
+    }
+
+    function syncRoomPlayers() {
+      clearRemotePlayers();
       const entries = [{ name: myName, score: myScore, adam: myAdam }];
+
       Object.values(allPlayersMap).forEach(p => {
-        if (p.id !== myId && (p.game || 'lobby') === currentGame) {
+        if (p.id !== myId && isSameSession(p)) {
           entries.push(p);
+          updateRemotePlayer(p);
         }
       });
+
+      document.getElementById('player-count').textContent = entries.length;
+      const ul = document.getElementById('players-ul');
       ul.innerHTML = entries
         .sort((a, b) => (b.score || 0) - (a.score || 0))
         .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} ن | ${p.adam || 0} ADAM</b></li>`)
         .join('');
+    }
+
+    function updateRemotePlayer(p) {
+      const displayName = p.name || 'لاعب';
+      const avatarKey = JSON.stringify(p.avatar || {});
+      if (!remotePlayers[p.id]) {
+        const mesh = createCharacterMesh(p.avatar || {}, displayName);
+        scene.add(mesh);
+        remotePlayers[p.id] = {
+          mesh,
+          lastX: p.x || 0,
+          lastZ: p.z || 0,
+          isMoving: false,
+          avatarKey,
+          tagLabel: displayName
+        };
+      } else if (remotePlayers[p.id].avatarKey !== avatarKey || remotePlayers[p.id].tagLabel !== displayName) {
+        const oldPos = remotePlayers[p.id].mesh.position.clone();
+        const oldRot = remotePlayers[p.id].mesh.rotation.y;
+        scene.remove(remotePlayers[p.id].mesh);
+        const rebuilt = createCharacterMesh(p.avatar || {}, displayName);
+        rebuilt.position.copy(oldPos);
+        rebuilt.rotation.y = oldRot;
+        scene.add(rebuilt);
+        remotePlayers[p.id].mesh = rebuilt;
+        remotePlayers[p.id].avatarKey = avatarKey;
+        remotePlayers[p.id].tagLabel = displayName;
+      }
+
+      const rp = remotePlayers[p.id];
+      rp.isMoving = Math.hypot((p.x || 0) - rp.lastX, (p.z || 0) - rp.lastZ) > 0.02;
+      rp.mesh.position.set(p.x || 0, p.y || 0, p.z || 0);
+      rp.mesh.rotation.y = p.rotY || 0;
+      rp.lastX = p.x || 0;
+      rp.lastZ = p.z || 0;
     }
 
     function clearStudioSceneItems() {
@@ -767,6 +964,11 @@
       savedStudioBlocks.forEach(renderStudioItem);
     }
 
+    function setAtmosphere(hexColor, fogDensity = 0.007) {
+      scene.background = new THREE.Color(hexColor);
+      scene.fog = new THREE.FogExp2(hexColor, fogDensity);
+    }
+
     function buildWorld(gameType) {
       while (worldGroup.children.length > 0) worldGroup.remove(worldGroup.children[0]);
       platforms = [];
@@ -781,6 +983,16 @@
         );
         mesh.position.set(x, y, z);
         worldGroup.add(mesh);
+
+        if (type === 'finish') {
+          const beacon = new THREE.Mesh(
+            new THREE.CylinderGeometry(0.3, 0.3, 4.5, 12),
+            new THREE.MeshLambertMaterial({ color: 0xfef08a, transparent: true, opacity: 0.65 })
+          );
+          beacon.position.set(x, y + 2.5, z);
+          worldGroup.add(beacon);
+        }
+
         const item = { x, y, z, w, h, d, type };
         platforms.push(item);
         if (type === 'finish') finishZones.push(item);
@@ -788,7 +1000,7 @@
 
       function addCoin(x, y, z) {
         const coin = new THREE.Mesh(
-          new THREE.CylinderGeometry(0.5, 0.5, 0.18, 16),
+          new THREE.CylinderGeometry(0.55, 0.55, 0.2, 16),
           new THREE.MeshLambertMaterial({ color: 0xfacc15 })
         );
         coin.rotation.x = Math.PI / 2;
@@ -798,59 +1010,59 @@
       }
 
       if (gameType === 'obby') {
-        scene.background = new THREE.Color(0x7dd3fc);
-        addPlat(0, -0.5, 0, 8, 1, 8, 0x22c55e);
+        setAtmosphere(0x7dd3fc, 0.006);
+        addPlat(0, -0.5, 0, 9, 1, 9, 0x22c55e);
         for (let i = 1; i <= 10; i++) {
-          const x = (i % 2 === 0 ? 2.5 : -2.5);
+          const x = (i % 2 === 0 ? 2.6 : -2.6);
           const y = i * 1.1;
-          const z = -i * 5.5;
+          const z = -i * 5.2;
           const isFinish = i === 10;
           const type = isFinish ? 'finish' : (i % 4 === 0 ? 'bounce' : 'normal');
           const color = isFinish ? 0xfacc15 : (type === 'bounce' ? 0x10b981 : 0x3b82f6);
-          addPlat(x, y, z, 4.2, 0.8, 4.2, color, type);
+          addPlat(x, y, z, 4.4, 0.85, 4.4, color, type);
           if (!isFinish) addCoin(x, y + 1.4, z);
         }
       } else if (gameType === 'coins') {
-        scene.background = new THREE.Color(0xfef08a);
-        addPlat(0, -0.5, 0, 36, 1, 36, 0x4ade80);
-        for (let i = 0; i < 15; i++) {
-          addCoin((Math.random() - 0.5) * 28, 1.2, (Math.random() - 0.5) * 28);
+        setAtmosphere(0xfef08a, 0.007);
+        addPlat(0, -0.5, 0, 38, 1, 38, 0x4ade80);
+        for (let i = 0; i < 18; i++) {
+          addCoin((Math.random() - 0.5) * 30, 1.2, (Math.random() - 0.5) * 30);
         }
       } else if (gameType === 'lava') {
-        scene.background = new THREE.Color(0x450a0a);
-        addPlat(0, -0.8, 0, 40, 0.5, 40, 0xdc2626, 'lava');
-        addPlat(0, 0, 0, 6, 1, 6, 0x64748b);
+        setAtmosphere(0x450a0a, 0.01);
+        addPlat(0, -0.8, 0, 44, 0.5, 44, 0xdc2626, 'lava');
+        addPlat(0, 0, 0, 6.5, 1, 6.5, 0x64748b);
         for (let i = 1; i <= 8; i++) {
-          addPlat((i % 2 === 0 ? 4 : -4), 0.2, -i * 4.5, 3.8, 1, 3.8, 0x94a3b8);
-          addCoin((i % 2 === 0 ? 4 : -4), 1.6, -i * 4.5);
+          addPlat((i % 2 === 0 ? 3.8 : -3.8), 0.25, -i * 4.4, 4.0, 1, 4.0, 0x94a3b8);
+          addCoin((i % 2 === 0 ? 3.8 : -3.8), 1.6, -i * 4.4);
         }
       } else if (gameType === 'ice') {
-        scene.background = new THREE.Color(0xcffafe);
-        addPlat(0, -0.5, 0, 38, 1, 38, 0x67e8f9);
-        addPlat(-6, 0.5, -8, 6, 1.5, 2, 0x0284c7);
-        addPlat(6, 0.5, -14, 6, 1.5, 2, 0x0284c7);
-        addPlat(0, 1.0, -21, 5, 1.5, 5, 0x0369a1);
-        addPlat(0, 2.0, -28, 6, 1, 6, 0xfacc15, 'finish');
-        addCoin(-6, 2.0, -8);
-        addCoin(6, 2.0, -14);
+        setAtmosphere(0xcffafe, 0.007);
+        addPlat(0, -0.5, 0, 40, 1, 40, 0x67e8f9);
+        addPlat(-5.5, 0.5, -8, 6.5, 1.5, 2.4, 0x0284c7);
+        addPlat(5.5, 0.5, -14, 6.5, 1.5, 2.4, 0x0284c7);
+        addPlat(0, 1.0, -21, 5.5, 1.5, 5.5, 0x0369a1);
+        addPlat(0, 2.0, -28, 6.5, 1, 6.5, 0xfacc15, 'finish');
+        addCoin(-5.5, 2.0, -8);
+        addCoin(5.5, 2.0, -14);
         addCoin(0, 2.5, -21);
       } else if (gameType === 'tower') {
-        scene.background = new THREE.Color(0xe9d5ff);
-        addPlat(0, -0.5, 0, 9, 1, 9, 0xa855f7);
+        setAtmosphere(0xe9d5ff, 0.007);
+        addPlat(0, -0.5, 0, 9.5, 1, 9.5, 0xa855f7);
         for (let i = 1; i <= 12; i++) {
           const angle = i * 0.7;
-          const radius = 5.5;
+          const radius = 5.2;
           const x = Math.cos(angle) * radius;
           const z = Math.sin(angle) * radius - 4;
-          const y = i * 1.4;
+          const y = i * 1.35;
           const isFinish = i === 12;
           const type = isFinish ? 'finish' : (i % 3 === 0 ? 'bounce' : 'normal');
           const color = isFinish ? 0xfacc15 : (type === 'bounce' ? 0x10b981 : 0x8b5cf6);
-          addPlat(x, y, z, 3.8, 0.8, 3.8, color, type);
+          addPlat(x, y, z, 4.0, 0.85, 4.0, color, type);
           if (!isFinish) addCoin(x, y + 1.4, z);
         }
       } else {
-        scene.background = new THREE.Color(0x93c5fd);
+        setAtmosphere(0x93c5fd, 0.006);
         addPlat(0, -0.5, 0, 44, 1, 44, 0x86efac);
         rebuildAllStudioItems();
       }
@@ -874,11 +1086,18 @@
 
     function exitToMenu() {
       currentGame = 'lobby';
+      clearRemotePlayers();
       showScreen('games-screen');
-      if (socket && socket.connected) socket.emit('updatePlayer', { game: 'lobby' });
+      if (socket && socket.connected) socket.emit('updatePlayer', { game: 'lobby', roomCode: myRoomCode });
     }
 
     function enterGame(gameType) {
+      const typedCode = document.getElementById('room-code-input').value;
+      myRoomCode = sanitizeRoomCode(typedCode);
+      document.getElementById('nav-room-code').textContent = myRoomCode;
+      document.getElementById('hud-room-code').textContent = myRoomCode;
+      persistProfile();
+
       currentGame = gameType;
       showScreen(null);
       document.getElementById('hud').style.display = 'block';
@@ -893,10 +1112,11 @@
       }
       buildWorld(gameType);
       respawn();
-      refreshLocalPlayerHud();
+      syncRoomPlayers();
       if (socket && socket.connected) {
         socket.emit('updatePlayer', {
           game: gameType,
+          roomCode: myRoomCode,
           avatar: myAvatar,
           name: myName,
           x: myChar.position.x,
@@ -923,11 +1143,11 @@
       };
       rebuildMyCharacter();
       persistProfile();
-      refreshLocalPlayerHud();
+      syncRoomPlayers();
       showToast('✅ تم حفظ مظهر شخصيتك');
       showScreen('games-screen');
       if (socket && socket.connected) {
-        socket.emit('updatePlayer', { name: myName, avatar: myAvatar });
+        socket.emit('updatePlayer', { name: myName, avatar: myAvatar, roomCode: myRoomCode });
       }
     }
 
@@ -994,7 +1214,7 @@
 
     function jump() {
       if (isGrounded) {
-        velocityY = 12;
+        velocityY = 12.5;
         isGrounded = false;
       }
     }
@@ -1006,6 +1226,19 @@
     }
 
     if (socket) {
+      socket.on('connect', () => {
+        socket.emit('updatePlayer', {
+          game: currentGame,
+          roomCode: myRoomCode,
+          avatar: myAvatar,
+          name: myName,
+          x: myChar.position.x,
+          y: myChar.position.y,
+          z: myChar.position.z,
+          rotY: myChar.rotation.y
+        });
+      });
+
       socket.on('initData', (data) => {
         myId = data.id || myId;
         allPlayersMap = data.players || {};
@@ -1020,28 +1253,42 @@
         if (currentGame === 'studio' || currentGame === 'custom') {
           rebuildAllStudioItems();
         }
-        refreshLocalPlayerHud();
+        syncRoomPlayers();
+      });
+
+      socket.on('playersList', (list) => {
+        allPlayersMap = {};
+        list.forEach(p => { allPlayersMap[p.id] = p; });
+        syncRoomPlayers();
+      });
+
+      socket.on('playerDisconnected', (id) => {
+        delete allPlayersMap[id];
+        if (remotePlayers[id]) {
+          scene.remove(remotePlayers[id].mesh);
+          delete remotePlayers[id];
+        }
+        syncRoomPlayers();
       });
 
       socket.on('chatMessage', (msg) => {
-        if ((msg.game || 'lobby') !== currentGame || msg.id === myId) return;
+        const msgRoom = sanitizeRoomCode(msg.roomCode || 'PUBLIC');
+        if ((msg.game || 'lobby') !== currentGame || msgRoom !== myRoomCode || msg.id === myId) return;
         appendChatLine(msg.name, msg.text);
       });
 
       socket.on('playerMoved', (p) => {
         allPlayersMap[p.id] = { ...(allPlayersMap[p.id] || {}), ...p };
-        if (p.id === myId || (p.game || 'lobby') !== currentGame) return;
-        if (!remotePlayers[p.id]) {
-          const mesh = createCharacterMesh(p.avatar || {});
-          scene.add(mesh);
-          remotePlayers[p.id] = { mesh, lastX: p.x || 0, lastZ: p.z || 0, isMoving: false };
+        if (p.id === myId) return;
+        if (!isSameSession(p)) {
+          if (remotePlayers[p.id]) {
+            scene.remove(remotePlayers[p.id].mesh);
+            delete remotePlayers[p.id];
+          }
+          syncRoomPlayers();
+          return;
         }
-        const rp = remotePlayers[p.id];
-        rp.isMoving = Math.hypot((p.x || 0) - rp.lastX, (p.z || 0) - rp.lastZ) > 0.02;
-        rp.mesh.position.set(p.x || 0, p.y || 0, p.z || 0);
-        rp.mesh.rotation.y = p.rotY || 0;
-        rp.lastX = p.x || 0;
-        rp.lastZ = p.z || 0;
+        updateRemotePlayer(p);
       });
     }
 
@@ -1062,8 +1309,8 @@
       if (isMoving) {
         const len = Math.hypot(moveX, moveZ);
         moveX /= len; moveZ /= len;
-        myChar.position.x += moveX * 9 * delta;
-        myChar.position.z += moveZ * 9 * delta;
+        myChar.position.x += moveX * 9.5 * delta;
+        myChar.position.z += moveZ * 9.5 * delta;
         myChar.rotation.y = Math.atan2(moveX, moveZ);
       }
 
@@ -1076,10 +1323,10 @@
         : platforms;
 
       for (const p of activePlatforms) {
-        const withinX = Math.abs(myChar.position.x - p.x) < (p.w / 2 + 0.4);
-        const withinZ = Math.abs(myChar.position.z - p.z) < (p.d / 2 + 0.4);
+        const withinX = Math.abs(myChar.position.x - p.x) < (p.w / 2 + 0.42);
+        const withinZ = Math.abs(myChar.position.z - p.z) < (p.d / 2 + 0.42);
         const topY = p.y + p.h / 2;
-        if (withinX && withinZ && myChar.position.y <= topY + 0.1 && myChar.position.y >= topY - 0.8 && velocityY <= 0) {
+        if (withinX && withinZ && myChar.position.y <= topY + 0.1 && myChar.position.y >= topY - 0.85 && velocityY <= 0) {
           if (p.type === 'lava') {
             showToast('🔥 احترقت بالحمم! إعادة المحاولة...');
             respawn();
@@ -1091,7 +1338,7 @@
             showToast('🏆 وصلت إلى نقطة الفوز! +50 نقطة');
           }
           myChar.position.y = topY;
-          velocityY = p.type === 'bounce' ? 18 : 0;
+          velocityY = p.type === 'bounce' ? 18.5 : 0;
           isGrounded = p.type !== 'bounce';
         }
       }
@@ -1100,15 +1347,15 @@
 
       for (let i = coins.length - 1; i >= 0; i--) {
         const c = coins[i];
-        c.rotation.z += 3 * delta;
-        if (myChar.position.distanceTo(c.position) < 1.6) {
+        c.rotation.z += 3.2 * delta;
+        if (myChar.position.distanceTo(c.position) < 1.65) {
           (currentGame === 'studio' || currentGame === 'custom' ? studioGroup : worldGroup).remove(c);
           coins.splice(i, 1);
           addPlayerScore(10);
           if (currentGame === 'coins') {
             setTimeout(() => {
               if (currentGame !== 'coins') return;
-              c.position.set((Math.random() - 0.5) * 28, 1.2, (Math.random() - 0.5) * 28);
+              c.position.set((Math.random() - 0.5) * 30, 1.2, (Math.random() - 0.5) * 30);
               worldGroup.add(c);
               coins.push(c);
             }, 1500);
@@ -1116,14 +1363,14 @@
         }
       }
 
-      animateLimbs(myChar, isMoving, delta);
-      Object.values(remotePlayers).forEach(rp => animateLimbs(rp.mesh, rp.isMoving, delta));
+      animateLimbs(myChar, isMoving, isGrounded, delta);
+      Object.values(remotePlayers).forEach(rp => animateLimbs(rp.mesh, rp.isMoving, true, delta));
 
       camera.position.lerp(
-        new THREE.Vector3(myChar.position.x, myChar.position.y + 6, myChar.position.z + 11),
+        new THREE.Vector3(myChar.position.x, myChar.position.y + 6.2, myChar.position.z + 11.2),
         0.12
       );
-      camera.lookAt(myChar.position.x, myChar.position.y + 1.5, myChar.position.z);
+      camera.lookAt(myChar.position.x, myChar.position.y + 1.6, myChar.position.z);
 
       if (socket && socket.connected && currentGame !== 'lobby' && (isMoving || !isGrounded) && now - lastNetEmit > 60) {
         lastNetEmit = now;
@@ -1131,7 +1378,8 @@
           x: myChar.position.x,
           y: myChar.position.y,
           z: myChar.position.z,
-          rotY: myChar.rotation.y
+          rotY: myChar.rotation.y,
+          roomCode: myRoomCode
         });
       }
 
