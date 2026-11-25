@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ROBLOX WEB 3D - ADAM & Pro Studio</title>
+  <title>ROBLOX WEB 3D - ADAM GoGo, Pro Studio & Slither</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -17,9 +17,10 @@
     }
     .logo { font-weight: 900; font-size: 17px; color: #38bdf8; letter-spacing: 0.5px; white-space: nowrap; }
     .adam-badge {
-      background: linear-gradient(45deg, #d97706, #fbbf24);
-      color: #111827; font-weight: 900; padding: 4px 10px;
+      background: linear-gradient(45deg, #0ea5e9, #f97316, #facc15);
+      color: #090d16; font-weight: 900; padding: 4px 11px;
       border-radius: 999px; font-size: 12px; white-space: nowrap;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
     }
     .nav-btns { display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; }
     .nav-btns button {
@@ -57,6 +58,11 @@
       border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;
     }
     .play-btn:hover { background: #059669; }
+    .edit-map-btn {
+      width: 100%; padding: 8px; margin-top: 6px; background: #2563eb; color: #fff;
+      border: none; border-radius: 8px; font-size: 12.5px; font-weight: bold; cursor: pointer;
+    }
+    .edit-map-btn:hover { background: #1d4ed8; }
 
     .store-container { max-width: 920px; margin: 12px auto; }
     .store-section-title { margin: 20px 0 10px; color: #fbbf24; font-size: 17px; }
@@ -73,8 +79,8 @@
       background: #0284c7; color: #fff; font-weight: bold; cursor: pointer;
     }
     .buy-btn:hover { background: #0369a1; }
-    .buy-btn.gold { background: #d97706; color: #111827; }
-    .buy-btn.gold:hover { background: #f59e0b; }
+    .buy-btn.gold { background: linear-gradient(90deg, #0284c7, #f97316); color: #ffffff; }
+    .buy-btn.gold:hover { filter: brightness(1.08); }
 
     .avatar-panel {
       max-width: 520px; margin: 16px auto; background: #1f2937;
@@ -100,7 +106,7 @@
     #toast {
       position: fixed; top: 68px; left: 50%; transform: translateX(-50%);
       background: rgba(16, 185, 129, 0.95); color: #fff; padding: 8px 16px;
-      border-radius: 999px; font-weight: bold; font-size: 13px; z-index: 25; display: none;
+      border-radius: 999px; font-weight: bold; font-size: 13px; z-index: 40; display: none;
       max-width: 90vw; text-align: center;
     }
 
@@ -119,6 +125,7 @@
     }
     #studio-bar input[type="color"] { width: 32px; height: 28px; border: none; background: none; cursor: pointer; padding: 0; }
     #studio-bar button { background: #2563eb; border-color: #3b82f6; cursor: pointer; }
+    #studio-bar button:hover { filter: brightness(1.1); }
     #studio-bar button.green { background: #059669; border-color: #10b981; }
     #studio-bar button.amber { background: #d97706; border-color: #fbbf24; }
     #studio-bar button.red { background: #dc2626; border-color: #ef4444; }
@@ -172,6 +179,249 @@
       border: 2px solid #fff; color: #fff; font-size: 15px; font-weight: 900;
       box-shadow: 0 6px 16px rgba(0,0,0,0.35); cursor: pointer;
     }
+
+    /* حاوية لعبة Slither.io */
+    #slither-container {
+      position: fixed;
+      inset: 56px 0 0 0;
+      background-color: #0b0f19;
+      z-index: 25;
+      display: none;
+      overflow: hidden;
+    }
+
+    #slitherCanvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    #slitherHud {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      display: none;
+      z-index: 28;
+    }
+
+    .slither-top-right {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      pointer-events: auto;
+    }
+
+    .slither-stat-box {
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 8px 14px;
+      min-width: 145px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .slither-stat-label { font-size: 11.5px; color: #94a3b8; }
+    .slither-stat-value { font-size: 19px; font-weight: 700; color: #38bdf8; margin-top: 2px; }
+
+    .slither-exit-btn {
+      padding: 7px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(248, 113, 113, 0.45);
+      background: rgba(220, 38, 38, 0.88);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .slither-top-left {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 10px 14px;
+      min-width: 195px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+
+    .slither-lb-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #facc15;
+      margin-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 4px;
+    }
+
+    .slither-lb-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 12.5px;
+    }
+
+    .slither-lb-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    .slither-lb-item.is-player {
+      background: rgba(56, 189, 248, 0.22);
+      color: #7dd3fc;
+      font-weight: 700;
+    }
+
+    #slitherMinimap {
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.85);
+      border: 2px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+
+    .slither-hint {
+      position: absolute;
+      bottom: 14px;
+      right: 14px;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 10px;
+      padding: 8px 12px;
+      font-size: 12px;
+      color: #cbd5e1;
+    }
+
+    #slitherOverlay {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.85), rgba(2, 6, 23, 0.96));
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      padding: 16px;
+    }
+
+    .slither-card {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 20px;
+      padding: 24px 22px;
+      text-align: center;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+
+    .slither-logo {
+      font-size: 32px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #4ade80, #38bdf8, #f472b6, #facc15);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .slither-sub { font-size: 12.5px; color: #94a3b8; margin-bottom: 16px; }
+
+    #slitherDeathStats {
+      display: none;
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 14px;
+      font-size: 13px;
+      color: #fca5a5;
+    }
+
+    .slither-input-group { text-align: right; margin-bottom: 14px; }
+    .slither-input-group label { display: block; font-size: 12.5px; color: #cbd5e1; margin-bottom: 5px; }
+
+    #slitherPlayerName {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(30, 41, 59, 0.9);
+      color: #ffffff;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .slither-skins-label { display: block; text-align: right; font-size: 12.5px; color: #cbd5e1; margin-bottom: 8px; }
+
+    .slither-skins-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 7px;
+      margin-bottom: 18px;
+    }
+
+    .slither-skin-option {
+      height: 34px;
+      border-radius: 999px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+
+    .slither-skin-option.selected {
+      border-color: #ffffff;
+      transform: scale(1.08);
+      box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
+    }
+
+    #slitherPlayBtn {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #22c55e, #10b981);
+      color: #052e16;
+      font-size: 16px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .slither-back-menu {
+      width: 100%;
+      margin-top: 8px;
+      padding: 10px;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      background: #1e293b;
+      color: #e2e8f0;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      #slitherMinimap { width: 104px; height: 104px; }
+      .slither-hint { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -179,20 +429,20 @@
   <div id="navbar">
     <div style="display:flex; align-items:center; gap:8px;">
       <div class="logo">ROBLOX WEB 3D</div>
-      <div class="adam-badge">🪙 <span id="adam-balance">50</span> ADAM</div>
+      <div class="adam-badge">⚡ <span id="adam-balance">50</span> ADAM GoGo</div>
     </div>
     <div class="nav-btns">
       <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
-      <button id="btn-store" onclick="showScreen('store-screen')">متجر ADAM</button>
+      <button id="btn-store" onclick="showScreen('store-screen')">متجر ADAM GoGo</button>
       <button id="btn-avatar" onclick="showScreen('avatar-screen')">الشخصية</button>
-      <button id="btn-studio" onclick="enterGame('studio')">Studio</button>
+      <button id="btn-studio" onclick="startNewOrCurrentStudio()">Studio</button>
     </div>
   </div>
 
   <div id="toast"></div>
 
   <div id="games-screen" class="screen active">
-    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب ماباً منشوراً</h2>
+    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب ماباً مسجلاً</h2>
     <div class="games-grid" id="games-grid">
       <div class="game-card" onclick="enterGame('obby')">
         <div class="game-banner" style="background: linear-gradient(45deg, #0284c7, #38bdf8);">🏃‍♂️</div>
@@ -238,12 +488,21 @@
           <button class="play-btn" onclick="event.stopPropagation(); enterGame('tower')">دخول اللعبة</button>
         </div>
       </div>
+
+      <div class="game-card" onclick="openSlitherGame()">
+        <div class="game-banner" style="background: linear-gradient(45deg, #0284c7, #f97316);">⚡🐍</div>
+        <div class="game-info">
+          <h3>Slither.io — ADAM GoGo</h3>
+          <p>اجمع النقاط المضيئة، حاصر المنافسين، وكن الأطول بهيئة GoGo السريعة.</p>
+          <button class="play-btn" onclick="event.stopPropagation(); openSlitherGame()">دخول لعبة Slither</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <div id="store-screen" class="screen">
     <div class="store-container">
-      <h2 style="text-align:center;">متجر عملة ADAM</h2>
+      <h2 style="text-align:center;">متجر عملة ADAM GoGo</h2>
       <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM أو استخدم رصيدك لشراء عناصر مميزة داخل اللعبة.</p>
 
       <h3 class="store-section-title">شحن ADAM</h3>
@@ -286,12 +545,12 @@
       <div class="store-grid">
         <div class="store-card">
           <div>
-            <h3>هالة ADAM الذهبية</h3>
-            <p style="color:#9ca3af; font-size:13px;">إكسسوار رأس ذهبي مميز يظهر على شخصيتك.</p>
+            <h3>هيئة ADAM GoGo النفاثة</h3>
+            <p style="color:#9ca3af; font-size:13px;">أجنحة سرعة نيون وهالة GoGo دوارة لشخصيتك.</p>
           </div>
           <div>
-            <div class="price-tag" style="color:#fbbf24;">150 ADAM</div>
-            <button class="buy-btn gold" style="margin-top:8px;" onclick="spendAdamItem('adam_halo')">شراء بـ 150 ADAM</button>
+            <div class="price-tag" style="color:#38bdf8;">120 ADAM</div>
+            <button class="buy-btn gold" style="margin-top:8px;" onclick="spendAdamItem('adam_gogo')">شراء بـ 120 ADAM</button>
           </div>
         </div>
 
@@ -322,11 +581,11 @@
       </div>
       <div class="form-row">
         <label>لون القميص (الجذع):</label>
-        <input type="color" id="shirt-color" value="#00a2ff" />
+        <input type="color" id="shirt-color" value="#0284c7" />
       </div>
       <div class="form-row">
         <label>لون البنطال (الأرجل):</label>
-        <input type="color" id="pants-color" value="#2c3e50" />
+        <input type="color" id="pants-color" value="#1e293b" />
       </div>
       <div class="form-row">
         <label>القبعة / الإكسسوار:</label>
@@ -335,7 +594,8 @@
           <option value="cap">قبعة رياضية حمراء</option>
           <option value="crown">تاج ذهبي</option>
           <option value="tophat">قبعة كلاسيكية</option>
-          <option value="adam_halo">هالة ADAM الذهبية (متجر ADAM)</option>
+          <option value="backpack">حقيبة مغامر</option>
+          <option value="adam_gogo">هيئة ADAM GoGo النفاثة ⚡</option>
         </select>
       </div>
       <button class="play-btn" onclick="saveAvatar()">حفظ المظهر والعودة للألعاب</button>
@@ -345,7 +605,7 @@
   <div id="hud">
     <h4 id="hud-player-name">اللاعب</h4>
     <div class="stat-row"><span>النقاط:</span><b id="hud-score">0</b></div>
-    <div class="stat-row"><span>رصيد ADAM:</span><b id="hud-adam">50</b></div>
+    <div class="stat-row"><span>رصيد ADAM GoGo:</span><b id="hud-adam">50</b></div>
     <button onclick="respawn()" style="margin-top:8px; width:100%; background:#0284c7; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:bold;">إعادة إلى البداية</button>
     <button onclick="exitToMenu()" style="margin-top:5px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:bold;">خروج للقائمة</button>
   </div>
@@ -371,12 +631,13 @@
         <button class="gray" onclick="adjustStudioOffsetY(-1)">▼ ارتفاع</button>
         <button class="gray" onclick="adjustStudioOffsetY(1)">▲ ارتفاع</button>
         <button class="gray" onclick="rotateStudioBlock()">↻ تدوير</button>
-        <span class="studio-badge">ارتفاع: <span id="studio-y-label">0</span> | العناصر: <span id="studio-count-label">0</span></span>
+        <span class="studio-badge">الماب: <span id="studio-active-name">جديد</span> | ارتفاع: <span id="studio-y-label">0</span> | العناصر: <span id="studio-count-label">0</span></span>
       </div>
       <div class="studio-controls">
+        <button class="cyan" onclick="createBlankIsolatedMap()">+ ماب جديد</button>
         <button onclick="placeStudioItem()">+ وضع العنصر (E)</button>
         <button class="gray" onclick="undoLastStudioBlock()">تراجع</button>
-        <button class="red" onclick="clearAllStudioBlocks()">مسح الكل</button>
+        <button class="red" onclick="clearAllStudioBlocks()">مسح عناصر هذا الماب</button>
       </div>
     </div>
 
@@ -384,14 +645,14 @@
       <div class="studio-controls">
         <button class="purple" onclick="loadStudioPreset('obby')">قالب باركور جاهز</button>
         <button class="purple" onclick="loadStudioPreset('arena')">قالب ساحة قفز</button>
-        <button class="gray" onclick="exportStudioJson()">تصدير JSON</button>
+        <button class="gray" onclick="exportIsolatedMapJson()">تصدير JSON</button>
         <button class="gray" onclick="document.getElementById('studio-import-input').click()">استيراد JSON</button>
-        <input type="file" id="studio-import-input" accept=".json" style="display:none" onchange="importStudioJson(event)" />
+        <input type="file" id="studio-import-input" accept=".json" style="display:none" onchange="importIsolatedMapJson(event)" />
       </div>
       <div class="studio-controls" style="flex:1; min-width:250px;">
         <input type="text" id="custom-game-title" placeholder="اسم الماب..." maxlength="32" style="flex:1;" />
         <input type="text" id="custom-game-desc" placeholder="وصف قصير..." maxlength="90" style="flex:1.2;" />
-        <button class="green" onclick="publishCustomGame()">نشر الماب</button>
+        <button class="green" onclick="registerCurrentMap()">تسجيل / حفظ الماب</button>
         <button class="cyan" onclick="copyShareableMapLink()">نسخ رابط الماب</button>
         <button class="amber" onclick="enterGame('custom')">تجربة الآن</button>
       </div>
@@ -414,6 +675,53 @@
     </div>
   </div>
 
+  <!-- شاشة لعبة Slither.io بهيئة ADAM GoGo -->
+  <div id="slither-container">
+    <canvas id="slitherCanvas"></canvas>
+
+    <div id="slitherHud">
+      <div class="slither-top-right">
+        <div class="slither-stat-box">
+          <div class="slither-stat-label">الطول الحالي</div>
+          <div class="slither-stat-value" id="slitherScoreDisplay">10</div>
+        </div>
+        <div class="slither-stat-box">
+          <div class="slither-stat-label">أفضل طول</div>
+          <div class="slither-stat-value" id="slitherBestDisplay" style="color:#4ade80;">10</div>
+        </div>
+        <button class="slither-exit-btn" onclick="closeSlitherGame()">خروج إلى القائمة</button>
+      </div>
+
+      <div class="slither-top-left">
+        <div class="slither-lb-title">🏆 المتصدرون</div>
+        <ul class="slither-lb-list" id="slitherLeaderboardList"></ul>
+      </div>
+
+      <canvas id="slitherMinimap" width="140" height="140"></canvas>
+      <div class="slither-hint">حرك الماوس للتوجيه • اضغط كليك أيسر أو Space لسرعة GoGo</div>
+    </div>
+
+    <div id="slitherOverlay">
+      <div class="slither-card">
+        <div class="slither-logo">SLITHER • ADAM GoGo</div>
+        <div class="slither-sub">اجمع النقاط، حاصر المنافسين، وانطلق بأقصى سرعة GoGo</div>
+
+        <div id="slitherDeathStats"></div>
+
+        <div class="slither-input-group">
+          <label for="slitherPlayerName">اسم اللاعب</label>
+          <input type="text" id="slitherPlayerName" maxlength="16" placeholder="أدخل اسمك..." />
+        </div>
+
+        <span class="slither-skins-label">اختر هيئة الثعبان (تتضمن هيئة ADAM GoGo)</span>
+        <div class="slither-skins-grid" id="slitherSkinsGrid"></div>
+
+        <button id="slitherPlayBtn">ابدأ اللعب GoGo</button>
+        <button class="slither-back-menu" onclick="closeSlitherGame()">العودة إلى قائمة الألعاب</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 768;
     if (isMobileDevice) {
@@ -422,18 +730,35 @@
 
     const STORAGE_KEYS = {
       profile: 'roblox_web_3d_profile_v1',
-      blocks: 'roblox_web_3d_blocks_v1',
-      customGame: 'roblox_web_3d_custom_game_v1'
+      mapsLibrary: 'roblox_web_3d_maps_library_v2',
+      activeMapId: 'roblox_web_3d_active_map_id_v2'
     };
+
+    function cloneBlocks(blocksArr) {
+      return Array.isArray(blocksArr) ? blocksArr.map(b => ({ ...b })) : [];
+    }
+
+    const DEFAULT_SHARED_MAPS = [
+      {
+        id: 'shared_map_1',
+        title: 'ماب التحدي العام',
+        description: 'ماب مدمج مستقل بمعطياته الخاصة.',
+        author: 'صانع الماب',
+        blocks: [
+          { x: 0, y: 1, z: -5, w: 3, h: 1, d: 3, color: '#3b82f6', type: 'normal', rotDeg: 0 },
+          { x: 0, y: 2, z: -10, w: 4, h: 1, d: 4, color: '#facc15', type: 'finish', rotDeg: 0 }
+        ]
+      }
+    ];
 
     function loadSavedState() {
       try {
         const p = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null');
-        const b = JSON.parse(localStorage.getItem(STORAGE_KEYS.blocks) || 'null');
-        const g = JSON.parse(localStorage.getItem(STORAGE_KEYS.customGame) || 'null');
-        return { p, b, g };
+        const lib = JSON.parse(localStorage.getItem(STORAGE_KEYS.mapsLibrary) || '[]');
+        const activeId = localStorage.getItem(STORAGE_KEYS.activeMapId) || null;
+        return { p, lib: Array.isArray(lib) ? lib : [], activeId };
       } catch (_) {
-        return { p: null, b: null, g: null };
+        return { p: null, lib: [], activeId: null };
       }
     }
 
@@ -449,17 +774,36 @@
       } catch (_) {}
     }
 
-    function persistBlocks() {
+    function saveMapsLibrary() {
       try {
-        localStorage.setItem(STORAGE_KEYS.blocks, JSON.stringify(savedStudioBlocks));
+        const sanitizedLib = mapsLibrary.map(m => ({
+          id: m.id,
+          title: m.title,
+          description: m.description,
+          author: m.author,
+          blocks: cloneBlocks(m.blocks)
+        }));
+        localStorage.setItem(STORAGE_KEYS.mapsLibrary, JSON.stringify(sanitizedLib));
+        if (activeMapId) {
+          localStorage.setItem(STORAGE_KEYS.activeMapId, activeMapId);
+        }
       } catch (_) {}
-      updateStudioLabels();
     }
 
-    function persistCustomGame() {
-      try {
-        localStorage.setItem(STORAGE_KEYS.customGame, JSON.stringify(publishedGameMeta));
-      } catch (_) {}
+    function commitActiveMapSnapshot() {
+      if (!activeMapId) return;
+      const idx = mapsLibrary.findIndex(m => m.id === activeMapId);
+      if (idx === -1) return;
+      const titleInput = (document.getElementById('custom-game-title').value || '').trim();
+      const descInput = (document.getElementById('custom-game-desc').value || '').trim();
+      mapsLibrary[idx] = {
+        ...mapsLibrary[idx],
+        title: titleInput || mapsLibrary[idx].title,
+        description: descInput || mapsLibrary[idx].description,
+        blocks: cloneBlocks(savedStudioBlocks)
+      };
+      saveMapsLibrary();
+      updateStudioLabels();
     }
 
     function encodeMapPayload(payloadObj) {
@@ -492,13 +836,14 @@
     let myAdam = (initialSaved.p && typeof initialSaved.p.adam === 'number') ? initialSaved.p.adam : 50;
     let myOwnedHats = (initialSaved.p && Array.isArray(initialSaved.p.ownedHats))
       ? initialSaved.p.ownedHats
-      : ['none', 'cap', 'crown', 'tophat'];
+      : ['none', 'cap', 'crown', 'tophat', 'backpack', 'adam_gogo'];
     let myAvatar = (initialSaved.p && initialSaved.p.avatar)
-      ? { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none', ...initialSaved.p.avatar }
-      : { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none' };
+      ? { skin: '#ffdbac', shirt: '#0284c7', pants: '#1e293b', hat: 'adam_gogo', ...initialSaved.p.avatar }
+      : { skin: '#ffdbac', shirt: '#0284c7', pants: '#1e293b', hat: 'adam_gogo' };
 
-    let savedStudioBlocks = Array.isArray(initialSaved.b) ? initialSaved.b : [];
-    let publishedGameMeta = initialSaved.g || null;
+    let mapsLibrary = initialSaved.lib || [];
+    let activeMapId = initialSaved.activeId || null;
+    let savedStudioBlocks = [];
     let reachedFinish = false;
     let studioOffsetY = 0;
     let studioRotationDeg = 0;
@@ -508,10 +853,166 @@
     document.getElementById('skin-color').value = myAvatar.skin;
     document.getElementById('shirt-color').value = myAvatar.shirt;
     document.getElementById('pants-color').value = myAvatar.pants;
-    document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'none';
-    if (publishedGameMeta) {
-      document.getElementById('custom-game-title').value = publishedGameMeta.title || '';
-      document.getElementById('custom-game-desc').value = publishedGameMeta.description || '';
+    document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'adam_gogo';
+
+    function sanitizeSlug(name) {
+      return (name || 'custom_map')
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9\u0600-\u06FF_-]+/gi, '_')
+        .replace(/^_+|_+$/g, '') || 'custom_map';
+    }
+
+    function getActiveMap() {
+      return mapsLibrary.find(m => m.id === activeMapId) || null;
+    }
+
+    function loadMapIntoWorkspace(mapObj) {
+      if (!mapObj) return;
+      activeMapId = mapObj.id;
+      savedStudioBlocks = cloneBlocks(mapObj.blocks);
+      document.getElementById('custom-game-title').value = mapObj.title || '';
+      document.getElementById('custom-game-desc').value = mapObj.description || '';
+      saveMapsLibrary();
+      updateStudioLabels();
+    }
+
+    function ensureActiveMap(titleFallback, descFallback) {
+      let current = getActiveMap();
+      const title = (document.getElementById('custom-game-title').value || '').trim() || titleFallback || `ماب ${myName}`;
+      const description = (document.getElementById('custom-game-desc').value || '').trim() || descFallback || 'ماب مستقل بمعطياته الخاصة.';
+
+      if (!current) {
+        current = {
+          id: `map_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+          title,
+          description,
+          author: myName,
+          blocks: cloneBlocks(savedStudioBlocks)
+        };
+        mapsLibrary.push(current);
+        activeMapId = current.id;
+      } else {
+        current.title = title;
+        current.description = description;
+        current.blocks = cloneBlocks(savedStudioBlocks);
+      }
+
+      saveMapsLibrary();
+      updateStudioLabels();
+      return current;
+    }
+
+    function createBlankIsolatedMap() {
+      if (activeMapId) {
+        commitActiveMapSnapshot();
+      }
+      const nextIndex = mapsLibrary.length + 1;
+      const freshMap = {
+        id: `map_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+        title: `ماب جديد ${nextIndex}`,
+        description: 'ماب فارغ مستقل لا يؤثر على المابات الأخرى.',
+        author: myName,
+        blocks: []
+      };
+      mapsLibrary.push(freshMap);
+      loadMapIntoWorkspace(freshMap);
+      renderAllSavedMapCards();
+      if (currentGame === 'studio' || currentGame === 'custom') {
+        buildWorld(currentGame);
+      }
+      showToast(`🆕 تم إنشاء "${freshMap.title}" بمعطيات مستقلة`);
+    }
+
+    function selectMapForEditing(mapId, openStudioMode = true) {
+      const target = mapsLibrary.find(m => m.id === mapId);
+      if (!target) return;
+      loadMapIntoWorkspace(target);
+      enterGame(openStudioMode ? 'studio' : 'custom');
+    }
+
+    function startNewOrCurrentStudio() {
+      if (!getActiveMap()) {
+        createBlankIsolatedMap();
+      }
+      enterGame('studio');
+    }
+
+    function exportIsolatedMapJson() {
+      const currentMap = ensureActiveMap();
+      const exportObj = {
+        id: currentMap.id,
+        title: currentMap.title,
+        description: currentMap.description,
+        author: currentMap.author,
+        blocks: cloneBlocks(currentMap.blocks)
+      };
+      const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${sanitizeSlug(currentMap.title)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast(`📦 تم تصدير معطيات "${currentMap.title}" بشكل مستقل`);
+    }
+
+    function importIsolatedMapJson(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (!Array.isArray(parsed.blocks)) {
+            showToast('⚠️ ملف JSON لا يحتوي على بيانات ماب صالحة');
+            return;
+          }
+          const isolatedMap = {
+            id: `map_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            title: (parsed.title || file.name.replace(/\.json$/i, '') || 'ماب مستورد').slice(0, 32),
+            description: (parsed.description || 'ماب مستورد مستقل بمعطياته الخاصة.').slice(0, 90),
+            author: parsed.author || myName,
+            blocks: cloneBlocks(parsed.blocks)
+          };
+          mapsLibrary.push(isolatedMap);
+          loadMapIntoWorkspace(isolatedMap);
+          renderAllSavedMapCards();
+          if (currentGame === 'studio' || currentGame === 'custom') {
+            buildWorld(currentGame);
+          }
+          showToast(`✅ تم تسجيل "${isolatedMap.title}" كماب مستقل دون التأثير على غيره`);
+        } catch (_) {
+          showToast('⚠️ تعذر قراءة ملف JSON');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
+    }
+
+    function injectDefaultSharedMaps() {
+      DEFAULT_SHARED_MAPS.forEach((sharedMap) => {
+        const existingIndex = mapsLibrary.findIndex(m => m.id === sharedMap.id);
+        const normalizedMap = {
+          id: sharedMap.id,
+          title: sharedMap.title,
+          description: sharedMap.description,
+          author: sharedMap.author,
+          blocks: cloneBlocks(sharedMap.blocks)
+        };
+        if (existingIndex === -1) {
+          mapsLibrary.unshift(normalizedMap);
+        } else {
+          mapsLibrary[existingIndex] = normalizedMap;
+        }
+      });
+
+      const active = getActiveMap() || mapsLibrary[0];
+      if (active) {
+        loadMapIntoWorkspace(active);
+      } else {
+        saveMapsLibrary();
+      }
     }
 
     function updateHudStats() {
@@ -522,6 +1023,11 @@
     }
 
     function updateStudioLabels() {
+      const current = getActiveMap();
+      const activeTitle = (document.getElementById('custom-game-title').value || '').trim()
+        || (current && current.title)
+        || 'ماب جديد';
+      document.getElementById('studio-active-name').textContent = activeTitle;
       document.getElementById('studio-y-label').textContent = studioOffsetY;
       document.getElementById('studio-count-label').textContent = savedStudioBlocks.length;
     }
@@ -539,9 +1045,9 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x4b5563, 1.0);
+    const hemiLight = new THREE.HemisphereLight(0xffffff, 0x4b5563, 1.05);
     scene.add(hemiLight);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
     dirLight.position.set(18, 32, 22);
     scene.add(dirLight);
 
@@ -593,7 +1099,7 @@
 
     function spendAdamItem(itemId) {
       const items = {
-        adam_halo: { cost: 150, hat: 'adam_halo', label: 'هالة ADAM الذهبية' },
+        adam_gogo: { cost: 120, hat: 'adam_gogo', label: 'هيئة ADAM GoGo النفاثة ⚡' },
         vip_boost: { cost: 80, scoreBonus: 100, label: '+100 نقطة' }
       };
       const item = items[itemId];
@@ -619,71 +1125,76 @@
       showToast(`✅ تم شراء ${item.label}!`);
     }
 
-    function renderPublishedGameCard(meta) {
-      publishedGameMeta = meta;
-      const existing = document.getElementById('custom-game-card');
-      if (existing) existing.remove();
-      if (!meta) return;
-
+    function renderAllSavedMapCards() {
+      document.querySelectorAll('.saved-map-card').forEach(el => el.remove());
       const grid = document.getElementById('games-grid');
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.id = 'custom-game-card';
-      card.onclick = () => enterGame('custom');
 
-      const banner = document.createElement('div');
-      banner.className = 'game-banner';
-      banner.style.background = 'linear-gradient(45deg, #7c3aed, #ec4899)';
-      banner.textContent = '🗺️';
+      mapsLibrary.forEach((mapItem) => {
+        const card = document.createElement('div');
+        card.className = 'game-card saved-map-card';
+        card.onclick = () => selectMapForEditing(mapItem.id, false);
 
-      const info = document.createElement('div');
-      info.className = 'game-info';
+        const banner = document.createElement('div');
+        banner.className = 'game-banner';
+        banner.style.background = 'linear-gradient(45deg, #7c3aed, #ec4899)';
+        banner.textContent = '🗺️';
 
-      const titleEl = document.createElement('h3');
-      titleEl.textContent = meta.title;
+        const info = document.createElement('div');
+        info.className = 'game-info';
 
-      const descEl = document.createElement('p');
-      descEl.textContent = `${meta.description} (بواسطة ${meta.author})`;
+        const titleEl = document.createElement('h3');
+        titleEl.textContent = mapItem.title;
 
-      const btn = document.createElement('button');
-      btn.className = 'play-btn';
-      btn.textContent = 'دخول الماب المنشور';
-      btn.onclick = (e) => {
-        e.stopPropagation();
-        enterGame('custom');
-      };
+        const descEl = document.createElement('p');
+        descEl.textContent = `${mapItem.description} (${mapItem.blocks ? mapItem.blocks.length : 0} عنصر - بواسطة ${mapItem.author})`;
 
-      info.append(titleEl, descEl, btn);
-      card.append(banner, info);
-      grid.appendChild(card);
+        const playBtn = document.createElement('button');
+        playBtn.className = 'play-btn';
+        playBtn.textContent = 'دخول الماب';
+        playBtn.onclick = (e) => {
+          e.stopPropagation();
+          selectMapForEditing(mapItem.id, false);
+        };
+
+        const editBtn = document.createElement('button');
+        editBtn.className = 'edit-map-btn';
+        editBtn.textContent = 'تعديل في Studio';
+        editBtn.onclick = (e) => {
+          e.stopPropagation();
+          selectMapForEditing(mapItem.id, true);
+        };
+
+        info.append(titleEl, descEl, playBtn, editBtn);
+        card.append(banner, info);
+        grid.appendChild(card);
+      });
     }
 
-    function publishCustomGame() {
-      const title = document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`;
-      const description = document.getElementById('custom-game-desc').value.trim() || 'ماب ثلاثي الأبعاد منشور.';
-      const meta = { title, description, author: myName, updatedAt: Date.now() };
-      renderPublishedGameCard(meta);
-      persistCustomGame();
-      persistBlocks();
-      showToast('✅ تم نشر الماب في قائمة الألعاب وحفظه!');
+    function registerCurrentMap() {
+      const currentMap = ensureActiveMap();
+      renderAllSavedMapCards();
+      showToast(`✅ تم تسجيل معطيات "${currentMap.title}" داخله دون التأثير على غيره!`);
     }
 
     function copyShareableMapLink() {
-      const title = document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`;
-      const description = document.getElementById('custom-game-desc').value.trim() || 'ماب ثلاثي الأبعاد مشترك.';
-      const meta = { title, description, author: myName };
-      renderPublishedGameCard(meta);
-      persistCustomGame();
-      persistBlocks();
+      const currentMap = ensureActiveMap();
+      renderAllSavedMapCards();
 
       try {
-        const encoded = encodeMapPayload({ meta, blocks: savedStudioBlocks });
+        const encoded = encodeMapPayload({
+          meta: {
+            title: currentMap.title,
+            description: currentMap.description,
+            author: currentMap.author
+          },
+          blocks: cloneBlocks(currentMap.blocks)
+        });
         const shareUrl = `${window.location.origin}${window.location.pathname}#map=${encoded}`;
         window.location.hash = `map=${encoded}`;
         if (navigator.clipboard && navigator.clipboard.writeText) {
           navigator.clipboard.writeText(shareUrl).catch(() => {});
         }
-        showToast('🔗 تم تجهيز رابط الماب! أرسله لأي لاعب لفتحه مباشرة.');
+        showToast(`🔗 تم تجهيز رابط "${currentMap.title}" لمشاركته!`);
       } catch (_) {
         showToast('⚠️ حجم الماب كبير للرابط، استخدم زر تصدير JSON.');
       }
@@ -696,15 +1207,20 @@
       try {
         const decoded = decodeMapPayload(match[1]);
         if (decoded && Array.isArray(decoded.blocks)) {
-          savedStudioBlocks = decoded.blocks;
-          persistBlocks();
-          if (decoded.meta) {
-            renderPublishedGameCard(decoded.meta);
-            persistCustomGame();
-            document.getElementById('custom-game-title').value = decoded.meta.title || '';
-            document.getElementById('custom-game-desc').value = decoded.meta.description || '';
-            showToast(`🗺️ تم تحميل الماب المشترك: ${decoded.meta.title}`);
-          }
+          const sharedTitle = (decoded.meta && decoded.meta.title) || 'ماب مشترك';
+          const sharedDesc = (decoded.meta && decoded.meta.description) || 'ماب مستقل بمعطياته الخاصة.';
+          const sharedAuthor = (decoded.meta && decoded.meta.author) || myName;
+          const sharedMap = {
+            id: `map_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
+            title: sharedTitle,
+            description: sharedDesc,
+            author: sharedAuthor,
+            blocks: cloneBlocks(decoded.blocks)
+          };
+          mapsLibrary.push(sharedMap);
+          loadMapIntoWorkspace(sharedMap);
+          renderAllSavedMapCards();
+          showToast(`🗺️ تم تسجيل الماب المشترك: ${sharedTitle}`);
         }
       } catch (_) {}
     }
@@ -714,71 +1230,157 @@
       const bodyRig = new THREE.Group();
       group.add(bodyRig);
 
-      const skinMat = new THREE.MeshLambertMaterial({ color: avatarData.skin || '#ffdbac' });
-      const shirtMat = new THREE.MeshLambertMaterial({ color: avatarData.shirt || '#00a2ff' });
-      const pantsMat = new THREE.MeshLambertMaterial({ color: avatarData.pants || '#2c3e50' });
-      const trimMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      const skinColor = avatarData.skin || '#ffdbac';
+      const shirtColor = avatarData.shirt || '#0284c7';
+      const pantsColor = avatarData.pants || '#1e293b';
 
-      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.04, 1.22, 0.54), shirtMat);
-      torso.position.y = 1.42;
+      const skinMat = new THREE.MeshLambertMaterial({ color: skinColor });
+      const shirtMat = new THREE.MeshLambertMaterial({ color: shirtColor });
+      const pantsMat = new THREE.MeshLambertMaterial({ color: pantsColor });
+      const trimMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      const darkAccentMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.24, 0.28, 0.24, 12), skinMat);
+      neck.position.y = 2.05;
+      bodyRig.add(neck);
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(1.06, 1.2, 0.56), shirtMat);
+      torso.position.y = 1.44;
       bodyRig.add(torso);
 
-      const belt = new THREE.Mesh(new THREE.BoxGeometry(1.06, 0.16, 0.56), trimMat);
+      const chestStripe = new THREE.Mesh(new THREE.BoxGeometry(0.22, 1.14, 0.58), trimMat);
+      chestStripe.position.set(0, 1.44, 0.01);
+      bodyRig.add(chestStripe);
+
+      const belt = new THREE.Mesh(new THREE.BoxGeometry(1.1, 0.18, 0.6), darkAccentMat);
       belt.position.y = 0.88;
       bodyRig.add(belt);
 
-      const head = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.78, 0.78), skinMat);
-      head.position.y = 2.48;
-      bodyRig.add(head);
+      const buckle = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.22, 0.62), new THREE.MeshLambertMaterial({ color: 0xf97316 }));
+      buckle.position.set(0, 0.88, 0.01);
+      bodyRig.add(buckle);
+
+      const headGroup = new THREE.Group();
+      headGroup.position.y = 2.54;
+      bodyRig.add(headGroup);
+
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.82, 0.82), skinMat);
+      headGroup.add(head);
 
       const eyeMat = new THREE.MeshBasicMaterial({ color: 0x111111 });
-      const leftEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.05), eyeMat);
-      leftEye.position.set(-0.19, 2.53, 0.4);
-      const rightEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.05), eyeMat);
-      rightEye.position.set(0.19, 2.53, 0.4);
-      const smile = new THREE.Mesh(new THREE.BoxGeometry(0.28, 0.06, 0.05), eyeMat);
-      smile.position.set(0, 2.31, 0.4);
-      bodyRig.add(leftEye, rightEye, smile);
+      const browMat = new THREE.MeshBasicMaterial({ color: 0x1f2937 });
 
+      const leftBrow = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.05, 0.05), browMat);
+      leftBrow.position.set(-0.2, 0.18, 0.42);
+      const rightBrow = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.05, 0.05), browMat);
+      rightBrow.position.set(0.2, 0.18, 0.42);
+
+      const leftEye = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.15, 0.05), eyeMat);
+      leftEye.position.set(-0.2, 0.04, 0.42);
+      const rightEye = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.15, 0.05), eyeMat);
+      rightEye.position.set(0.2, 0.04, 0.42);
+
+      const smile = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.06, 0.05), eyeMat);
+      smile.position.set(0, -0.2, 0.42);
+
+      headGroup.add(leftBrow, rightBrow, leftEye, rightEye, smile);
+
+      let haloMesh = null;
+      let gogoWings = null;
       if (avatarData.hat === 'cap') {
-        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.24, 0.86), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
-        cap.position.set(0, 2.94, 0.02);
-        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.08, 0.35), new THREE.MeshLambertMaterial({ color: 0xb91c1c }));
-        visor.position.set(0, 2.86, 0.52);
-        bodyRig.add(cap, visor);
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.88, 0.24, 0.9), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
+        cap.position.set(0, 0.46, 0.02);
+        const visor = new THREE.Mesh(new THREE.BoxGeometry(0.84, 0.07, 0.36), new THREE.MeshLambertMaterial({ color: 0xb91c1c }));
+        visor.position.set(0, 0.38, 0.54);
+        headGroup.add(cap, visor);
       } else if (avatarData.hat === 'crown') {
-        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.36, 0.34, 7), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
-        crown.position.set(0, 3.02, 0);
-        bodyRig.add(crown);
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.46, 0.38, 0.36, 7), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+        crown.position.set(0, 0.54, 0);
+        headGroup.add(crown);
       } else if (avatarData.hat === 'tophat') {
-        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.62, 0.07, 16), new THREE.MeshLambertMaterial({ color: 0x111827 }));
-        brim.position.set(0, 2.89, 0);
-        const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.36, 0.36, 0.56, 14), new THREE.MeshLambertMaterial({ color: 0x1f2937 }));
-        hat.position.set(0, 3.18, 0);
-        bodyRig.add(brim, hat);
-      } else if (avatarData.hat === 'adam_halo') {
-        const halo = new THREE.Mesh(
-          new THREE.TorusGeometry(0.48, 0.08, 12, 28),
-          new THREE.MeshLambertMaterial({ color: 0xfbbf24 })
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.64, 0.07, 16), new THREE.MeshLambertMaterial({ color: 0x111827 }));
+        brim.position.set(0, 0.42, 0);
+        const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.38, 0.38, 0.56, 14), new THREE.MeshLambertMaterial({ color: 0x1f2937 }));
+        hat.position.set(0, 0.72, 0);
+        headGroup.add(brim, hat);
+      } else if (avatarData.hat === 'backpack') {
+        const pack = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.82, 0.34), new THREE.MeshLambertMaterial({ color: 0xea580c }));
+        pack.position.set(0, 1.46, -0.44);
+        const pocket = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.34, 0.14), new THREE.MeshLambertMaterial({ color: 0xf97316 }));
+        pocket.position.set(0, 1.32, -0.62);
+        bodyRig.add(pack, pocket);
+      } else if (avatarData.hat === 'adam_gogo') {
+        // هيئة ADAM GoGo: هالة طاقة زرقاء + أجنحة سرعة برتقالية
+        haloMesh = new THREE.Mesh(
+          new THREE.TorusGeometry(0.52, 0.085, 12, 28),
+          new THREE.MeshLambertMaterial({ color: 0x38bdf8 })
         );
-        halo.rotation.x = Math.PI / 2;
-        halo.position.set(0, 3.22, 0);
-        bodyRig.add(halo);
+        haloMesh.rotation.x = Math.PI / 2;
+        haloMesh.position.set(0, 0.72, 0);
+        headGroup.add(haloMesh);
+
+        gogoWings = new THREE.Group();
+        gogoWings.position.set(0, 1.55, -0.42);
+        const wingMat = new THREE.MeshLambertMaterial({ color: 0xf97316 });
+        const tipMat = new THREE.MeshLambertMaterial({ color: 0x38bdf8 });
+
+        const leftWing = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.24, 0.12), wingMat);
+        leftWing.position.set(-0.68, 0.12, 0);
+        leftWing.rotation.z = 0.28;
+        const leftTip = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.14), tipMat);
+        leftTip.position.set(-1.15, 0.26, 0);
+        leftTip.rotation.z = 0.42;
+
+        const rightWing = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.24, 0.12), wingMat);
+        rightWing.position.set(0.68, 0.12, 0);
+        rightWing.rotation.z = -0.28;
+        const rightTip = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.18, 0.14), tipMat);
+        rightTip.position.set(1.15, 0.26, 0);
+        rightTip.rotation.z = -0.42;
+
+        gogoWings.add(leftWing, leftTip, rightWing, rightTip);
+        bodyRig.add(gogoWings);
       }
 
-      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.36, 1.08, 0.36), skinMat);
-      leftArm.position.set(-0.74, 1.44, 0);
-      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.36, 1.08, 0.36), skinMat);
-      rightArm.position.set(0.74, 1.44, 0);
+      const leftArm = new THREE.Group();
+      leftArm.position.set(-0.75, 1.92, 0);
+      const lSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.56, 0.38), shirtMat);
+      lSleeve.position.y = -0.28;
+      const lForearm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.54, 0.35), skinMat);
+      lForearm.position.y = -0.8;
+      leftArm.add(lSleeve, lForearm);
+
+      const rightArm = new THREE.Group();
+      rightArm.position.set(0.75, 1.92, 0);
+      const rSleeve = new THREE.Mesh(new THREE.BoxGeometry(0.38, 0.56, 0.38), shirtMat);
+      rSleeve.position.y = -0.28;
+      const rForearm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.54, 0.35), skinMat);
+      rForearm.position.y = -0.8;
+      rightArm.add(rSleeve, rForearm);
+
       bodyRig.add(leftArm, rightArm);
 
-      const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.43, 0.96, 0.43), pantsMat);
-      leftLeg.position.set(-0.27, 0.48, 0);
-      const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.43, 0.96, 0.43), pantsMat);
-      rightLeg.position.set(0.27, 0.48, 0);
+      const shoeMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+
+      const leftLeg = new THREE.Group();
+      leftLeg.position.set(-0.27, 0.82, 0);
+      const lLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.68, 0.42), pantsMat);
+      lLegMesh.position.y = -0.34;
+      const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.54), shoeMat);
+      lShoe.position.set(0, -0.74, 0.05);
+      leftLeg.add(lLegMesh, lShoe);
+
+      const rightLeg = new THREE.Group();
+      rightLeg.position.set(0.27, 0.82, 0);
+      const rLegMesh = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.68, 0.42), pantsMat);
+      rLegMesh.position.y = -0.34;
+      const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.16, 0.54), shoeMat);
+      rShoe.position.set(0, -0.74, 0.05);
+      rightLeg.add(rLegMesh, rShoe);
+
       bodyRig.add(leftLeg, rightLeg);
 
-      group.userData = { bodyRig, leftArm, rightArm, leftLeg, rightLeg, walkTime: 0 };
+      group.userData = { bodyRig, headGroup, haloMesh, gogoWings, leftArm, rightArm, leftLeg, rightLeg, walkTime: 0 };
       return group;
     }
 
@@ -796,29 +1398,49 @@
     }
 
     function animateLimbs(charMesh, isMoving, grounded, delta) {
-      const { bodyRig, leftArm, rightArm, leftLeg, rightLeg } = charMesh.userData;
+      const { bodyRig, headGroup, haloMesh, gogoWings, leftArm, rightArm, leftLeg, rightLeg } = charMesh.userData;
+      if (haloMesh) {
+        haloMesh.rotation.z += delta * 4.5;
+      }
+      if (gogoWings) {
+        gogoWings.rotation.y = Math.sin(charMesh.userData.walkTime * 1.4) * 0.22;
+      }
+
       if (!grounded) {
-        leftArm.rotation.x = -0.55;
-        rightArm.rotation.x = -0.55;
-        leftLeg.rotation.x = 0.35;
-        rightLeg.rotation.x = -0.25;
-        bodyRig.rotation.x = -0.06;
+        leftArm.rotation.x = -0.65;
+        rightArm.rotation.x = -0.65;
+        leftLeg.rotation.x = 0.42;
+        rightLeg.rotation.x = -0.28;
+        bodyRig.position.y = 0.05;
+        bodyRig.rotation.x = -0.05;
+        bodyRig.rotation.z = 0;
+        if (headGroup) headGroup.rotation.x = 0.08;
       } else if (isMoving) {
-        charMesh.userData.walkTime += delta * 12;
-        const swing = Math.sin(charMesh.userData.walkTime) * 0.68;
+        charMesh.userData.walkTime += delta * 15;
+        const t = charMesh.userData.walkTime;
+        const swing = Math.sin(t) * 0.72;
+        const bounce = Math.abs(Math.cos(t)) * 0.08;
+
         leftLeg.rotation.x = swing;
         rightLeg.rotation.x = -swing;
-        leftArm.rotation.x = -swing;
-        rightArm.rotation.x = swing;
-        bodyRig.rotation.x = 0.08;
+        leftArm.rotation.x = -swing * 0.9;
+        rightArm.rotation.x = swing * 0.9;
+
+        bodyRig.position.y = bounce;
+        bodyRig.rotation.x = 0.09;
+        bodyRig.rotation.z = Math.sin(t) * 0.04;
+        if (headGroup) headGroup.rotation.x = -0.05;
       } else {
-        charMesh.userData.walkTime += delta * 2.2;
-        const breath = Math.sin(charMesh.userData.walkTime) * 0.04;
+        charMesh.userData.walkTime += delta * 2.4;
+        const breath = Math.sin(charMesh.userData.walkTime);
         leftLeg.rotation.x = 0;
         rightLeg.rotation.x = 0;
-        leftArm.rotation.x = breath;
-        rightArm.rotation.x = -breath;
+        leftArm.rotation.x = breath * 0.05;
+        rightArm.rotation.x = -breath * 0.05;
+        bodyRig.position.y = breath * 0.015;
         bodyRig.rotation.x = 0;
+        bodyRig.rotation.z = 0;
+        if (headGroup) headGroup.rotation.x = breath * 0.03;
       }
     }
 
@@ -950,6 +1572,7 @@
     }
 
     function loadStudioPreset(presetName) {
+      ensureActiveMap();
       if (presetName === 'obby') {
         savedStudioBlocks = [
           { x: 0, y: 1, z: -5, w: 3, h: 1, d: 3, color: '#3b82f6', type: 'normal', rotDeg: 0 },
@@ -967,52 +1590,9 @@
           { x: 0, y: 3, z: -15, w: 4, h: 1, d: 4, color: '#facc15', type: 'finish', rotDeg: 0 }
         ];
       }
-      persistBlocks();
+      commitActiveMapSnapshot();
       buildWorld(currentGame);
-      showToast('✨ تم تحميل القالب في Studio');
-    }
-
-    function exportStudioJson() {
-      const payload = {
-        title: document.getElementById('custom-game-title').value.trim() || `ماب ${myName}`,
-        description: document.getElementById('custom-game-desc').value.trim() || 'ماب Studio مخصص',
-        blocks: savedStudioBlocks
-      };
-      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'studio_world.json';
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast('📦 تم تصدير ملف الماب JSON');
-    }
-
-    function importStudioJson(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const parsed = JSON.parse(reader.result);
-          if (Array.isArray(parsed.blocks)) {
-            savedStudioBlocks = parsed.blocks;
-            persistBlocks();
-            const title = parsed.title || `ماب ${myName}`;
-            const desc = parsed.description || 'ماب مستورد.';
-            document.getElementById('custom-game-title').value = title;
-            document.getElementById('custom-game-desc').value = desc;
-            renderPublishedGameCard({ title, description: desc, author: myName });
-            persistCustomGame();
-            buildWorld(currentGame);
-            showToast('✅ تم استيراد الماب ونشره في القائمة!');
-          }
-        } catch (_) {
-          showToast('⚠️ ملف JSON غير صالح');
-        }
-      };
-      reader.readAsText(file);
-      event.target.value = '';
+      showToast('✨ تم تطبيق القالب داخل هذا الماب فقط');
     }
 
     function setAtmosphere(hexColor, fogDensity = 0.007) {
@@ -1117,6 +1697,14 @@
     }
 
     function showScreen(screenId) {
+      if (currentGame === 'studio') {
+        commitActiveMapSnapshot();
+      }
+      if (currentGame === 'slither') {
+        stopSlitherLoop();
+        document.getElementById('slither-container').style.display = 'none';
+      }
+      currentGame = 'lobby';
       document.body.classList.remove('studio-active');
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-btns button').forEach(b => b.classList.remove('active'));
@@ -1131,7 +1719,10 @@
 
       if (screenId) {
         document.getElementById(screenId).classList.add('active');
-        if (screenId === 'games-screen') document.getElementById('btn-games').classList.add('active');
+        if (screenId === 'games-screen') {
+          renderAllSavedMapCards();
+          document.getElementById('btn-games').classList.add('active');
+        }
         if (screenId === 'store-screen') document.getElementById('btn-store').classList.add('active');
         if (screenId === 'avatar-screen') document.getElementById('btn-avatar').classList.add('active');
       }
@@ -1146,12 +1737,14 @@
     function enterGame(gameType) {
       currentGame = gameType;
       showScreen(null);
+      currentGame = gameType;
       document.getElementById('hud').style.display = 'block';
       if (gameType === 'studio') {
         document.body.classList.add('studio-active');
         document.getElementById('studio-bar').style.display = 'flex';
         document.getElementById('btn-studio').classList.add('active');
         studioGridHelper.visible = true;
+        updateStudioLabels();
       }
       if (isMobileDevice) {
         document.getElementById('mobile-controls').style.display = 'flex';
@@ -1167,7 +1760,7 @@
     function saveAvatar() {
       const selectedHat = document.getElementById('hat-type').value;
       if (!myOwnedHats.includes(selectedHat)) {
-        showToast('⚠️ يجب شراء هذا الإكسسوار من متجر ADAM أولاً');
+        showToast('⚠️ يجب شراء هذه الهيئة من متجر ADAM GoGo أولاً');
         return;
       }
       const typedName = document.getElementById('player-name').value.trim();
@@ -1186,33 +1779,43 @@
     }
 
     function placeStudioItem() {
+      ensureActiveMap();
       const block = {
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         ...getStudioPlacementDraft()
       };
       savedStudioBlocks.push(block);
-      persistBlocks();
+      commitActiveMapSnapshot();
       renderStudioItem(block);
     }
 
     function undoLastStudioBlock() {
       if (!savedStudioBlocks.length) return;
       savedStudioBlocks.pop();
-      persistBlocks();
+      commitActiveMapSnapshot();
       buildWorld(currentGame);
     }
 
     function clearAllStudioBlocks() {
       savedStudioBlocks = [];
-      persistBlocks();
+      commitActiveMapSnapshot();
       clearStudioSceneItems();
     }
 
+    document.getElementById('custom-game-title').addEventListener('input', () => {
+      commitActiveMapSnapshot();
+    });
+    document.getElementById('custom-game-desc').addEventListener('input', () => {
+      commitActiveMapSnapshot();
+    });
+
+    injectDefaultSharedMaps();
     loadMapFromUrlHash();
-    if (publishedGameMeta) {
-      renderPublishedGameCard(publishedGameMeta);
-    }
-    window.addEventListener('hashchange', loadMapFromUrlHash);
+    renderAllSavedMapCards();
+    window.addEventListener('hashchange', () => {
+      loadMapFromUrlHash();
+      renderAllSavedMapCards();
+    });
 
     const joyZone = document.getElementById('joystick-zone');
     const joyKnob = document.getElementById('joystick-knob');
@@ -1263,7 +1866,7 @@
     }
 
     renderer.domElement.addEventListener('touchstart', (e) => {
-      if (currentGame === 'lobby' || orbitTouchId !== null) return;
+      if (currentGame === 'lobby' || currentGame === 'slither' || orbitTouchId !== null) return;
       const t = e.changedTouches[0];
       orbitTouchId = t.identifier;
       lastOrbitX = t.clientX;
@@ -1299,6 +1902,7 @@
     let isGrounded = false;
 
     window.addEventListener('keydown', (e) => {
+      if (currentGame === 'slither') return;
       if (document.activeElement && ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
       const k = e.key.toLowerCase();
       if (k === 'w' || e.key === 'ArrowUp') keys.w = true;
@@ -1311,6 +1915,7 @@
     });
 
     window.addEventListener('keyup', (e) => {
+      if (currentGame === 'slither') return;
       const k = e.key.toLowerCase();
       if (k === 'w' || e.key === 'ArrowUp') keys.w = false;
       if (k === 's' || e.key === 'ArrowDown') keys.s = false;
@@ -1340,6 +1945,10 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
+      if (currentGame === 'slither') {
+        renderer.render(scene, camera);
+        return;
+      }
       if (speedBoostTimer > 0) speedBoostTimer -= delta;
 
       let inputX = 0, inputZ = 0;
@@ -1354,7 +1963,8 @@
       }
 
       const isMoving = Math.hypot(inputX, inputZ) > 0.12;
-      const moveSpeed = speedBoostTimer > 0 ? 16.5 : 9.5;
+      const gogoBonus = myAvatar.hat === 'adam_gogo' ? 1.8 : 0;
+      const moveSpeed = (speedBoostTimer > 0 ? 16.5 : 9.5) + gogoBonus;
 
       if (isMoving) {
         const sinY = Math.sin(camYaw);
@@ -1444,7 +2054,638 @@
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
+      if (currentGame === 'slither') {
+        resizeSlitherCanvas();
+      }
     });
+
+    /* ==================== لعبة Slither.io بهيئة ADAM GoGo ==================== */
+    const slitherContainer = document.getElementById('slither-container');
+    const slitherCanvas = document.getElementById('slitherCanvas');
+    const sctx = slitherCanvas.getContext('2d');
+    const slitherMinimap = document.getElementById('slitherMinimap');
+    const smctx = slitherMinimap.getContext('2d');
+    const slitherHud = document.getElementById('slitherHud');
+    const slitherOverlay = document.getElementById('slitherOverlay');
+    const slitherPlayBtn = document.getElementById('slitherPlayBtn');
+    const slitherNameInput = document.getElementById('slitherPlayerName');
+    const slitherSkinsGrid = document.getElementById('slitherSkinsGrid');
+    const slitherScoreDisplay = document.getElementById('slitherScoreDisplay');
+    const slitherBestDisplay = document.getElementById('slitherBestDisplay');
+    const slitherLeaderboardList = document.getElementById('slitherLeaderboardList');
+    const slitherDeathStats = document.getElementById('slitherDeathStats');
+
+    const SLITHER_WORLD_RADIUS = 2600;
+    const SLITHER_INITIAL_SCORE = 10;
+    const SLITHER_BOT_COUNT = 18;
+    const SLITHER_FOOD_COUNT = 420;
+
+    const SLITHER_SKINS = [
+      { name: 'هيئة ADAM GoGo ⚡', colors: ['#0ea5e9', '#f97316', '#38bdf8'], isGoGo: true },
+      { name: 'أخضر زمردي', colors: ['#22c55e', '#16a34a', '#4ade80'] },
+      { name: 'أزرق سماوي', colors: ['#38bdf8', '#0284c7', '#7dd3fc'] },
+      { name: 'وردي نيون', colors: ['#f472b6', '#db2777', '#f9a8d4'] },
+      { name: 'ذهبي ملكي', colors: ['#facc15', '#ca8a04', '#fde047'] },
+      { name: 'بنفسجي', colors: ['#a855f7', '#7e22ce', '#d8b4fe'] },
+      { name: 'برتقالي ناري', colors: ['#fb923c', '#ea580c', '#fdba74'] }
+    ];
+
+    const SLITHER_BOT_NAMES = [
+      'أفعى الليل', 'كوبرا', 'البرق', 'مفترس', 'ظل الساحة',
+      'نينجا', 'تنين', 'شهاب', 'سريع', 'بطل',
+      'صياد', 'عاصفة', 'فهد', 'مارد', 'سراب',
+      'كاسر', 'مغامر', 'أسطورة', 'رعد', 'مخلب'
+    ];
+
+    let slitherSelectedSkin = 0;
+    let slitherBestScore = Number(localStorage.getItem('slither_best_score') || SLITHER_INITIAL_SCORE);
+    slitherBestDisplay.textContent = slitherBestScore;
+
+    let slitherSnakes = [];
+    let slitherFoods = [];
+    let slitherPlayer = null;
+    let slitherRunning = false;
+    let slitherRafId = null;
+    let slitherLastTime = 0;
+    let slitherBoostDropTimer = 0;
+
+    const slitherInput = {
+      pointerActive: false,
+      pointerX: 0,
+      pointerY: 0,
+      boostKey: false,
+      pointerDown: false
+    };
+
+    const slitherCam = { x: 0, y: 0, zoom: 1 };
+
+    function initSlitherSkinsUI() {
+      slitherSkinsGrid.innerHTML = '';
+      SLITHER_SKINS.forEach((skin, idx) => {
+        const btn = document.createElement('div');
+        btn.className = 'slither-skin-option' + (idx === slitherSelectedSkin ? ' selected' : '');
+        btn.style.background = `linear-gradient(135deg, ${skin.colors[0]}, ${skin.colors[1]})`;
+        btn.title = skin.name;
+        btn.addEventListener('click', () => {
+          slitherSelectedSkin = idx;
+          document.querySelectorAll('.slither-skin-option').forEach((el, i) => {
+            el.classList.toggle('selected', i === idx);
+          });
+        });
+        slitherSkinsGrid.appendChild(btn);
+      });
+    }
+
+    function resizeSlitherCanvas() {
+      slitherCanvas.width = slitherContainer.clientWidth || window.innerWidth;
+      slitherCanvas.height = slitherContainer.clientHeight || (window.innerHeight - 56);
+    }
+
+    function slitherRandomInCircle(maxRadius) {
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.sqrt(Math.random()) * maxRadius;
+      return { x: Math.cos(angle) * dist, y: Math.sin(angle) * dist };
+    }
+
+    function slitherNormalizeAngle(angle) {
+      while (angle > Math.PI) angle -= Math.PI * 2;
+      while (angle < -Math.PI) angle += Math.PI * 2;
+      return angle;
+    }
+
+    function createSlitherFood(x, y, value = 1, color = null) {
+      const palette = ['#4ade80', '#38bdf8', '#f472b6', '#facc15', '#c084fc', '#fb923c'];
+      const pos = (x !== undefined && y !== undefined) ? { x, y } : slitherRandomInCircle(SLITHER_WORLD_RADIUS - 60);
+      return {
+        x: pos.x,
+        y: pos.y,
+        value,
+        radius: Math.min(13, 4.5 + value * 1.4),
+        color: color || palette[Math.floor(Math.random() * palette.length)],
+        phase: Math.random() * Math.PI * 2
+      };
+    }
+
+    class SlitherSnake {
+      constructor(name, skinColors, isBot = true, startScore = SLITHER_INITIAL_SCORE, startPos = null, isGoGo = false) {
+        this.name = name;
+        this.colors = skinColors;
+        this.isBot = isBot;
+        this.isGoGo = isGoGo;
+        this.score = startScore;
+        this.alive = true;
+        this.boosting = false;
+        this.aiTimer = 0;
+
+        const pos = startPos || slitherRandomInCircle(SLITHER_WORLD_RADIUS - 350);
+        this.angle = Math.atan2(-pos.y, -pos.x) + (Math.random() - 0.5) * 0.8;
+        this.targetAngle = this.angle;
+
+        this.segments = [];
+        const initialCount = this.getTargetSegmentCount();
+        const spacing = this.getSegmentSpacing();
+        for (let i = 0; i < initialCount; i++) {
+          this.segments.push({
+            x: pos.x - Math.cos(this.angle) * i * spacing,
+            y: pos.y - Math.sin(this.angle) * i * spacing
+          });
+        }
+      }
+
+      get head() { return this.segments[0]; }
+      getRadius() { return Math.min(28, 12 + Math.pow(this.score, 0.34) * 1.35); }
+      getSegmentSpacing() { return this.getRadius() * 0.62; }
+      getTargetSegmentCount() { return Math.max(8, Math.floor(8 + this.score * 0.65)); }
+
+      getSpeed() {
+        const gogoBoost = this.isGoGo ? 24 : 0;
+        const baseSpeed = Math.max(155, 225 - Math.min(55, this.score * 0.12)) + gogoBoost;
+        return this.boosting && this.score > SLITHER_INITIAL_SCORE ? baseSpeed * 1.72 : baseSpeed;
+      }
+
+      updateAI(dt) {
+        this.aiTimer -= dt;
+        const head = this.head;
+        if (Math.hypot(head.x, head.y) > SLITHER_WORLD_RADIUS - 260) {
+          this.targetAngle = Math.atan2(-head.y, -head.x);
+          this.boosting = false;
+          return;
+        }
+
+        let dangerX = 0, dangerY = 0, hasDanger = false;
+        const lookAhead = 150 + this.getRadius() * 3;
+
+        for (const other of slitherSnakes) {
+          if (!other.alive || other === this) continue;
+          for (let i = 0; i < other.segments.length; i += 2) {
+            const seg = other.segments[i];
+            const dx = seg.x - head.x;
+            const dy = seg.y - head.y;
+            const d = Math.hypot(dx, dy);
+            if (d < lookAhead && d > 1) {
+              const weight = (lookAhead - d) / lookAhead;
+              dangerX -= (dx / d) * weight;
+              dangerY -= (dy / d) * weight;
+              hasDanger = true;
+            }
+          }
+        }
+
+        if (hasDanger) {
+          this.targetAngle = Math.atan2(dangerY, dangerX);
+          this.boosting = false;
+          return;
+        }
+
+        if (this.aiTimer <= 0) {
+          this.aiTimer = 0.25 + Math.random() * 0.35;
+          let bestFood = null, bestScore = -Infinity;
+          for (let i = 0; i < slitherFoods.length; i += 2) {
+            const f = slitherFoods[i];
+            const d = Math.hypot(f.x - head.x, f.y - head.y);
+            if (d < 460) {
+              const utility = (f.value * 80) - d;
+              if (utility > bestScore) { bestScore = utility; bestFood = f; }
+            }
+          }
+          if (bestFood) {
+            this.targetAngle = Math.atan2(bestFood.y - head.y, bestFood.x - head.x);
+          } else {
+            this.targetAngle = slitherNormalizeAngle(this.angle + (Math.random() - 0.5) * 1.4);
+          }
+          this.boosting = Math.random() < 0.08 && this.score > 22;
+        }
+      }
+
+      update(dt) {
+        if (!this.alive) return;
+
+        if (this.isBot) {
+          this.updateAI(dt);
+        } else if (slitherInput.pointerActive) {
+          const dx = slitherInput.pointerX - slitherCanvas.width / 2;
+          const dy = slitherInput.pointerY - slitherCanvas.height / 2;
+          if (Math.hypot(dx, dy) > 8) {
+            this.targetAngle = Math.atan2(dy, dx);
+          }
+          this.boosting = (slitherInput.boostKey || slitherInput.pointerDown) && this.score > SLITHER_INITIAL_SCORE;
+        } else {
+          this.boosting = slitherInput.boostKey && this.score > SLITHER_INITIAL_SCORE;
+        }
+
+        const turnSpeed = Math.max(3.2, 5.2 - this.score * 0.004);
+        const diff = slitherNormalizeAngle(this.targetAngle - this.angle);
+        const maxTurn = turnSpeed * dt;
+        if (Math.abs(diff) <= maxTurn) {
+          this.angle = this.targetAngle;
+        } else {
+          this.angle = slitherNormalizeAngle(this.angle + Math.sign(diff) * maxTurn);
+        }
+
+        const speed = this.getSpeed();
+        const newX = this.head.x + Math.cos(this.angle) * speed * dt;
+        const newY = this.head.y + Math.sin(this.angle) * speed * dt;
+        this.segments.unshift({ x: newX, y: newY });
+
+        const spacing = this.getSegmentSpacing();
+        const targetCount = this.getTargetSegmentCount();
+        const updated = [this.segments[0]];
+
+        for (let i = 1; i < this.segments.length && updated.length < targetCount; i++) {
+          const prev = updated[updated.length - 1];
+          const curr = this.segments[i];
+          const dx = curr.x - prev.x;
+          const dy = curr.y - prev.y;
+          const dist = Math.hypot(dx, dy) || 0.0001;
+          updated.push({ x: prev.x + (dx / dist) * spacing, y: prev.y + (dy / dist) * spacing });
+        }
+        this.segments = updated;
+
+        if (Math.hypot(this.head.x, this.head.y) + this.getRadius() > SLITHER_WORLD_RADIUS) {
+          this.die();
+        }
+      }
+
+      die() {
+        if (!this.alive) return;
+        this.alive = false;
+        const dropCount = Math.min(80, Math.max(10, Math.floor(this.score * 0.65)));
+        const foodValue = Math.max(2, Math.round((this.score * 0.75) / dropCount));
+        for (let i = 0; i < this.segments.length; i += Math.max(1, Math.floor(this.segments.length / dropCount))) {
+          const seg = this.segments[i];
+          const color = this.colors[i % this.colors.length];
+          slitherFoods.push(createSlitherFood(
+            seg.x + (Math.random() - 0.5) * 24,
+            seg.y + (Math.random() - 0.5) * 24,
+            foodValue,
+            color
+          ));
+        }
+      }
+
+      draw() {
+        if (!this.alive) return;
+        const radius = this.getRadius();
+
+        for (let i = this.segments.length - 1; i >= 0; i--) {
+          const seg = this.segments[i];
+          const taper = i > this.segments.length - 5
+            ? Math.max(0.55, 1 - (i - (this.segments.length - 5)) * 0.09)
+            : 1;
+          sctx.beginPath();
+          sctx.arc(seg.x, seg.y, radius * taper, 0, Math.PI * 2);
+          sctx.fillStyle = this.colors[Math.floor(i / 2) % this.colors.length];
+          sctx.fill();
+          if (this.boosting || this.isGoGo) {
+            sctx.lineWidth = this.isGoGo ? 2.6 : 2;
+            sctx.strokeStyle = this.isGoGo ? 'rgba(56, 189, 248, 0.55)' : 'rgba(255, 255, 255, 0.35)';
+            sctx.stroke();
+          }
+        }
+
+        const head = this.head;
+        const eyeOffsetForward = radius * 0.35;
+        const eyeOffsetSide = radius * 0.45;
+        const perpX = -Math.sin(this.angle);
+        const perpY = Math.cos(this.angle);
+        const fwdX = Math.cos(this.angle);
+        const fwdY = Math.sin(this.angle);
+
+        const eyes = [
+          { x: head.x + fwdX * eyeOffsetForward + perpX * eyeOffsetSide, y: head.y + fwdY * eyeOffsetForward + perpY * eyeOffsetSide },
+          { x: head.x + fwdX * eyeOffsetForward - perpX * eyeOffsetSide, y: head.y + fwdY * eyeOffsetForward - perpY * eyeOffsetSide }
+        ];
+
+        const eyeRadius = Math.max(3.5, radius * 0.28);
+        const pupilRadius = eyeRadius * 0.55;
+
+        eyes.forEach((eye) => {
+          sctx.beginPath();
+          sctx.arc(eye.x, eye.y, eyeRadius, 0, Math.PI * 2);
+          sctx.fillStyle = '#ffffff';
+          sctx.fill();
+
+          sctx.beginPath();
+          sctx.arc(eye.x + fwdX * (eyeRadius * 0.25), eye.y + fwdY * (eyeRadius * 0.25), pupilRadius, 0, Math.PI * 2);
+          sctx.fillStyle = '#0f172a';
+          sctx.fill();
+        });
+
+        const label = this.isGoGo ? `⚡ ${this.name} (GoGo)` : this.name;
+        sctx.font = "bold 13px 'Segoe UI', Tahoma, sans-serif";
+        sctx.textAlign = 'center';
+        sctx.fillStyle = this.isGoGo ? '#7dd3fc' : 'rgba(255, 255, 255, 0.9)';
+        sctx.fillText(label, head.x, head.y - radius - 10);
+      }
+    }
+
+    function spawnSlitherBot() {
+      const used = new Set(slitherSnakes.map(s => s.name));
+      const avail = SLITHER_BOT_NAMES.filter(n => !used.has(n));
+      const name = avail.length ? avail[Math.floor(Math.random() * avail.length)] : 'بوت ' + Math.floor(Math.random() * 99);
+      const skin = SLITHER_SKINS[1 + Math.floor(Math.random() * (SLITHER_SKINS.length - 1))];
+      slitherSnakes.push(new SlitherSnake(name, skin.colors, true, SLITHER_INITIAL_SCORE + Math.floor(Math.random() * 45)));
+    }
+
+    function stopSlitherLoop() {
+      slitherRunning = false;
+      if (slitherRafId) {
+        cancelAnimationFrame(slitherRafId);
+        slitherRafId = null;
+      }
+    }
+
+    function openSlitherGame() {
+      showScreen(null);
+      currentGame = 'slither';
+      slitherContainer.style.display = 'block';
+      slitherOverlay.style.display = 'flex';
+      slitherHud.style.display = 'none';
+      slitherDeathStats.style.display = 'none';
+      if (!slitherNameInput.value.trim()) {
+        slitherNameInput.value = myName || 'ADAM GoGo';
+      }
+      resizeSlitherCanvas();
+    }
+
+    function closeSlitherGame() {
+      stopSlitherLoop();
+      slitherContainer.style.display = 'none';
+      currentGame = 'lobby';
+      showScreen('games-screen');
+    }
+
+    function startSlitherMatch() {
+      const playerName = (slitherNameInput.value || '').trim() || myName || 'ADAM GoGo';
+      const skin = SLITHER_SKINS[slitherSelectedSkin];
+
+      slitherSnakes = [];
+      slitherFoods = [];
+      for (let i = 0; i < SLITHER_FOOD_COUNT; i++) {
+        slitherFoods.push(createSlitherFood());
+      }
+
+      slitherPlayer = new SlitherSnake(playerName, skin.colors, false, SLITHER_INITIAL_SCORE, { x: 0, y: 0 }, Boolean(skin.isGoGo));
+      slitherSnakes.push(slitherPlayer);
+
+      for (let i = 0; i < SLITHER_BOT_COUNT; i++) {
+        spawnSlitherBot();
+      }
+
+      slitherCam.x = slitherPlayer.head.x;
+      slitherCam.y = slitherPlayer.head.y;
+      slitherCam.zoom = 1;
+
+      slitherOverlay.style.display = 'none';
+      slitherHud.style.display = 'block';
+      resizeSlitherCanvas();
+      stopSlitherLoop();
+      slitherRunning = true;
+      slitherLastTime = performance.now();
+      slitherRafId = requestAnimationFrame(slitherGameLoop);
+    }
+
+    function endSlitherMatch(finalScore) {
+      stopSlitherLoop();
+      slitherHud.style.display = 'none';
+      slitherDeathStats.style.display = 'block';
+      const earnedAdam = Math.max(1, Math.floor(finalScore / 25));
+      myAdam += earnedAdam;
+      persistProfile();
+      updateHudStats();
+      slitherDeathStats.innerHTML = `انتهت الجولة! طولك: <strong>${Math.floor(finalScore)}</strong> • أفضل طول: <strong>${slitherBestScore}</strong> • مكافأة: <strong>+${earnedAdam} ADAM</strong>`;
+      slitherOverlay.style.display = 'flex';
+    }
+
+    function handleSlitherCollisions(dt) {
+      for (const snake of slitherSnakes) {
+        if (!snake.alive) continue;
+        const head = snake.head;
+        const eatRadius = snake.getRadius() + 10;
+
+        for (let i = slitherFoods.length - 1; i >= 0; i--) {
+          const f = slitherFoods[i];
+          const dx = head.x - f.x;
+          const dy = head.y - f.y;
+          const dist = Math.hypot(dx, dy);
+
+          if (dist < eatRadius + 38 && dist > 1) {
+            f.x += (dx / dist) * 220 * dt;
+            f.y += (dy / dist) * 220 * dt;
+          }
+
+          if (dist < eatRadius + f.radius) {
+            snake.score += f.value;
+            slitherFoods.splice(i, 1);
+
+            if (snake === slitherPlayer && snake.score > slitherBestScore) {
+              slitherBestScore = Math.floor(snake.score);
+              slitherBestDisplay.textContent = slitherBestScore;
+              localStorage.setItem('slither_best_score', String(slitherBestScore));
+            }
+          }
+        }
+      }
+
+      for (const snake of slitherSnakes) {
+        if (!snake.alive || !snake.boosting || snake.score <= SLITHER_INITIAL_SCORE) continue;
+        slitherBoostDropTimer += dt;
+        if (slitherBoostDropTimer >= 0.08) {
+          slitherBoostDropTimer = 0;
+          snake.score = Math.max(SLITHER_INITIAL_SCORE, snake.score - 0.6);
+          const tail = snake.segments[snake.segments.length - 1] || snake.head;
+          slitherFoods.push(createSlitherFood(tail.x, tail.y, 1, snake.colors[0]));
+        }
+      }
+
+      for (const snake of slitherSnakes) {
+        if (!snake.alive) continue;
+        const head = snake.head;
+        const headRadius = snake.getRadius() * 0.78;
+
+        for (const other of slitherSnakes) {
+          if (!other.alive || other === snake) continue;
+          const otherRadius = other.getRadius() * 0.82;
+          for (let i = 1; i < other.segments.length; i++) {
+            const seg = other.segments[i];
+            if (Math.hypot(head.x - seg.x, head.y - seg.y) < headRadius + otherRadius) {
+              snake.die();
+              break;
+            }
+          }
+          if (!snake.alive) break;
+        }
+      }
+
+      slitherSnakes = slitherSnakes.filter(s => s.alive);
+      const currentBots = slitherSnakes.filter(s => s.isBot).length;
+      for (let i = currentBots; i < SLITHER_BOT_COUNT; i++) {
+        spawnSlitherBot();
+      }
+      while (slitherFoods.length < SLITHER_FOOD_COUNT) {
+        slitherFoods.push(createSlitherFood());
+      }
+    }
+
+    function drawSlitherBackground() {
+      const gridSize = 60;
+      sctx.fillStyle = '#0b0f19';
+      sctx.fillRect(-SLITHER_WORLD_RADIUS - 600, -SLITHER_WORLD_RADIUS - 600, (SLITHER_WORLD_RADIUS + 600) * 2, (SLITHER_WORLD_RADIUS + 600) * 2);
+
+      sctx.strokeStyle = 'rgba(148, 163, 184, 0.06)';
+      sctx.lineWidth = 1;
+
+      const startX = Math.floor((slitherCam.x - slitherCanvas.width) / gridSize) * gridSize;
+      const endX = Math.ceil((slitherCam.x + slitherCanvas.width) / gridSize) * gridSize;
+      const startY = Math.floor((slitherCam.y - slitherCanvas.height) / gridSize) * gridSize;
+      const endY = Math.ceil((slitherCam.y + slitherCanvas.height) / gridSize) * gridSize;
+
+      sctx.beginPath();
+      for (let x = startX; x <= endX; x += gridSize) {
+        sctx.moveTo(x, startY);
+        sctx.lineTo(x, endY);
+      }
+      for (let y = startY; y <= endY; y += gridSize) {
+        sctx.moveTo(startX, y);
+        sctx.lineTo(endX, y);
+      }
+      sctx.stroke();
+
+      sctx.beginPath();
+      sctx.arc(0, 0, SLITHER_WORLD_RADIUS, 0, Math.PI * 2);
+      sctx.lineWidth = 10;
+      sctx.strokeStyle = '#ef4444';
+      sctx.stroke();
+    }
+
+    function drawSlitherFoods(timeSec) {
+      for (const f of slitherFoods) {
+        const pulse = 1 + Math.sin(timeSec * 4 + f.phase) * 0.16;
+        sctx.beginPath();
+        sctx.arc(f.x, f.y, f.radius * pulse, 0, Math.PI * 2);
+        sctx.fillStyle = f.color;
+        sctx.fill();
+      }
+    }
+
+    function updateSlitherHUD() {
+      if (!slitherPlayer || !slitherPlayer.alive) return;
+      slitherScoreDisplay.textContent = Math.floor(slitherPlayer.score);
+
+      const sorted = [...slitherSnakes]
+        .filter(s => s.alive)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 5);
+
+      slitherLeaderboardList.innerHTML = '';
+      sorted.forEach((s, index) => {
+        const li = document.createElement('li');
+        li.className = 'slither-lb-item' + (s === slitherPlayer ? ' is-player' : '');
+        li.innerHTML = `<span>${index + 1}. ${s.name}</span><span>${Math.floor(s.score)}</span>`;
+        slitherLeaderboardList.appendChild(li);
+      });
+
+      const mw = slitherMinimap.width;
+      const mh = slitherMinimap.height;
+      const mr = mw / 2 - 6;
+      smctx.clearRect(0, 0, mw, mh);
+
+      smctx.beginPath();
+      smctx.arc(mw / 2, mh / 2, mr, 0, Math.PI * 2);
+      smctx.strokeStyle = 'rgba(239, 68, 68, 0.55)';
+      smctx.lineWidth = 1.5;
+      smctx.stroke();
+
+      for (const s of slitherSnakes) {
+        if (!s.alive) continue;
+        const sx = mw / 2 + (s.head.x / SLITHER_WORLD_RADIUS) * mr;
+        const sy = mh / 2 + (s.head.y / SLITHER_WORLD_RADIUS) * mr;
+        smctx.beginPath();
+        smctx.arc(sx, sy, s === slitherPlayer ? 4 : 2.3, 0, Math.PI * 2);
+        smctx.fillStyle = s === slitherPlayer ? '#38bdf8' : '#f87171';
+        smctx.fill();
+      }
+    }
+
+    function slitherGameLoop(now) {
+      if (!slitherRunning || currentGame !== 'slither') return;
+      const dt = Math.min(0.05, (now - slitherLastTime) / 1000);
+      slitherLastTime = now;
+
+      for (const snake of slitherSnakes) {
+        snake.update(dt);
+      }
+
+      handleSlitherCollisions(dt);
+
+      if (!slitherPlayer || !slitherPlayer.alive) {
+        endSlitherMatch(slitherPlayer ? slitherPlayer.score : SLITHER_INITIAL_SCORE);
+        return;
+      }
+
+      slitherCam.x += (slitherPlayer.head.x - slitherCam.x) * Math.min(1, dt * 8);
+      slitherCam.y += (slitherPlayer.head.y - slitherCam.y) * Math.min(1, dt * 8);
+      const targetZoom = Math.max(0.62, 1 - Math.min(0.38, (slitherPlayer.getRadius() - 12) * 0.018));
+      slitherCam.zoom += (targetZoom - slitherCam.zoom) * Math.min(1, dt * 3);
+
+      sctx.save();
+      sctx.translate(slitherCanvas.width / 2, slitherCanvas.height / 2);
+      sctx.scale(slitherCam.zoom, slitherCam.zoom);
+      sctx.translate(-slitherCam.x, -slitherCam.y);
+
+      drawSlitherBackground();
+      drawSlitherFoods(now / 1000);
+      for (const snake of slitherSnakes) {
+        snake.draw();
+      }
+
+      sctx.restore();
+      updateSlitherHUD();
+
+      slitherRafId = requestAnimationFrame(slitherGameLoop);
+    }
+
+    slitherCanvas.addEventListener('pointermove', (e) => {
+      if (currentGame !== 'slither') return;
+      const rect = slitherCanvas.getBoundingClientRect();
+      slitherInput.pointerActive = true;
+      slitherInput.pointerX = e.clientX - rect.left;
+      slitherInput.pointerY = e.clientY - rect.top;
+    });
+
+    slitherCanvas.addEventListener('pointerdown', (e) => {
+      if (currentGame !== 'slither') return;
+      const rect = slitherCanvas.getBoundingClientRect();
+      slitherInput.pointerActive = true;
+      slitherInput.pointerX = e.clientX - rect.left;
+      slitherInput.pointerY = e.clientY - rect.top;
+      slitherInput.pointerDown = true;
+    });
+
+    window.addEventListener('pointerup', () => {
+      slitherInput.pointerDown = false;
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (currentGame === 'slither' && e.code === 'Space') {
+        e.preventDefault();
+        slitherInput.boostKey = true;
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (currentGame === 'slither' && e.code === 'Space') {
+        slitherInput.boostKey = false;
+      }
+    });
+
+    slitherPlayBtn.addEventListener('click', startSlitherMatch);
+    slitherNameInput.addEventListener('keydown', (e) => {
+      if (currentGame === 'slither' && e.key === 'Enter') startSlitherMatch();
+    });
+
+    initSlitherSkinsUI();
+    resizeSlitherCanvas();
   </script>
 </body>
 </html>
