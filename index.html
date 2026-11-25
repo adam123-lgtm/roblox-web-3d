@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>ROBLOX WEB 3D</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
+    body { margin: 0; overflow: hidden; background: #0f172a; color: #f8fafc; }
+
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0; height: 56px;
+      background: rgba(15, 23, 42, 0.96); border-bottom: 1px solid #334155;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 16px; z-index: 25;
+    }
+    .logo { font-weight: 900; font-size: 19px; color: #38bdf8; }
+    .nav-btns button {
+      background: #1e293b; color: #f8fafc; border: 1px solid #334155;
+      padding: 8px 13px; border-radius: 8px; cursor: pointer; margin-right: 6px; font-weight: 700;
+    }
+    .nav-btns button.active, .nav-btns button:hover { background: #0284c7; border-color: #38bdf8; }
+
+    .screen {
+      position: fixed; inset: 56px 0 0 0; padding: 24px;
+      background: radial-gradient(circle at top, #1e293b, #0f172a);
+      overflow-y: auto; z-index: 20; display: none;
+    }
+    .screen.active { display: block; }
+
+    .section-title {
+      max-width: 1120px; margin: 18px auto 10px; font-size: 18px;
+      color: #38bdf8; border-bottom: 1px solid #334155; padding-bottom: 6px;
+    }
+
+    .games-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px; max-width: 1120px; margin: 14px auto 28px;
+    }
+    .game-card {
+      background: #1e293b; border: 1px solid #334155; border-radius: 14px;
+      overflow: hidden; transition: transform 0.2s, border-color 0.2s;
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .game-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
+    .game-banner {
+      height: 110px; display: flex; align-items: center; justify-content: center; font-size: 42px;
+    }
+    .game-info { padding: 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+    .game-info h3 { margin: 0 0 6px; font-size: 17px; }
+    .game-info p { margin: 0 0 12px; color: #94a3b8; font-size: 13px; line-height: 1.5; }
+    .creator-tag { font-size: 11px; color: #fbbf24; margin-bottom: 10px; }
+
+    .play-btn {
+      width: 100%; padding: 10px; background: #10b981; color: #fff;
+      border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+    .play-btn:hover { background: #059669; }
+    .del-btn {
+      margin-top: 6px; width: 100%; padding: 6px; background: transparent;
+      color: #f87171; border: 1px solid #7f1d1d; border-radius: 7px; font-size: 12px; cursor: pointer;
+    }
+
+    .avatar-panel {
+      max-width: 540px; margin: 16px auto; background: #1e293b;
+      padding: 20px; border-radius: 14px; border: 1px solid #334155;
+    }
+    .form-row { margin-bottom: 13px; display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+    .form-row input[type="text"], .form-row select {
+      padding: 8px 10px; border-radius: 8px; border: 1px solid #475569;
+      background: #0f172a; color: #fff; width: 58%;
+    }
+    .form-row input[type="color"] { width: 56px; height: 34px; border: none; background: none; cursor: pointer; }
+
+    #hud {
+      position: fixed; top: 66px; right: 12px; background: rgba(15, 23, 42, 0.88);
+      padding: 12px; border-radius: 12px; border: 1px solid #334155; z-index: 10;
+      width: 220px; display: none;
+    }
+    #hud h4 { margin: 0 0 8px; color: #38bdf8; font-size: 13px; }
+    #players-ul { list-style: none; padding: 0; margin: 0 0 8px; font-size: 12px; max-height: 125px; overflow-y: auto; }
+    #players-ul li { padding: 4px 0; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; }
+
+    #chat-box {
+      position: fixed; bottom: 14px; right: 12px; width: 250px;
+      background: rgba(15, 23, 42, 0.88); border: 1px solid #334155;
+      border-radius: 12px; padding: 10px; z-index: 12; display: none;
+    }
+    #chat-messages {
+      height: 100px; overflow-y: auto; font-size: 12px; margin-bottom: 8px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .chat-msg { background: rgba(30, 41, 59, 0.9); padding: 4px 7px; border-radius: 6px; word-break: break-word; }
+    .chat-msg b { color: #38bdf8; }
+    #chat-form { display: flex; gap: 5px; }
+    #chat-input {
+      flex: 1; padding: 6px 8px; border-radius: 7px; border: 1px solid #475569;
+      background: #0f172a; color: #fff; font-size: 12px;
+    }
+    #chat-form button {
+      padding: 6px 10px; border-radius: 7px; border: none;
+      background: #0284c7; color: #fff; font-weight: 700; cursor: pointer; font-size: 12px;
+    }
+
+    /* شريط Studio */
+    #studio-bar {
+      position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(15, 23, 42, 0.95); padding: 10px 14px; border-radius: 12px;
+      border: 1px solid #38bdf8; display: none; gap: 7px; z-index: 13; flex-wrap: wrap;
+      max-width: 95vw; justify-content: center;
+    }
+    #studio-bar button {
+      background: #2563eb; color: #fff; border: none; padding: 8px 11px;
+      border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 12px;
+    }
+
+    /* نافذة نشر اللعبة */
+    #publish-modal {
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.72);
+      display: none; align-items: center; justify-content: center; z-index: 40;
+    }
+    .modal-box {
+      background: #1e293b; border: 1px solid #38bdf8; border-radius: 14px;
+      padding: 20px; width: 92%; max-width: 400px;
+    }
+    .modal-box h3 { margin-top: 0; color: #38bdf8; }
+    .modal-box input {
+      width: 100%; padding: 9px; margin-bottom: 10px; border-radius: 8px;
+      border: 1px solid #475569; background: #0f172a; color: #fff;
+    }
+
+    #mobile-controls {
+      position: fixed; bottom: 135px; left: 16px; right: 16px;
+      display: none; justify-content: space-between; pointer-events: none; z-index: 11;
+    }
+    .dpad { display: grid; grid-template-columns: repeat(3, 48px); gap: 5px; pointer-events: auto; }
+    .ctrl-btn {
+      width: 48px; height: 48px; background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.35); border-radius: 11px;
+      color: #fff; font-size: 18px; font-weight: bold; touch-action: manipulation;
+    }
+    .action-stack { display: flex; flex-direction: column; gap: 8px; pointer-events: auto; align-items: center; }
+    .jump-btn {
+      width: 64px; height: 64px; border-radius: 50%; background: rgba(16, 185, 129, 0.8);
+      border: 2px solid #fff; color: #fff; font-weight: 700; font-size: 13px;
+    }
+    .blast-btn {
+      width: 64px; height: 42px; border-radius: 10px; background: rgba(239, 68, 68, 0.85);
+      border: 1px solid #fca5a5; color: #fff; font-weight: 700; font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="navbar">
+    <div class="logo">ROBLOX WEB 3D</div>
+    <div class="nav-btns">
+      <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
+      <button id="btn-avatar" onclick="showScreen('avatar-screen')">الشخصية</button>
+      <button id="btn-studio" onclick="enterGame('studio')">Studio (صنع لعبة)</button>
+    </div>
+  </div>
+
+  <!-- شاشة الألعاب -->
+  <div id="games-screen" class="screen active">
+    <h2 class="section-title">الألعاب الرسمية</h2>
+    <div class="games-grid">
+      <div class="game-card">
+        <div class="game-banner" style="background: linear-gradient(135deg, #0284c7, #38bdf8);">🏃‍♂️</div>
+        <div class="game-info">
+          <div>
+            <h3>باركور السماء ونقاط الحفظ</h3>
+            <p>اقفز بين المنصات العائمة واحفظ تقدمك عند النقطة البرتقالية.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('obby')">دخول اللعبة</button>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="game-banner" style="background: linear-gradient(135deg, #d97706, #fbbf24);">🪙</div>
+        <div class="game-info">
+          <div>
+            <h3>صائد العملات الذهبية</h3>
+            <p>اجمع العملات المتجددة في الساحة وتصدر قائمة المتصلين.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('coins')">دخول اللعبة</button>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="game-banner" style="background: linear-gradient(135deg, #b91c1c, #f97316);">🌋</div>
+        <div class="game-info">
+          <div>
+            <h3>ساحة الحمم والقفز</h3>
+            <p>اعبر الجسور الحجرية فوق أرضية الحمم وتجنب السقوط.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('lava')">دخول اللعبة</button>
+        </div>
+      </div>
+
+      <div class="game-card">
+        <div class="game-banner" style="background: linear-gradient(135deg, #7c3aed, #ec4899);">⚡</div>
+        <div class="game-info">
+          <div>
+            <h3>ساحة التصويب والقفز</h3>
+            <p>أطلق كرات الطاقة (F) لإصابة الأهداف المتحركة وكسب النقاط.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('arena')">دخول اللعبة</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">ألعاب اللاعبين (المصنوعة في Studio)</h2>
+    <div id="custom-games-grid" class="games-grid">
+      <p style="color:#94a3b8; font-size:14px;">لا توجد ألعاب منشورة بعد. افتح <b>Studio</b> وابنِ عالمك ثم اضغط <b>نشر كلعبة جديدة</b>!</p>
+    </div>
+  </div>
+
+  <!-- شاشة الشخصية -->
+  <div id="avatar-screen" class="screen">
+    <div class="avatar-panel">
+      <h3 style="margin-top:0;">تخصيص الشخصية</h3>
+      <div class="form-row">
+        <label>اسم اللاعب:</label>
+        <input type="text" id="player-name" placeholder="اكتب اسمك..." maxlength="14" />
+      </div>
+      <div class="form-row">
+        <label>لون البشرة:</label>
+        <input type="color" id="skin-color" value="#ffdbac" />
+      </div>
+      <div class="form-row">
+        <label>لون القميص:</label>
+        <input type="color" id="shirt-color" value="#00a2ff" />
+      </div>
+      <div class="form-row">
+        <label>لون البنطال:</label>
+        <input type="color" id="pants-color" value="#2c3e50" />
+      </div>
+      <div class="form-row">
+        <label>تعبير الوجه:</label>
+        <select id="face-type">
+          <option value="smile">مبتسم</option>
+          <option value="happy">سعيد واسع</option>
+          <option value="angry">غاضب</option>
+          <option value="cool">نظارات شمسية</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>القبعة:</label>
+        <select id="hat-type">
+          <option value="none">بدون قبعة</option>
+          <option value="cap">قبعة حمراء</option>
+          <option value="crown">تاج ذهبي</option>
+          <option value="tophat">قبعة عالية</option>
+        </select>
+      </div>
+      <button class="play-btn" onclick="saveAvatar()">حفظ المظهر</button>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud">
+    <h4 id="current-game-title">المتصلون (<span id="player-count">1</span>)</h4>
+    <ul id="players-ul"></ul>
+    <div id="status-note" style="font-size:11px; color:#fbbf24; margin-bottom:6px;"></div>
+    <button onclick="showScreen('games-screen')" style="width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:7px; cursor:pointer; font-weight:700;">القائمة الرئيسية</button>
+  </div>
+
+  <!-- الدردشة -->
+  <div id="chat-box">
+    <div id="chat-messages"></div>
+    <form id="chat-form" onsubmit="sendChat(event)">
+      <input type="text" id="chat-input" placeholder="اكتب رسالة..." maxlength="120" autocomplete="off" />
+      <button type="submit">إرسال</button>
+    </form>
+  </div>
+
+  <!-- شريط أدوات Studio -->
+  <div id="studio-bar">
+    <button onclick="addDraftBlock('#3b82f6', 'normal')">+ مكعب أزرق</button>
+    <button onclick="addDraftBlock('#10b981', 'bounce')" style="background:#059669;">+ قفز عالٍ</button>
+    <button onclick="addDraftBlock('#f59e0b', 'checkpoint')" style="background:#d97706;">+ نقطة حفظ</button>
+    <button onclick="addDraftBlock('#ef4444', 'lava')" style="background:#dc2626;">+ خطر</button>
+    <button onclick="addDraftBlock('#facc15', 'coin')" style="background:#ca8a04;">+ عملة</button>
+    <button onclick="clearDraftBlocks()" style="background:#475569;">مسح المسودة</button>
+    <button onclick="openPublishModal()" style="background:#16a34a;">نشر كلعبة جديدة</button>
+  </div>
+
+  <!-- نافذة نشر اللعبة -->
+  <div id="publish-modal">
+    <div class="modal-box">
+      <h3>نشر كلعبة مستقلة جديدة</h3>
+      <input type="text" id="new-game-title" placeholder="اسم اللعبة الجديدة (مثال: باركور التحدي)..." maxlength="30" />
+      <input type="text" id="new-game-desc" placeholder="وصف قصير للعبة..." maxlength="90" />
+      <div style="display:flex; gap:8px;">
+        <button class="play-btn" onclick="publishStudioGame()">حفظ ونشر الآن</button>
+        <button onclick="closePublishModal()" style="padding:10px 14px; background:#475569; color:#fff; border:none; border-radius:8px; cursor:pointer;">إلغاء</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- تحكم الهاتف -->
+  <div id="mobile-controls">
+    <div class="dpad">
+      <div></div>
+      <button class="ctrl-btn" ontouchstart="keys.w=true" ontouchend="keys.w=false">▲</button>
+      <div></div>
+      <button class="ctrl-btn" ontouchstart="keys.a=true" ontouchend="keys.a=false">◀</button>
+      <button class="ctrl-btn" ontouchstart="keys.s=true" ontouchend="keys.s=false">▼</button>
+      <button class="ctrl-btn" ontouchstart="keys.d=true" ontouchend="keys.d=false">▶</button>
+    </div>
+    <div class="action-stack">
+      <button class="blast-btn" onclick="fireBlast()">طاقة</button>
+      <button class="jump-btn" ontouchstart="jump()">قفز</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+    let myId = null;
+    let currentGame = 'lobby';
+    let checkpointPos = { x: 0, y: 3, z: 0 };
+    let customGamesList = [];
+    let studioDraftBlocks = []; // مسودة Studio المستقلة
+
+    let audioCtx = null;
+    function playTone(freq, duration = 0.12, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (_) {}
+    }
+
+    const savedProfile = JSON.parse(localStorage.getItem('robloxWebProfile') || '{}');
+    let myName = savedProfile.name || '';
+    let myAvatar = savedProfile.avatar || {
+      skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none', face: 'smile'
+    };
+
+    function syncFormFromProfile() {
+      document.getElementById('player-name').value = myName;
+      document.getElementById('skin-color').value = myAvatar.skin;
+      document.getElementById('shirt-color').value = myAvatar.shirt;
+      document.getElementById('pants-color').value = myAvatar.pants;
+      document.getElementById('hat-type').value = myAvatar.hat;
+      document.getElementById('face-type').value = myAvatar.face || 'smile';
+    }
+    syncFormFromProfile();
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x7dd3fc);
+    const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 600);
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    scene.add(new THREE.HemisphereLight(0xffffff, 0x334155, 0.95));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(18, 35, 20);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    const worldGroup = new THREE.Group();
+    scene.add(worldGroup);
+
+    let platforms = [];
+    let coins = [];
+    let targets = [];
+    let blasts = [];
+    const remotePlayers = {};
+
+    function createCharacterMesh(avatarData) {
+      const group = new THREE.Group();
+      const skinMat = new THREE.MeshLambertMaterial({ color: avatarData.skin || '#ffdbac' });
+      const shirtMat = new THREE.MeshLambertMaterial({ color: avatarData.shirt || '#00a2ff' });
+      const pantsMat = new THREE.MeshLambertMaterial({ color: avatarData.pants || '#2c3e50' });
+
+      const torso = new THREE.Mesh(new THREE.BoxGeometry(1, 1.2, 0.52), shirtMat);
+      torso.position.y = 1.4;
+      group.add(torso);
+
+      const head = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.78, 0.78), skinMat);
+      head.position.y = 2.46;
+      group.add(head);
+
+      const faceType = avatarData.face || 'smile';
+      const darkMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+      if (faceType === 'cool') {
+        const glasses = new THREE.Mesh(new THREE.BoxGeometry(0.72, 0.22, 0.1), new THREE.MeshBasicMaterial({ color: 0x111827 }));
+        glasses.position.set(0, 2.5, 0.41);
+        group.add(glasses);
+      } else {
+        const lEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.06), darkMat);
+        lEye.position.set(-0.18, 2.52, 0.4);
+        const rEye = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.12, 0.06), darkMat);
+        rEye.position.set(0.18, 2.52, 0.4);
+        group.add(lEye, rEye);
+
+        if (faceType === 'angry') {
+          const lBrow = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.06, 0.06), darkMat);
+          lBrow.position.set(-0.18, 2.66, 0.41);
+          lBrow.rotation.z = -0.35;
+          const rBrow = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.06, 0.06), darkMat);
+          rBrow.position.set(0.18, 2.66, 0.41);
+          rBrow.rotation.z = 0.35;
+          group.add(lBrow, rBrow);
+        }
+        const mouth = new THREE.Mesh(new THREE.BoxGeometry(faceType === 'happy' ? 0.36 : 0.24, 0.07, 0.06), darkMat);
+        mouth.position.set(0, 2.26, 0.4);
+        group.add(mouth);
+      }
+
+      if (avatarData.hat === 'cap') {
+        const cap = new THREE.Mesh(new THREE.BoxGeometry(0.82, 0.24, 0.92), new THREE.MeshLambertMaterial({ color: 0xef4444 }));
+        cap.position.set(0, 2.92, 0.06);
+        group.add(cap);
+      } else if (avatarData.hat === 'crown') {
+        const crown = new THREE.Mesh(new THREE.CylinderGeometry(0.42, 0.34, 0.32, 6), new THREE.MeshLambertMaterial({ color: 0xfacc15 }));
+        crown.position.set(0, 2.98, 0);
+        group.add(crown);
+      } else if (avatarData.hat === 'tophat') {
+        const brim = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.08, 16), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        brim.position.set(0, 2.88, 0);
+        const top = new THREE.Mesh(new THREE.CylinderGeometry(0.34, 0.34, 0.55, 16), new THREE.MeshLambertMaterial({ color: 0x1e293b }));
+        top.position.set(0, 3.16, 0);
+        group.add(brim, top);
+      }
+
+      const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.08, 0.35), skinMat);
+      leftArm.position.set(-0.72, 1.42, 0);
+      const rightArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.08, 0.35), skinMat);
+      rightArm.position.set(0.72, 1.42, 0);
+
+      const leftLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.0, 0.42), pantsMat);
+      leftLeg.position.set(-0.26, 0.5, 0);
+      const rightLeg = new THREE.Mesh(new THREE.BoxGeometry(0.42, 1.0, 0.42), pantsMat);
+      rightLeg.position.set(0.26, 0.5, 0);
+
+      group.add(leftArm, rightArm, leftLeg, rightLeg);
+      group.userData = { leftArm, rightArm, leftLeg, rightLeg, walkTime: 0, blastAnim: 0 };
+      return group;
+    }
+
+    let myChar = createCharacterMesh(myAvatar);
+    scene.add(myChar);
+
+    function rebuildMyCharacter() {
+      const pos = myChar.position.clone();
+      const rot = myChar.rotation.y;
+      scene.remove(myChar);
+      myChar = createCharacterMesh(myAvatar);
+      myChar.position.copy(pos);
+      myChar.rotation.y = rot;
+      scene.add(myChar);
+    }
+
+    function animateLimbs(charMesh, isMoving, delta) {
+      const { leftArm, rightArm, leftLeg, rightLeg } = charMesh.userData;
+      if (charMesh.userData.blastAnim > 0) {
+        charMesh.userData.blastAnim -= delta * 4;
+        rightArm.rotation.x = -Math.PI / 2;
+      } else if (isMoving) {
+        charMesh.userData.walkTime += delta * 10;
+        const swing = Math.sin(charMesh.userData.walkTime) * 0.65;
+        leftLeg.rotation.x = swing;
+        rightLeg.rotation.x = -swing;
+        leftArm.rotation.x = -swing;
+        rightArm.rotation.x = swing;
+      } else {
+        leftLeg.rotation.x = 0;
+        rightLeg.rotation.x = 0;
+        leftArm.rotation.x = 0;
+        rightArm.rotation.x = 0;
+      }
+    }
+
+    function addPlat(x, y, z, w, h, d, color, type = 'normal') {
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(w, h, d),
+        new THREE.MeshLambertMaterial({ color })
+      );
+      mesh.position.set(x, y, z);
+      worldGroup.add(mesh);
+      platforms.push({ x, y, z, w, h, d, type, mesh, activated: false });
+    }
+
+    function addCoin(x, y, z) {
+      const coin = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.48, 0.48, 0.16, 16),
+        new THREE.MeshLambertMaterial({ color: 0xfacc15 })
+      );
+      coin.rotation.x = Math.PI / 2;
+      coin.position.set(x, y, z);
+      worldGroup.add(coin);
+      coins.push(coin);
+    }
+
+    // بناء العالم لكل لعبة بشكل مستقل تماماً
+    function buildWorld(gameType) {
+      while (worldGroup.children.length > 0) worldGroup.remove(worldGroup.children[0]);
+      platforms = [];
+      coins = [];
+      targets = [];
+      checkpointPos = { x: 0, y: 3, z: 0 };
+      document.getElementById('status-note').textContent = '';
+
+      if (gameType === 'obby') {
+        scene.background = new THREE.Color(0x7dd3fc);
+        addPlat(0, -0.5, 0, 8, 1, 8, 0x22c55e);
+        for (let i = 1; i <= 12; i++) {
+          const x = (i % 2 === 0 ? 2.6 : -2.6);
+          const y = i * 1.05;
+          const z = -i * 5.2;
+          const isCp = (i === 6);
+          const type = isCp ? 'checkpoint' : (i % 4 === 0 ? 'bounce' : 'normal');
+          const color = isCp ? 0xf59e0b : (type === 'bounce' ? 0x10b981 : 0x3b82f6);
+          addPlat(x, y, z, 4.2, 0.8, 4.2, color, type);
+          addCoin(x, y + 1.4, z);
+        }
+      } else if (gameType === 'coins') {
+        scene.background = new THREE.Color(0xfef08a);
+        addPlat(0, -0.5, 0, 38, 1, 38, 0x4ade80);
+        for (let i = 0; i < 16; i++) {
+          addCoin((Math.random() - 0.5) * 30, 1.2, (Math.random() - 0.5) * 30);
+        }
+      } else if (gameType === 'lava') {
+        scene.background = new THREE.Color(0x450a0a);
+        addPlat(0, -0.9, 0, 44, 0.5, 44, 0xdc2626, 'lava');
+        addPlat(0, 0, 0, 6, 1, 6, 0x64748b);
+        for (let i = 1; i <= 9; i++) {
+          addPlat((i % 2 === 0 ? 4.2 : -4.2), 0.2, -i * 4.4, 3.8, 1, 3.8, 0x94a3b8);
+          addCoin((i % 2 === 0 ? 4.2 : -4.2), 1.6, -i * 4.4);
+        }
+      } else if (gameType === 'arena') {
+        scene.background = new THREE.Color(0x1e1b4b);
+        addPlat(0, -0.5, 0, 42, 1, 42, 0x312e81);
+        for (let i = 0; i < 6; i++) {
+          const targetMesh = new THREE.Mesh(
+            new THREE.BoxGeometry(1.8, 1.8, 1.8),
+            new THREE.MeshLambertMaterial({ color: 0xf43f5e })
+          );
+          targetMesh.position.set((i - 2.5) * 5, 1.4, -12 - (i % 2) * 6);
+          worldGroup.add(targetMesh);
+          targets.push({ mesh: targetMesh, baseX: targetMesh.position.x, phase: i });
+        }
+      } else if (gameType === 'studio') {
+        // مساحة بناء Studio مستقلة بالكامل
+        scene.background = new THREE.Color(0x93c5fd);
+        addPlat(0, -0.5, 0, 46, 1, 46, 0x86efac);
+        studioDraftBlocks.forEach(b => renderCustomElement(b));
+        document.getElementById('status-note').textContent = 'أنت في وضع البناء — اضغط (نشر كلعبة جديدة) لحفظها مستقلة';
+      } else if (gameType.startsWith('custom_')) {
+        // تحميل لعبة مخصصة مستقلة من القائمة
+        const found = customGamesList.find(g => g.id === gameType);
+        scene.background = new THREE.Color(0x38bdf8);
+        addPlat(0, -0.5, 0, 46, 1, 46, 0x4ade80);
+        if (found) {
+          found.blocks.forEach(b => renderCustomElement(b));
+          document.getElementById('status-note').textContent = `لعبة: ${found.title}`;
+        }
+      }
+    }
+
+    function renderCustomElement(b) {
+      if (b.type === 'coin') {
+        addCoin(b.x, b.y + 0.8, b.z);
+      } else {
+        addPlat(b.x, b.y, b.z, b.w || 3, b.h || 1, b.d || 3, b.color, b.type);
+      }
+    }
+
+    // تحديث بطاقات الألعاب المنشورة من Studio في الصفحة الرئيسية
+    function renderCustomGamesCards() {
+      const grid = document.getElementById('custom-games-grid');
+      if (!customGamesList.length) {
+        grid.innerHTML = `<p style="color:#94a3b8; font-size:14px;">لا توجد ألعاب منشورة بعد. افتح <b>Studio</b> وابنِ عالمك ثم اضغط <b>نشر كلعبة جديدة</b>!</p>`;
+        return;
+      }
+      grid.innerHTML = customGamesList.map(g => `
+        <div class="game-card">
+          <div class="game-banner" style="background: linear-gradient(135deg, #0ea5e9, #10b981);">🎮</div>
+          <div class="game-info">
+            <div>
+              <h3>${g.title}</h3>
+              <p>${g.desc}</p>
+              <div class="creator-tag">بواسطة: ${g.creator} • (${g.blocks.length} عنصر)</div>
+            </div>
+            <div>
+              <button class="play-btn" onclick="enterGame('${g.id}')">دخول اللعبة</button>
+              <button class="del-btn" onclick="socket.emit('deleteCustomGame', '${g.id}')">حذف اللعبة</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.querySelectorAll('.nav-btns button').forEach(b => b.classList.remove('active'));
+      document.getElementById('hud').style.display = 'none';
+      document.getElementById('chat-box').style.display = 'none';
+      document.getElementById('studio-bar').style.display = 'none';
+      document.getElementById('mobile-controls').style.display = 'none';
+
+      if (screenId) {
+        currentGame = 'lobby';
+        document.getElementById(screenId).classList.add('active');
+        if (screenId === 'games-screen') document.getElementById('btn-games').classList.add('active');
+        if (screenId === 'avatar-screen') {
+          syncFormFromProfile();
+          document.getElementById('btn-avatar').classList.add('active');
+        }
+      }
+    }
+
+    function enterGame(gameType) {
+      currentGame = gameType;
+      showScreen(null);
+      document.getElementById('hud').style.display = 'block';
+      document.getElementById('chat-box').style.display = 'block';
+      if (gameType === 'studio') {
+        document.getElementById('studio-bar').style.display = 'flex';
+        document.getElementById('btn-studio').classList.add('active');
+      }
+      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+        document.getElementById('mobile-controls').style.display = 'flex';
+      }
+      buildWorld(gameType);
+      respawn();
+      socket.emit('updatePlayer', { game: gameType, avatar: myAvatar, name: myName || undefined });
+    }
+
+    function saveAvatar() {
+      myName = document.getElementById('player-name').value.trim();
+      myAvatar = {
+        skin: document.getElementById('skin-color').value,
+        shirt: document.getElementById('shirt-color').value,
+        pants: document.getElementById('pants-color').value,
+        hat: document.getElementById('hat-type').value,
+        face: document.getElementById('face-type').value
+      };
+      localStorage.setItem('robloxWebProfile', JSON.stringify({ name: myName, avatar: myAvatar }));
+      rebuildMyCharacter();
+      socket.emit('updatePlayer', { name: myName || undefined, avatar: myAvatar });
+      playTone(660, 0.12);
+      showScreen('games-screen');
+    }
+
+    // أدوات مسودة Studio المستقلة
+    function addDraftBlock(color, type) {
+      const block = {
+        x: Math.round(myChar.position.x),
+        y: Math.round(myChar.position.y),
+        z: Math.round(myChar.position.z - 3),
+        w: 3, h: 1, d: 3,
+        color, type
+      };
+      studioDraftBlocks.push(block);
+      renderCustomElement(block);
+      playTone(520, 0.08);
+    }
+
+    function clearDraftBlocks() {
+      studioDraftBlocks = [];
+      buildWorld('studio');
+    }
+
+    function openPublishModal() {
+      if (studioDraftBlocks.length === 0) {
+        alert('أضف مكعباً أو منصة واحدة على الأقل قبل النشر!');
+        return;
+      }
+      document.getElementById('publish-modal').style.display = 'flex';
+    }
+
+    function closePublishModal() {
+      document.getElementById('publish-modal').style.display = 'none';
+    }
+
+    function publishStudioGame() {
+      const title = document.getElementById('new-game-title').value.trim();
+      const desc = document.getElementById('new-game-desc').value.trim();
+      if (!title) {
+        alert('اكتب اسماً للعبة الجديدة!');
+        return;
+      }
+      socket.emit('publishStudioGame', {
+        title,
+        desc,
+        blocks: studioDraftBlocks
+      });
+      document.getElementById('new-game-title').value = '';
+      document.getElementById('new-game-desc').value = '';
+      studioDraftBlocks = [];
+      closePublishModal();
+      playTone(880, 0.16);
+      showScreen('games-screen');
+    }
+
+    function spawnBlast(origin, dirY) {
+      const ball = new THREE.Mesh(
+        new THREE.SphereGeometry(0.32, 12, 12),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+      );
+      ball.position.set(origin.x, origin.y + 1.5, origin.z);
+      scene.add(ball);
+      blasts.push({ mesh: ball, vx: Math.sin(dirY) * 24, vz: Math.cos(dirY) * 24, life: 1.5 });
+    }
+
+    function fireBlast() {
+      myChar.userData.blastAnim = 1;
+      playTone(880, 0.09, 'square');
+      const origin = myChar.position.clone();
+      const rotY = myChar.rotation.y;
+      spawnBlast(origin, rotY);
+      socket.emit('fireBlast', { x: origin.x, y: origin.y, z: origin.z, rotY });
+    }
+
+    function sendChat(e) {
+      e.preventDefault();
+      const input = document.getElementById('chat-input');
+      if (!input.value.trim()) return;
+      socket.emit('chatMessage', input.value.trim());
+      input.value = '';
+    }
+
+    const keys = { w: false, a: false, s: false, d: false };
+    let velocityY = 0;
+    let isGrounded = false;
+
+    window.addEventListener('keydown', (e) => {
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
+      const k = e.key.toLowerCase();
+      if (k === 'w' || e.key === 'ArrowUp') keys.w = true;
+      if (k === 's' || e.key === 'ArrowDown') keys.s = true;
+      if (k === 'a' || e.key === 'ArrowLeft') keys.a = true;
+      if (k === 'd' || e.key === 'ArrowRight') keys.d = true;
+      if (e.code === 'Space') jump();
+      if (k === 'f') fireBlast();
+    });
+    window.addEventListener('keyup', (e) => {
+      const k = e.key.toLowerCase();
+      if (k === 'w' || e.key === 'ArrowUp') keys.w = false;
+      if (k === 's' || e.key === 'ArrowDown') keys.s = false;
+      if (k === 'a' || e.key === 'ArrowLeft') keys.a = false;
+      if (k === 'd' || e.key === 'ArrowRight') keys.d = false;
+    });
+
+    function jump() {
+      if (isGrounded) {
+        velocityY = 12.5;
+        isGrounded = false;
+        playTone(440, 0.1);
+      }
+    }
+
+    function respawn() {
+      myChar.position.set(checkpointPos.x, checkpointPos.y, checkpointPos.z);
+      velocityY = 0;
+    }
+
+    socket.on('initData', (data) => {
+      myId = data.id;
+      customGamesList = data.customGames || [];
+      renderCustomGamesCards();
+      Object.values(data.players).forEach(p => {
+        if (p.id !== myId) updateRemotePlayer(p);
+      });
+      if (myName || myAvatar) {
+        socket.emit('updatePlayer', { name: myName || undefined, avatar: myAvatar });
+      }
+    });
+
+    socket.on('customGamesUpdated', (games) => {
+      customGamesList = games || [];
+      renderCustomGamesCards();
+    });
+
+    socket.on('playerMoved', (p) => {
+      if (p.id !== myId) updateRemotePlayer(p);
+    });
+
+    function updateRemotePlayer(p) {
+      if (!remotePlayers[p.id]) {
+        const mesh = createCharacterMesh(p.avatar || {});
+        scene.add(mesh);
+        remotePlayers[p.id] = { mesh, lastX: p.x, lastZ: p.z, isMoving: false };
+      }
+      const rp = remotePlayers[p.id];
+      // إخفاء اللاعبين الموجودين في لعبة أخرى حتى لا يظهروا داخل عالمك
+      rp.mesh.visible = (p.game === currentGame && currentGame !== 'studio');
+      rp.isMoving = Math.hypot(p.x - rp.lastX, p.z - rp.lastZ) > 0.02;
+      rp.mesh.position.set(p.x, p.y, p.z);
+      rp.mesh.rotation.y = p.rotY || 0;
+      rp.lastX = p.x;
+      rp.lastZ = p.z;
+    }
+
+    socket.on('remoteBlast', (b) => {
+      spawnBlast({ x: b.x, y: b.y, z: b.z }, b.rotY);
+    });
+
+    socket.on('chatMessage', (msg) => {
+      const box = document.getElementById('chat-messages');
+      const div = document.createElement('div');
+      div.className = 'chat-msg';
+      div.innerHTML = `<b>${msg.sender}:</b> ${msg.text}`;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    });
+
+    socket.on('playerDisconnected', (id) => {
+      if (remotePlayers[id]) {
+        scene.remove(remotePlayers[id].mesh);
+        delete remotePlayers[id];
+      }
+    });
+
+    socket.on('playersList', (list) => {
+      document.getElementById('player-count').textContent = list.length;
+      const ul = document.getElementById('players-ul');
+      ul.innerHTML = list
+        .sort((a, b) => b.score - a.score)
+        .map(p => `<li><span>${p.name}</span><b>${p.score}</b></li>`)
+        .join('');
+    });
+
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = Math.min(clock.getDelta(), 0.05);
+
+      let moveX = 0, moveZ = 0;
+      if (keys.w) moveZ -= 1;
+      if (keys.s) moveZ += 1;
+      if (keys.a) moveX -= 1;
+      if (keys.d) moveX += 1;
+
+      const isMoving = moveX !== 0 || moveZ !== 0;
+      if (isMoving) {
+        const len = Math.hypot(moveX, moveZ);
+        moveX /= len; moveZ /= len;
+        myChar.position.x += moveX * 9.5 * delta;
+        myChar.position.z += moveZ * 9.5 * delta;
+        myChar.rotation.y = Math.atan2(moveX, moveZ);
+      }
+
+      velocityY -= 28 * delta;
+      myChar.position.y += velocityY * delta;
+      isGrounded = false;
+
+      for (const p of platforms) {
+        const withinX = Math.abs(myChar.position.x - p.x) < (p.w / 2 + 0.42);
+        const withinZ = Math.abs(myChar.position.z - p.z) < (p.d / 2 + 0.42);
+        const topY = p.y + p.h / 2;
+        if (withinX && withinZ && myChar.position.y <= topY + 0.12 && myChar.position.y >= topY - 0.85 && velocityY <= 0) {
+          if (p.type === 'lava') {
+            playTone(180, 0.2, 'sawtooth');
+            respawn();
+            break;
+          }
+          if (p.type === 'checkpoint' && !p.activated) {
+            p.activated = true;
+            checkpointPos = { x: p.x, y: topY + 1.2, z: p.z };
+            if (p.mesh && p.mesh.material) p.mesh.material.color.setHex(0x22c55e);
+            playTone(720, 0.14);
+          }
+          myChar.position.y = topY;
+          velocityY = p.type === 'bounce' ? 18.5 : 0;
+          isGrounded = p.type !== 'bounce';
+        }
+      }
+
+      if (myChar.position.y < -12) respawn();
+
+      for (let i = coins.length - 1; i >= 0; i--) {
+        const c = coins[i];
+        c.rotation.z += 3.5 * delta;
+        if (myChar.position.distanceTo(c.position) < 1.65) {
+          worldGroup.remove(c);
+          coins.splice(i, 1);
+          socket.emit('addScore', 10);
+          playTone(980, 0.1);
+          if (currentGame === 'coins') {
+            setTimeout(() => {
+              c.position.set((Math.random() - 0.5) * 30, 1.2, (Math.random() - 0.5) * 30);
+              worldGroup.add(c);
+              coins.push(c);
+            }, 1500);
+          }
+        }
+      }
+
+      for (const t of targets) {
+        t.mesh.position.x = t.baseX + Math.sin(clock.elapsedTime * 2 + t.phase) * 2.5;
+      }
+
+      for (let i = blasts.length - 1; i >= 0; i--) {
+        const b = blasts[i];
+        b.mesh.position.x += b.vx * delta;
+        b.mesh.position.z += b.vz * delta;
+        b.life -= delta;
+
+        let hit = false;
+        for (const t of targets) {
+          if (b.mesh.position.distanceTo(t.mesh.position) < 1.5) {
+            hit = true;
+            socket.emit('addScore', 15);
+            playTone(1046, 0.12);
+            t.mesh.scale.setScalar(1.35);
+            setTimeout(() => t.mesh.scale.setScalar(1), 150);
+            break;
+          }
+        }
+
+        if (hit || b.life <= 0) {
+          scene.remove(b.mesh);
+          blasts.splice(i, 1);
+        }
+      }
+
+      animateLimbs(myChar, isMoving, delta);
+      Object.values(remotePlayers).forEach(rp => animateLimbs(rp.mesh, rp.isMoving, delta));
+
+      camera.position.lerp(
+        new THREE.Vector3(myChar.position.x, myChar.position.y + 6.2, myChar.position.z + 11.2),
+        0.12
+      );
+      camera.lookAt(myChar.position.x, myChar.position.y + 1.5, myChar.position.z);
+
+      if (isMoving || !isGrounded) {
+        socket.emit('updatePlayer', {
+          x: myChar.position.x,
+          y: myChar.position.y,
+          z: myChar.position.z,
+          rotY: myChar.rotation.y
+        });
+      }
+
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

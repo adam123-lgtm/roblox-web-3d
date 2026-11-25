@@ -1,0 +1,16 @@
+﻿{
+  "name": "roblox-web-3d",
+  "version": "1.0.0",
+  "description": "Multiplayer 3D game platform with Node.js, Socket.io, Three.js, and Studio",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
