@@ -3,64 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ROBLOX WEB 3D - ADAM & Studio</title>
+  <title>ROBLOX WEB 3D - ADAM & Pro Studio</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
   <style>
-    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
-    body { margin: 0; overflow: hidden; background: #111827; color: #f9fafb; }
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
+    body { margin: 0; overflow: hidden; background: #111827; color: #f9fafb; user-select: none; }
 
     #navbar {
       position: fixed; top: 0; left: 0; right: 0; height: 56px;
       background: rgba(17, 24, 39, 0.95); border-bottom: 1px solid #374151;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; z-index: 20; gap: 8px;
+      padding: 0 12px; z-index: 20; gap: 6px;
     }
-    .logo { font-weight: 900; font-size: 19px; color: #38bdf8; letter-spacing: 1px; white-space: nowrap; }
+    .logo { font-weight: 900; font-size: 17px; color: #38bdf8; letter-spacing: 0.5px; white-space: nowrap; }
     .adam-badge {
       background: linear-gradient(45deg, #d97706, #fbbf24);
-      color: #111827; font-weight: 900; padding: 5px 12px;
-      border-radius: 999px; font-size: 13px; white-space: nowrap;
-    }
-    .room-pill {
-      background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8;
-      color: #7dd3fc; font-weight: 800; padding: 4px 10px;
+      color: #111827; font-weight: 900; padding: 4px 10px;
       border-radius: 999px; font-size: 12px; white-space: nowrap;
     }
-    .nav-btns { display: flex; flex-wrap: wrap; align-items: center; }
+    .nav-btns { display: flex; flex-wrap: nowrap; align-items: center; overflow-x: auto; }
     .nav-btns button {
       background: #1f2937; color: #fff; border: 1px solid #374151;
-      padding: 7px 12px; border-radius: 8px; cursor: pointer; margin-right: 6px; font-weight: bold; font-size: 13px;
+      padding: 6px 10px; border-radius: 8px; cursor: pointer; margin-right: 5px;
+      font-weight: bold; font-size: 12px; white-space: nowrap;
     }
     .nav-btns button.active, .nav-btns button:hover { background: #0284c7; border-color: #38bdf8; }
 
     .screen {
-      position: fixed; inset: 56px 0 0 0; padding: 24px;
+      position: fixed; inset: 56px 0 0 0; padding: 20px;
       background: linear-gradient(135deg, #0f172a, #1e293b);
       overflow-y: auto; z-index: 15; display: none;
     }
     .screen.active { display: block; }
 
-    .friend-room-bar {
-      max-width: 1120px; margin: 0 auto 14px;
-      background: #1f2937; border: 1px solid #374151; border-radius: 14px;
-      padding: 14px 18px; display: flex; flex-wrap: wrap; gap: 10px;
-      align-items: center; justify-content: space-between;
-    }
-    .friend-room-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .friend-room-controls input {
-      padding: 8px 12px; border-radius: 8px; border: 1px solid #4b5563;
-      background: #111827; color: #fff; font-weight: bold; width: 150px; text-transform: uppercase;
-    }
-    .small-btn {
-      padding: 8px 12px; border-radius: 8px; border: none;
-      font-weight: bold; cursor: pointer; font-size: 13px; color: #fff; background: #0284c7;
-    }
-    .small-btn.alt { background: #4b5563; }
-
     .games-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px; max-width: 1120px; margin: 16px auto;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px; max-width: 1120px; margin: 16px auto;
     }
     .game-card {
       background: #1f2937; border: 1px solid #374151; border-radius: 14px;
@@ -68,28 +46,28 @@
     }
     .game-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
     .game-banner {
-      height: 120px; display: flex; align-items: center; justify-content: center;
-      font-size: 44px; font-weight: bold;
+      height: 112px; display: flex; align-items: center; justify-content: center;
+      font-size: 42px; font-weight: bold;
     }
-    .game-info { padding: 16px; }
-    .game-info h3 { margin: 0 0 8px; color: #f8fafc; }
-    .game-info p { margin: 0 0 14px; color: #9ca3af; font-size: 14px; }
+    .game-info { padding: 14px; }
+    .game-info h3 { margin: 0 0 6px; color: #f8fafc; font-size: 16px; }
+    .game-info p { margin: 0 0 12px; color: #9ca3af; font-size: 13px; }
     .play-btn {
       width: 100%; padding: 10px; background: #10b981; color: #fff;
-      border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
+      border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer;
     }
     .play-btn:hover { background: #059669; }
 
-    .store-container { max-width: 920px; margin: 16px auto; }
-    .store-section-title { margin: 22px 0 12px; color: #fbbf24; font-size: 18px; }
+    .store-container { max-width: 920px; margin: 12px auto; }
+    .store-section-title { margin: 20px 0 10px; color: #fbbf24; font-size: 17px; }
     .store-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px;
     }
     .store-card {
       background: #1f2937; border: 1px solid #374151; border-radius: 14px;
-      padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+      padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
     }
-    .price-tag { font-size: 20px; font-weight: 900; color: #34d399; }
+    .price-tag { font-size: 19px; font-weight: 900; color: #34d399; }
     .buy-btn {
       width: 100%; padding: 10px; border: none; border-radius: 8px;
       background: #0284c7; color: #fff; font-weight: bold; cursor: pointer;
@@ -99,93 +77,108 @@
     .buy-btn.gold:hover { background: #f59e0b; }
 
     .avatar-panel {
-      max-width: 520px; margin: 20px auto; background: #1f2937;
-      padding: 20px; border-radius: 14px; border: 1px solid #374151;
+      max-width: 520px; margin: 16px auto; background: #1f2937;
+      padding: 18px; border-radius: 14px; border: 1px solid #374151;
     }
-    .form-row { margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .form-row { margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .form-row input[type="text"], .form-row select {
       padding: 8px; border-radius: 6px; border: 1px solid #4b5563; background: #111827; color: #fff; width: 60%;
     }
-    .form-row input[type="color"] { width: 60px; height: 36px; border: none; background: none; cursor: pointer; }
+    .form-row input[type="color"] { width: 56px; height: 34px; border: none; background: none; cursor: pointer; }
 
     #hud {
-      position: fixed; top: 66px; right: 14px; background: rgba(17, 24, 39, 0.88);
-      padding: 12px; border-radius: 10px; border: 1px solid #374151; z-index: 10;
-      min-width: 225px; display: none;
+      position: fixed; top: 64px; right: 12px; background: rgba(17, 24, 39, 0.88);
+      padding: 10px 12px; border-radius: 10px; border: 1px solid #374151; z-index: 10;
+      min-width: 185px; display: none;
     }
-    #hud h4 { margin: 0 0 8px; color: #38bdf8; font-size: 13.5px; }
-    #players-ul { list-style: none; padding: 0; margin: 0; font-size: 13px; }
-    #players-ul li { padding: 4px 0; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; gap: 8px; }
-
-    #chat-box {
-      position: fixed; top: 66px; left: 14px; width: 270px;
-      background: rgba(17, 24, 39, 0.85); border: 1px solid #374151;
-      border-radius: 10px; padding: 8px; z-index: 10; display: none;
-      flex-direction: column; gap: 6px;
-    }
-    #chat-messages {
-      height: 115px; overflow-y: auto; font-size: 12.5px;
-      display: flex; flex-direction: column; gap: 4px; padding-left: 4px;
-    }
-    .chat-line { background: rgba(31, 41, 55, 0.75); padding: 4px 7px; border-radius: 6px; word-break: break-word; }
-    .chat-line b { color: #38bdf8; }
-    #chat-form { display: flex; gap: 4px; }
-    #chat-input {
-      flex: 1; padding: 6px 8px; border-radius: 6px; border: 1px solid #4b5563;
-      background: #111827; color: #fff; font-size: 12.5px;
-    }
-    #chat-send {
-      background: #0284c7; color: #fff; border: none; border-radius: 6px;
-      padding: 0 10px; font-weight: bold; cursor: pointer; font-size: 12px;
+    #hud h4 { margin: 0 0 6px; color: #38bdf8; font-size: 13px; }
+    .stat-row {
+      display: flex; justify-content: space-between; padding: 4px 0;
+      border-bottom: 1px solid #374151; font-size: 12.5px;
     }
 
     #toast {
-      position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-      background: rgba(16, 185, 129, 0.94); color: #fff; padding: 8px 18px;
-      border-radius: 999px; font-weight: bold; font-size: 14px; z-index: 25; display: none;
+      position: fixed; top: 68px; left: 50%; transform: translateX(-50%);
+      background: rgba(16, 185, 129, 0.95); color: #fff; padding: 8px 16px;
+      border-radius: 999px; font-weight: bold; font-size: 13px; z-index: 25; display: none;
+      max-width: 90vw; text-align: center;
     }
 
     #studio-bar {
-      position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
-      background: rgba(17, 24, 39, 0.95); padding: 10px 14px; border-radius: 14px;
-      border: 1px solid #38bdf8; display: none; flex-direction: column; gap: 8px;
-      z-index: 12; width: min(94vw, 760px);
+      position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+      background: rgba(17, 24, 39, 0.96); padding: 9px 12px; border-radius: 14px;
+      border: 1px solid #38bdf8; display: none; flex-direction: column; gap: 7px;
+      z-index: 12; width: min(96vw, 880px); box-shadow: 0 10px 28px rgba(0,0,0,0.55);
+      max-height: 36vh; overflow-y: auto;
     }
-    .studio-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
-    .studio-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .studio-row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: space-between; }
+    .studio-controls { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
     #studio-bar button, #studio-bar select, #studio-bar input[type="text"] {
       background: #1f2937; color: #fff; border: 1px solid #4b5563;
-      padding: 7px 10px; border-radius: 8px; font-size: 12.5px; font-weight: bold;
+      padding: 6px 9px; border-radius: 8px; font-size: 12px; font-weight: bold;
     }
+    #studio-bar input[type="color"] { width: 32px; height: 28px; border: none; background: none; cursor: pointer; padding: 0; }
     #studio-bar button { background: #2563eb; border-color: #3b82f6; cursor: pointer; }
     #studio-bar button.green { background: #059669; border-color: #10b981; }
     #studio-bar button.amber { background: #d97706; border-color: #fbbf24; }
     #studio-bar button.red { background: #dc2626; border-color: #ef4444; }
     #studio-bar button.gray { background: #4b5563; border-color: #6b7280; }
+    #studio-bar button.purple { background: #7c3aed; border-color: #a78bfa; }
+
+    .studio-badge {
+      background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8;
+      color: #7dd3fc; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold;
+    }
 
     #mobile-controls {
-      position: fixed; bottom: 20px; left: 20px; right: 20px;
-      display: none; justify-content: space-between; pointer-events: none; z-index: 11;
+      position: fixed; bottom: 18px; left: 16px; right: 16px;
+      display: none; justify-content: space-between; align-items: flex-end;
+      pointer-events: none; z-index: 11;
     }
-    .dpad { display: grid; grid-template-columns: repeat(3, 52px); gap: 6px; pointer-events: auto; }
-    .ctrl-btn {
-      width: 52px; height: 52px; background: rgba(255,255,255,0.2);
-      border: 1px solid rgba(255,255,255,0.4); border-radius: 12px;
-      color: #fff; font-size: 20px; font-weight: bold; touch-action: manipulation;
+    body.mobile-mode.studio-active #mobile-controls { bottom: 38vh; }
+
+    #joystick-zone {
+      position: relative; width: 116px; height: 116px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.35);
+      pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center;
     }
+    #joystick-knob {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(56, 189, 248, 0.85); border: 2px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35); transform: translate(0px, 0px);
+      pointer-events: none;
+    }
+
+    .mobile-right-actions {
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      pointer-events: auto; touch-action: none;
+    }
+    #mobile-studio-quick {
+      display: none; grid-template-columns: repeat(2, 54px); gap: 6px;
+    }
+    body.mobile-mode.studio-active #mobile-studio-quick { display: grid; }
+
+    .m-quick-btn {
+      height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(37, 99, 235, 0.88); color: #fff; font-weight: 800; font-size: 11.5px;
+      cursor: pointer;
+    }
+    .m-quick-btn.amber { background: rgba(217, 119, 6, 0.9); }
+    .m-quick-btn.gray { background: rgba(75, 85, 99, 0.9); }
+
     .jump-btn {
-      width: 72px; height: 72px; border-radius: 50%; background: rgba(16, 185, 129, 0.7);
-      border: 2px solid #fff; color: #fff; font-weight: bold; pointer-events: auto; align-self: flex-end;
+      width: 74px; height: 74px; border-radius: 50%; background: rgba(16, 185, 129, 0.82);
+      border: 2px solid #fff; color: #fff; font-size: 15px; font-weight: 900;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.35); cursor: pointer;
     }
   </style>
 </head>
 <body>
 
   <div id="navbar">
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:8px;">
       <div class="logo">ROBLOX WEB 3D</div>
       <div class="adam-badge">🪙 <span id="adam-balance">50</span> ADAM</div>
-      <div class="room-pill">غرفة: <span id="nav-room-code">PUBLIC</span></div>
     </div>
     <div class="nav-btns">
       <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
@@ -198,19 +191,7 @@
   <div id="toast"></div>
 
   <div id="games-screen" class="screen active">
-    <div class="friend-room-bar">
-      <div>
-        <strong style="color:#38bdf8;">غرفة الأصدقاء (Friend Room):</strong>
-        <span style="color:#9ca3af; font-size:13px;">شارك نفس الرمز مع أصدقائك للدخول إلى نفس اللعبة معاً</span>
-      </div>
-      <div class="friend-room-controls">
-        <input type="text" id="room-code-input" value="PUBLIC" maxlength="12" placeholder="رمز الغرفة..." />
-        <button class="small-btn" onclick="applyRoomCode()">تطبيق الرمز</button>
-        <button class="small-btn alt" onclick="generateFriendCode()">إنشاء رمز صديق</button>
-      </div>
-    </div>
-
-    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب عالماً من صنع المستخدمين</h2>
+    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب عالماً من صنعك</h2>
     <div class="games-grid" id="games-grid">
       <div class="game-card" onclick="enterGame('obby')">
         <div class="game-banner" style="background: linear-gradient(45deg, #0284c7, #38bdf8);">🏃‍♂️</div>
@@ -225,7 +206,7 @@
         <div class="game-banner" style="background: linear-gradient(45deg, #d97706, #fbbf24);">🪙</div>
         <div class="game-info">
           <h3>صائد العملات الذهبية</h3>
-          <p>اجمع أكبر عدد من العملات المتجددة في الساحة وتصدر قائمة المتصلين.</p>
+          <p>اجمع أكبر عدد من العملات المتجددة في الساحة وارفع رصيد نقاطك.</p>
           <button class="play-btn" onclick="event.stopPropagation(); enterGame('coins')">دخول اللعبة</button>
         </div>
       </div>
@@ -262,9 +243,9 @@
   <div id="store-screen" class="screen">
     <div class="store-container">
       <h2 style="text-align:center;">متجر عملة ADAM</h2>
-      <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM بالنقود الحقيقية أو استخدم رصيدك لشراء عناصر مميزة داخل اللعبة.</p>
+      <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM أو استخدم رصيدك لشراء عناصر مميزة داخل اللعبة.</p>
 
-      <h3 class="store-section-title">شحن ADAM بالنقود الحقيقية</h3>
+      <h3 class="store-section-title">شحن ADAM</h3>
       <div class="store-grid">
         <div class="store-card">
           <div>
@@ -273,7 +254,7 @@
           </div>
           <div>
             <div class="price-tag">$0.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_100', 100, 0.99)">شراء بـ $0.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack(100, 0.99)">شراء بـ $0.99</button>
           </div>
         </div>
 
@@ -284,7 +265,7 @@
           </div>
           <div>
             <div class="price-tag">$4.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_550', 550, 4.99)">شراء بـ $4.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack(550, 4.99)">شراء بـ $4.99</button>
           </div>
         </div>
 
@@ -295,7 +276,7 @@
           </div>
           <div>
             <div class="price-tag">$9.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_1200', 1200, 9.99)">شراء بـ $9.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack(1200, 9.99)">شراء بـ $9.99</button>
           </div>
         </div>
       </div>
@@ -361,81 +342,87 @@
   </div>
 
   <div id="hud">
-    <h4>الغرفة: <span id="hud-room-code">PUBLIC</span> (<span id="player-count">1</span>)</h4>
-    <ul id="players-ul"></ul>
-    <button onclick="respawn()" style="margin-top:8px; width:100%; background:#0284c7; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">إعادة إلى البداية</button>
-    <button onclick="exitToMenu()" style="margin-top:6px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">خروج للقائمة</button>
-  </div>
-
-  <div id="chat-box">
-    <div id="chat-messages"></div>
-    <form id="chat-form" onsubmit="sendChat(event)">
-      <input type="text" id="chat-input" placeholder="اكتب رسالة للغرفة..." maxlength="120" autocomplete="off" />
-      <button type="submit" id="chat-send">إرسال</button>
-    </form>
+    <h4 id="hud-player-name">اللاعب</h4>
+    <div class="stat-row"><span>النقاط:</span><b id="hud-score">0</b></div>
+    <div class="stat-row"><span>رصيد ADAM:</span><b id="hud-adam">50</b></div>
+    <button onclick="respawn()" style="margin-top:8px; width:100%; background:#0284c7; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:bold;">إعادة إلى البداية</button>
+    <button onclick="exitToMenu()" style="margin-top:5px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer; font-weight:bold;">خروج للقائمة</button>
   </div>
 
   <div id="studio-bar">
     <div class="studio-row">
       <div class="studio-controls">
-        <select id="studio-type">
+        <select id="studio-type" onchange="updateStudioGhost()">
           <option value="normal">منصة عادية</option>
           <option value="bounce">منصة قفز (+)</option>
+          <option value="speed">منصة تسريع (⚡)</option>
           <option value="lava">حمم خطرة</option>
           <option value="coin">عملة (+10)</option>
           <option value="finish">نقطة فوز (+50)</option>
         </select>
-        <select id="studio-size">
-          <option value="3,1,3">حجم متوسط</option>
-          <option value="6,1,6">منصة كبيرة</option>
-          <option value="2,2,2">عمود / مكعب</option>
+        <select id="studio-size" onchange="updateStudioGhost()">
+          <option value="3,1,3">متوسط (3×1×3)</option>
+          <option value="6,1,6">كبير (6×1×6)</option>
+          <option value="8,0.8,2">جسر طويل (8×0.8×2)</option>
+          <option value="2,3,2">برج / عمود (2×3×2)</option>
         </select>
-        <input type="color" id="studio-color" value="#3b82f6" title="لون العنصر" />
-        <button onclick="placeStudioItem()">+ وضع أمام اللاعب</button>
-        <button class="gray" onclick="undoLastStudioBlock()">تراجع عن آخر عنصر</button>
+        <input type="color" id="studio-color" value="#3b82f6" title="لون العنصر" onchange="updateStudioGhost()" />
+        <button class="gray" onclick="adjustStudioOffsetY(-1)">▼ ارتفاع</button>
+        <button class="gray" onclick="adjustStudioOffsetY(1)">▲ ارتفاع</button>
+        <button class="gray" onclick="rotateStudioBlock()">↻ تدوير</button>
+        <span class="studio-badge">ارتفاع: <span id="studio-y-label">0</span> | العناصر: <span id="studio-count-label">0</span></span>
+      </div>
+      <div class="studio-controls">
+        <button onclick="placeStudioItem()">+ وضع العنصر (E)</button>
+        <button class="gray" onclick="undoLastStudioBlock()">تراجع</button>
         <button class="red" onclick="clearAllStudioBlocks()">مسح الكل</button>
       </div>
     </div>
+
     <div class="studio-row">
-      <div class="studio-controls" style="flex:1;">
+      <div class="studio-controls">
+        <button class="purple" onclick="loadStudioPreset('obby')">قالب باركور جاهز</button>
+        <button class="purple" onclick="loadStudioPreset('arena')">قالب ساحة قفز</button>
+        <button class="gray" onclick="exportStudioJson()">تصدير JSON</button>
+        <button class="gray" onclick="document.getElementById('studio-import-input').click()">استيراد JSON</button>
+        <input type="file" id="studio-import-input" accept=".json" style="display:none" onchange="importStudioJson(event)" />
+      </div>
+      <div class="studio-controls" style="flex:1; min-width:250px;">
         <input type="text" id="custom-game-title" placeholder="اسم لعبتك المخصصة..." maxlength="32" style="flex:1;" />
-        <input type="text" id="custom-game-desc" placeholder="وصف قصير للعبة..." maxlength="90" style="flex:1.4;" />
-        <button class="green" onclick="publishCustomGame()">نشر اللعبة في القائمة</button>
-        <button class="amber" onclick="enterGame('custom')">تجربة اللعبة الآن</button>
+        <input type="text" id="custom-game-desc" placeholder="وصف قصير..." maxlength="90" style="flex:1.2;" />
+        <button class="green" onclick="publishCustomGame()">نشر في القائمة</button>
+        <button class="amber" onclick="enterGame('custom')">تجربة الآن</button>
       </div>
     </div>
   </div>
 
   <div id="mobile-controls">
-    <div class="dpad">
-      <div></div>
-      <button class="ctrl-btn" ontouchstart="keys.w=true" ontouchend="keys.w=false">▲</button>
-      <div></div>
-      <button class="ctrl-btn" ontouchstart="keys.a=true" ontouchend="keys.a=false">◀</button>
-      <button class="ctrl-btn" ontouchstart="keys.s=true" ontouchend="keys.s=false">▼</button>
-      <button class="ctrl-btn" ontouchstart="keys.d=true" ontouchend="keys.d=false">▶</button>
+    <div id="joystick-zone">
+      <div id="joystick-knob"></div>
     </div>
-    <button class="jump-btn" ontouchstart="jump()">قفز</button>
+
+    <div class="mobile-right-actions">
+      <div id="mobile-studio-quick">
+        <button class="m-quick-btn" onclick="placeStudioItem()">+ وضع</button>
+        <button class="m-quick-btn amber" onclick="rotateStudioBlock()">↻ 45°</button>
+        <button class="m-quick-btn gray" onclick="adjustStudioOffsetY(1)">▲ أعلى</button>
+        <button class="m-quick-btn gray" onclick="adjustStudioOffsetY(-1)">▼ أسفل</button>
+      </div>
+      <button class="jump-btn" ontouchstart="jump()">قفز</button>
+    </div>
   </div>
 
   <script>
-    const isGitHubPages = window.location.hostname.endsWith('github.io');
-    const serverEndpoint = window.MULTIPLAYER_SERVER_URL || null;
-    const socket = ((!isGitHubPages || serverEndpoint) && typeof io === 'function')
-      ? io(serverEndpoint || undefined, { reconnectionAttempts: 3, timeout: 2000 })
-      : null;
+    const isMobileDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0) || window.innerWidth <= 768;
+    if (isMobileDevice) {
+      document.body.classList.add('mobile-mode');
+    }
 
     const STORAGE_KEYS = {
       profile: 'roblox_web_3d_profile_v1',
       blocks: 'roblox_web_3d_blocks_v1',
       customGame: 'roblox_web_3d_custom_game_v1'
     };
-
-    function sanitizeRoomCode(raw) {
-      if (typeof raw !== 'string') return 'PUBLIC';
-      const cleaned = raw.trim().toUpperCase().replace(/[^A-Z0-9_-]/g, '').slice(0, 12);
-      return cleaned || 'PUBLIC';
-    }
 
     function loadSavedState() {
       try {
@@ -455,8 +442,7 @@
           score: myScore,
           adam: myAdam,
           ownedHats: myOwnedHats,
-          avatar: myAvatar,
-          roomCode: myRoomCode
+          avatar: myAvatar
         }));
       } catch (_) {}
     }
@@ -465,6 +451,7 @@
       try {
         localStorage.setItem(STORAGE_KEYS.blocks, JSON.stringify(savedStudioBlocks));
       } catch (_) {}
+      updateStudioLabels();
     }
 
     function persistCustomGame() {
@@ -474,9 +461,7 @@
     }
 
     const initialSaved = loadSavedState();
-    let myId = 'local_player';
     let currentGame = 'lobby';
-    let myRoomCode = sanitizeRoomCode((initialSaved.p && initialSaved.p.roomCode) || 'PUBLIC');
     let myName = (initialSaved.p && initialSaved.p.name) || 'لاعب';
     let myScore = (initialSaved.p && typeof initialSaved.p.score === 'number') ? initialSaved.p.score : 0;
     let myAdam = (initialSaved.p && typeof initialSaved.p.adam === 'number') ? initialSaved.p.adam : 50;
@@ -487,44 +472,37 @@
       ? { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none', ...initialSaved.p.avatar }
       : { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none' };
 
-    let allPlayersMap = {};
     let savedStudioBlocks = Array.isArray(initialSaved.b) ? initialSaved.b : [];
     let publishedGameMeta = initialSaved.g || null;
     let reachedFinish = false;
+    let studioOffsetY = 0;
+    let studioRotationDeg = 0;
+    let speedBoostTimer = 0;
 
     document.getElementById('player-name').value = myName === 'لاعب' ? '' : myName;
     document.getElementById('skin-color').value = myAvatar.skin;
     document.getElementById('shirt-color').value = myAvatar.shirt;
     document.getElementById('pants-color').value = myAvatar.pants;
     document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'none';
-    document.getElementById('adam-balance').textContent = myAdam;
-    document.getElementById('room-code-input').value = myRoomCode;
-    document.getElementById('nav-room-code').textContent = myRoomCode;
-    document.getElementById('hud-room-code').textContent = myRoomCode;
-
-    function updateRoomUi(code) {
-      myRoomCode = sanitizeRoomCode(code);
-      document.getElementById('room-code-input').value = myRoomCode;
-      document.getElementById('nav-room-code').textContent = myRoomCode;
-      document.getElementById('hud-room-code').textContent = myRoomCode;
-      persistProfile();
-      syncRoomPlayers();
-      if (socket && socket.connected) {
-        socket.emit('updatePlayer', { roomCode: myRoomCode, game: currentGame });
-      }
+    if (publishedGameMeta) {
+      document.getElementById('custom-game-title').value = publishedGameMeta.title || '';
+      document.getElementById('custom-game-desc').value = publishedGameMeta.description || '';
     }
 
-    function applyRoomCode() {
-      const inputVal = document.getElementById('room-code-input').value;
-      updateRoomUi(inputVal);
-      showToast(`🔑 تم الانضمام إلى الغرفة: ${myRoomCode}`);
+    function updateHudStats() {
+      document.getElementById('adam-balance').textContent = myAdam;
+      document.getElementById('hud-player-name').textContent = myName;
+      document.getElementById('hud-score').textContent = myScore;
+      document.getElementById('hud-adam').textContent = myAdam;
     }
 
-    function generateFriendCode() {
-      const randomPart = Math.random().toString(36).substring(2, 6).toUpperCase();
-      updateRoomUi(`FR-${randomPart}`);
-      showToast(`🎟️ رمز غرفتك: ${myRoomCode} (شاركه مع أصدقائك)`);
+    function updateStudioLabels() {
+      document.getElementById('studio-y-label').textContent = studioOffsetY;
+      document.getElementById('studio-count-label').textContent = savedStudioBlocks.length;
     }
+
+    updateHudStats();
+    updateStudioLabels();
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -532,6 +510,7 @@
 
     const camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 500);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -546,11 +525,24 @@
     const studioGroup = new THREE.Group();
     scene.add(studioGroup);
 
+    const studioGridHelper = new THREE.GridHelper(48, 48, 0x1d4ed8, 0x60a5fa);
+    studioGridHelper.position.y = 0.02;
+    studioGridHelper.visible = false;
+    scene.add(studioGridHelper);
+
+    let studioGhostMesh = null;
     let platforms = [];
     let studioPlatforms = [];
     let coins = [];
-    let finishZones = [];
-    const remotePlayers = {};
+
+    // Mobile joystick & touch camera state
+    let joyVector = { x: 0, z: 0 };
+    let joyTouchId = null;
+    let camYaw = 0;
+    let camPitch = 0.42;
+    let orbitTouchId = null;
+    let lastOrbitX = 0;
+    let lastOrbitY = 0;
 
     function showToast(msg) {
       const el = document.getElementById('toast');
@@ -560,55 +552,18 @@
       el._timer = setTimeout(() => { el.style.display = 'none'; }, 2600);
     }
 
-    function updateAdamUi(balance) {
-      myAdam = balance;
-      document.getElementById('adam-balance').textContent = balance;
-      persistProfile();
-      syncRoomPlayers();
-    }
-
     function addPlayerScore(pts) {
       myScore += pts;
       persistProfile();
-      syncRoomPlayers();
-      if (socket && socket.connected) socket.emit('addScore', pts);
+      updateHudStats();
     }
 
-    async function buyRealMoneyPack(packId, adamAmount, priceUsd) {
-      const confirmed = window.confirm('تأكيد إتمام عملية الشراء الوهمية/التجريبية لحزمة ADAM؟ (اربطها ببوابة Stripe/PayPal في الإنتاج)');
+    function buyRealMoneyPack(adamAmount, priceUsd) {
+      const confirmed = window.confirm('تأكيد شحن حزمة ADAM؟');
       if (!confirmed) return;
-
-      if (socket && socket.connected && serverEndpoint) {
-        try {
-          const res = await fetch(`${serverEndpoint}/api/adam/purchase`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ socketId: socket.id, packId })
-          });
-          const data = await res.json();
-          if (res.ok && data.ok) {
-            updateAdamUi(data.adam);
-            showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
-            return;
-          }
-        } catch (_) {}
-      } else if (!isGitHubPages && socket && socket.connected) {
-        try {
-          const res = await fetch('/api/adam/purchase', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ socketId: socket.id, packId })
-          });
-          const data = await res.json();
-          if (res.ok && data.ok) {
-            updateAdamUi(data.adam);
-            showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
-            return;
-          }
-        } catch (_) {}
-      }
-
-      updateAdamUi(myAdam + adamAmount);
+      myAdam += adamAmount;
+      persistProfile();
+      updateHudStats();
       showToast(`🪙 تم شحن +${adamAmount} ADAM بنجاح ($${priceUsd})`);
     }
 
@@ -625,7 +580,7 @@
         return;
       }
 
-      updateAdamUi(myAdam - item.cost);
+      myAdam -= item.cost;
       if (item.hat && !myOwnedHats.includes(item.hat)) {
         myOwnedHats.push(item.hat);
         myAvatar.hat = item.hat;
@@ -636,9 +591,8 @@
         myScore += item.scoreBonus;
       }
       persistProfile();
-      syncRoomPlayers();
+      updateHudStats();
       showToast(`✅ تم شراء ${item.label}!`);
-      if (socket && socket.connected) socket.emit('spendAdam', itemId);
     }
 
     function renderPublishedGameCard(meta) {
@@ -687,62 +641,9 @@
       renderPublishedGameCard(meta);
       persistCustomGame();
       showToast('✅ تم نشر لعبتك في قائمة الألعاب!');
-      if (socket && socket.connected) socket.emit('publishGame', { title, description });
     }
 
-    function appendChatLine(authorName, text) {
-      const box = document.getElementById('chat-messages');
-      const line = document.createElement('div');
-      line.className = 'chat-line';
-      const author = document.createElement('b');
-      author.textContent = `${authorName}: `;
-      const body = document.createElement('span');
-      body.textContent = text;
-      line.append(author, body);
-      box.appendChild(line);
-      while (box.children.length > 40) box.removeChild(box.firstChild);
-      box.scrollTop = box.scrollHeight;
-    }
-
-    function sendChat(e) {
-      e.preventDefault();
-      const input = document.getElementById('chat-input');
-      const text = input.value.trim();
-      if (!text) return;
-      appendChatLine(myName, text);
-      if (socket && socket.connected) socket.emit('chatMessage', text);
-      input.value = '';
-      input.blur();
-    }
-
-    function createNameTagSprite(labelText) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 256;
-      canvas.height = 64;
-      const ctx = canvas.getContext('2d');
-      ctx.fillStyle = 'rgba(17, 24, 39, 0.78)';
-      ctx.beginPath();
-      ctx.roundRect(12, 10, 232, 44, 14);
-      ctx.fill();
-      ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-
-      ctx.fillStyle = '#f9fafb';
-      ctx.font = 'bold 22px Tahoma, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText(labelText.slice(0, 16), 128, 33);
-
-      const tex = new THREE.CanvasTexture(canvas);
-      const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthTest: false });
-      const sprite = new THREE.Sprite(mat);
-      sprite.scale.set(2.4, 0.6, 1);
-      sprite.position.set(0, 3.65, 0);
-      return sprite;
-    }
-
-    function createCharacterMesh(avatarData, tagName = null) {
+    function createCharacterMesh(avatarData) {
       const group = new THREE.Group();
       const bodyRig = new THREE.Group();
       group.add(bodyRig);
@@ -811,13 +712,7 @@
       rightLeg.position.set(0.27, 0.48, 0);
       bodyRig.add(leftLeg, rightLeg);
 
-      let nameTag = null;
-      if (tagName) {
-        nameTag = createNameTagSprite(tagName);
-        group.add(nameTag);
-      }
-
-      group.userData = { bodyRig, leftArm, rightArm, leftLeg, rightLeg, nameTag, tagLabel: tagName, walkTime: 0 };
+      group.userData = { bodyRig, leftArm, rightArm, leftLeg, rightLeg, walkTime: 0 };
       return group;
     }
 
@@ -861,76 +756,89 @@
       }
     }
 
-    function clearRemotePlayers() {
-      Object.keys(remotePlayers).forEach(id => {
-        scene.remove(remotePlayers[id].mesh);
-        delete remotePlayers[id];
-      });
+    function getEffectiveDims(b) {
+      const rad = ((b.rotDeg || 0) * Math.PI) / 180;
+      const cos = Math.abs(Math.cos(rad));
+      const sin = Math.abs(Math.sin(rad));
+      return {
+        ew: b.w * cos + b.d * sin,
+        ed: b.w * sin + b.d * cos
+      };
     }
 
-    function isSameSession(p) {
-      const pRoom = sanitizeRoomCode(p.roomCode || 'PUBLIC');
-      return (p.game || 'lobby') === currentGame && pRoom === myRoomCode;
+    function getStudioPlacementDraft() {
+      const type = document.getElementById('studio-type').value;
+      const color = document.getElementById('studio-color').value;
+      const [w, h, d] = document.getElementById('studio-size').value.split(',').map(Number);
+      const forwardX = Math.sin(myChar.rotation.y) * 4;
+      const forwardZ = Math.cos(myChar.rotation.y) * 4;
+
+      return {
+        x: Math.round(myChar.position.x + forwardX),
+        y: Math.max(0.5, Math.round(myChar.position.y + studioOffsetY)),
+        z: Math.round(myChar.position.z + forwardZ),
+        w, h, d,
+        rotDeg: studioRotationDeg,
+        color,
+        type
+      };
     }
 
-    function syncRoomPlayers() {
-      clearRemotePlayers();
-      const entries = [{ name: myName, score: myScore, adam: myAdam }];
-
-      Object.values(allPlayersMap).forEach(p => {
-        if (p.id !== myId && isSameSession(p)) {
-          entries.push(p);
-          updateRemotePlayer(p);
-        }
-      });
-
-      document.getElementById('player-count').textContent = entries.length;
-      const ul = document.getElementById('players-ul');
-      ul.innerHTML = entries
-        .sort((a, b) => (b.score || 0) - (a.score || 0))
-        .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} ن | ${p.adam || 0} ADAM</b></li>`)
-        .join('');
-    }
-
-    function updateRemotePlayer(p) {
-      const displayName = p.name || 'لاعب';
-      const avatarKey = JSON.stringify(p.avatar || {});
-      if (!remotePlayers[p.id]) {
-        const mesh = createCharacterMesh(p.avatar || {}, displayName);
-        scene.add(mesh);
-        remotePlayers[p.id] = {
-          mesh,
-          lastX: p.x || 0,
-          lastZ: p.z || 0,
-          isMoving: false,
-          avatarKey,
-          tagLabel: displayName
-        };
-      } else if (remotePlayers[p.id].avatarKey !== avatarKey || remotePlayers[p.id].tagLabel !== displayName) {
-        const oldPos = remotePlayers[p.id].mesh.position.clone();
-        const oldRot = remotePlayers[p.id].mesh.rotation.y;
-        scene.remove(remotePlayers[p.id].mesh);
-        const rebuilt = createCharacterMesh(p.avatar || {}, displayName);
-        rebuilt.position.copy(oldPos);
-        rebuilt.rotation.y = oldRot;
-        scene.add(rebuilt);
-        remotePlayers[p.id].mesh = rebuilt;
-        remotePlayers[p.id].avatarKey = avatarKey;
-        remotePlayers[p.id].tagLabel = displayName;
+    function updateStudioGhost() {
+      if (studioGhostMesh) {
+        scene.remove(studioGhostMesh);
+        studioGhostMesh = null;
       }
+      if (currentGame !== 'studio') return;
 
-      const rp = remotePlayers[p.id];
-      rp.isMoving = Math.hypot((p.x || 0) - rp.lastX, (p.z || 0) - rp.lastZ) > 0.02;
-      rp.mesh.position.set(p.x || 0, p.y || 0, p.z || 0);
-      rp.mesh.rotation.y = p.rotY || 0;
-      rp.lastX = p.x || 0;
-      rp.lastZ = p.z || 0;
+      const draft = getStudioPlacementDraft();
+      if (draft.type === 'coin') {
+        studioGhostMesh = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.55, 0.55, 0.2, 16),
+          new THREE.MeshBasicMaterial({ color: 0xfacc15, transparent: true, opacity: 0.55 })
+        );
+        studioGhostMesh.rotation.x = Math.PI / 2;
+        studioGhostMesh.position.set(draft.x, draft.y + 0.8, draft.z);
+      } else {
+        const ghostColor = draft.type === 'finish' ? 0xfacc15
+          : (draft.type === 'lava' ? 0xef4444
+            : (draft.type === 'speed' ? 0x06b6d4 : draft.color));
+        studioGhostMesh = new THREE.Mesh(
+          new THREE.BoxGeometry(draft.w, draft.h, draft.d),
+          new THREE.MeshBasicMaterial({ color: ghostColor, transparent: true, opacity: 0.45 })
+        );
+        studioGhostMesh.position.set(draft.x, draft.y, draft.z);
+        studioGhostMesh.rotation.y = (draft.rotDeg * Math.PI) / 180;
+      }
+      scene.add(studioGhostMesh);
+    }
+
+    function syncStudioGhostPosition() {
+      if (currentGame !== 'studio' || !studioGhostMesh) return;
+      const draft = getStudioPlacementDraft();
+      if (draft.type === 'coin') {
+        studioGhostMesh.position.set(draft.x, draft.y + 0.8, draft.z);
+      } else {
+        studioGhostMesh.position.set(draft.x, draft.y, draft.z);
+        studioGhostMesh.rotation.y = (draft.rotDeg * Math.PI) / 180;
+      }
+    }
+
+    function adjustStudioOffsetY(deltaY) {
+      studioOffsetY = Math.max(-4, Math.min(16, studioOffsetY + deltaY));
+      updateStudioLabels();
+      syncStudioGhostPosition();
+    }
+
+    function rotateStudioBlock() {
+      studioRotationDeg = (studioRotationDeg + 45) % 360;
+      syncStudioGhostPosition();
+      showToast(`↻ زاوية القطعة: ${studioRotationDeg}°`);
     }
 
     function clearStudioSceneItems() {
       while (studioGroup.children.length > 0) studioGroup.remove(studioGroup.children[0]);
       studioPlatforms = [];
-      finishZones = [];
     }
 
     function renderStudioItem(b) {
@@ -946,22 +854,95 @@
         return;
       }
 
-      const color = b.type === 'finish' ? 0xfacc15 : (b.type === 'lava' ? 0xef4444 : b.color);
+      const color = b.type === 'finish' ? 0xfacc15
+        : (b.type === 'lava' ? 0xef4444
+          : (b.type === 'speed' ? 0x06b6d4 : b.color));
       const mesh = new THREE.Mesh(
         new THREE.BoxGeometry(b.w, b.h, b.d),
         new THREE.MeshLambertMaterial({ color })
       );
       mesh.position.set(b.x, b.y, b.z);
+      mesh.rotation.y = ((b.rotDeg || 0) * Math.PI) / 180;
       studioGroup.add(mesh);
 
-      const platObj = { ...b, color };
-      studioPlatforms.push(platObj);
-      if (b.type === 'finish') finishZones.push(platObj);
+      if (b.type === 'finish') {
+        const beacon = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.3, 0.3, 4.2, 12),
+          new THREE.MeshLambertMaterial({ color: 0xfef08a, transparent: true, opacity: 0.65 })
+        );
+        beacon.position.set(b.x, b.y + 2.3, b.z);
+        studioGroup.add(beacon);
+      }
+
+      const eff = getEffectiveDims(b);
+      studioPlatforms.push({ ...b, w: eff.ew, d: eff.ed, color });
     }
 
     function rebuildAllStudioItems() {
       clearStudioSceneItems();
       savedStudioBlocks.forEach(renderStudioItem);
+    }
+
+    function loadStudioPreset(presetName) {
+      if (presetName === 'obby') {
+        savedStudioBlocks = [
+          { x: 0, y: 1, z: -5, w: 3, h: 1, d: 3, color: '#3b82f6', type: 'normal', rotDeg: 0 },
+          { x: 3, y: 2, z: -10, w: 3, h: 1, d: 3, color: '#10b981', type: 'bounce', rotDeg: 0 },
+          { x: -2, y: 4, z: -16, w: 3, h: 1, d: 3, color: '#3b82f6', type: 'normal', rotDeg: 0 },
+          { x: -2, y: 5, z: -16, w: 1, h: 1, d: 1, color: '#facc15', type: 'coin', rotDeg: 0 },
+          { x: 2, y: 5, z: -22, w: 6, h: 1, d: 2, color: '#06b6d4', type: 'speed', rotDeg: 90 },
+          { x: 0, y: 6, z: -29, w: 5, h: 1, d: 5, color: '#facc15', type: 'finish', rotDeg: 0 }
+        ];
+      } else {
+        savedStudioBlocks = [
+          { x: 0, y: 0.5, z: -8, w: 12, h: 0.6, d: 12, color: '#ef4444', type: 'lava', rotDeg: 0 },
+          { x: -3, y: 1.5, z: -6, w: 3, h: 1, d: 3, color: '#64748b', type: 'normal', rotDeg: 0 },
+          { x: 3, y: 2.2, z: -10, w: 3, h: 1, d: 3, color: '#64748b', type: 'normal', rotDeg: 0 },
+          { x: 0, y: 3, z: -15, w: 4, h: 1, d: 4, color: '#facc15', type: 'finish', rotDeg: 0 }
+        ];
+      }
+      persistBlocks();
+      buildWorld(currentGame);
+      showToast('✨ تم تحميل القالب في Studio');
+    }
+
+    function exportStudioJson() {
+      const payload = {
+        title: document.getElementById('custom-game-title').value.trim() || `عالم ${myName}`,
+        description: document.getElementById('custom-game-desc').value.trim() || 'عالم Studio مخصص',
+        blocks: savedStudioBlocks
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'studio_world.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('📦 تم تصدير ملف العالم JSON');
+    }
+
+    function importStudioJson(event) {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const parsed = JSON.parse(reader.result);
+          if (Array.isArray(parsed.blocks)) {
+            savedStudioBlocks = parsed.blocks;
+            persistBlocks();
+            if (parsed.title) document.getElementById('custom-game-title').value = parsed.title;
+            if (parsed.description) document.getElementById('custom-game-desc').value = parsed.description;
+            buildWorld(currentGame);
+            showToast('✅ تم استيراد العالم بنجاح!');
+          }
+        } catch (_) {
+          showToast('⚠️ ملف JSON غير صالح');
+        }
+      };
+      reader.readAsText(file);
+      event.target.value = '';
     }
 
     function setAtmosphere(hexColor, fogDensity = 0.007) {
@@ -973,7 +954,6 @@
       while (worldGroup.children.length > 0) worldGroup.remove(worldGroup.children[0]);
       platforms = [];
       coins = [];
-      finishZones = [];
       reachedFinish = false;
 
       function addPlat(x, y, z, w, h, d, color, type = 'normal') {
@@ -993,9 +973,7 @@
           worldGroup.add(beacon);
         }
 
-        const item = { x, y, z, w, h, d, type };
-        platforms.push(item);
-        if (type === 'finish') finishZones.push(item);
+        platforms.push({ x, y, z, w, h, d, type });
       }
 
       function addCoin(x, y, z) {
@@ -1063,18 +1041,23 @@
         }
       } else {
         setAtmosphere(0x93c5fd, 0.006);
-        addPlat(0, -0.5, 0, 44, 1, 44, 0x86efac);
+        addPlat(0, -0.5, 0, 48, 1, 48, 0x86efac);
         rebuildAllStudioItems();
       }
     }
 
     function showScreen(screenId) {
+      document.body.classList.remove('studio-active');
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.querySelectorAll('.nav-btns button').forEach(b => b.classList.remove('active'));
       document.getElementById('hud').style.display = 'none';
-      document.getElementById('chat-box').style.display = 'none';
       document.getElementById('studio-bar').style.display = 'none';
       document.getElementById('mobile-controls').style.display = 'none';
+      studioGridHelper.visible = false;
+      if (studioGhostMesh) {
+        scene.remove(studioGhostMesh);
+        studioGhostMesh = null;
+      }
 
       if (screenId) {
         document.getElementById(screenId).classList.add('active');
@@ -1086,44 +1069,28 @@
 
     function exitToMenu() {
       currentGame = 'lobby';
-      clearRemotePlayers();
+      joyVector = { x: 0, z: 0 };
       showScreen('games-screen');
-      if (socket && socket.connected) socket.emit('updatePlayer', { game: 'lobby', roomCode: myRoomCode });
     }
 
     function enterGame(gameType) {
-      const typedCode = document.getElementById('room-code-input').value;
-      myRoomCode = sanitizeRoomCode(typedCode);
-      document.getElementById('nav-room-code').textContent = myRoomCode;
-      document.getElementById('hud-room-code').textContent = myRoomCode;
-      persistProfile();
-
       currentGame = gameType;
       showScreen(null);
       document.getElementById('hud').style.display = 'block';
-      document.getElementById('chat-box').style.display = 'flex';
-      document.getElementById('chat-messages').innerHTML = '';
       if (gameType === 'studio') {
+        document.body.classList.add('studio-active');
         document.getElementById('studio-bar').style.display = 'flex';
         document.getElementById('btn-studio').classList.add('active');
+        studioGridHelper.visible = true;
       }
-      if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      if (isMobileDevice) {
         document.getElementById('mobile-controls').style.display = 'flex';
       }
       buildWorld(gameType);
       respawn();
-      syncRoomPlayers();
-      if (socket && socket.connected) {
-        socket.emit('updatePlayer', {
-          game: gameType,
-          roomCode: myRoomCode,
-          avatar: myAvatar,
-          name: myName,
-          x: myChar.position.x,
-          y: myChar.position.y,
-          z: myChar.position.z,
-          rotY: myChar.rotation.y
-        });
+      updateHudStats();
+      if (gameType === 'studio') {
+        updateStudioGhost();
       }
     }
 
@@ -1143,52 +1110,119 @@
       };
       rebuildMyCharacter();
       persistProfile();
-      syncRoomPlayers();
+      updateHudStats();
       showToast('✅ تم حفظ مظهر شخصيتك');
       showScreen('games-screen');
-      if (socket && socket.connected) {
-        socket.emit('updatePlayer', { name: myName, avatar: myAvatar, roomCode: myRoomCode });
-      }
     }
 
     function placeStudioItem() {
-      const type = document.getElementById('studio-type').value;
-      const color = document.getElementById('studio-color').value;
-      const [w, h, d] = document.getElementById('studio-size').value.split(',').map(Number);
-
       const block = {
         id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-        x: Math.round(myChar.position.x),
-        y: Math.max(0.5, Math.round(myChar.position.y)),
-        z: Math.round(myChar.position.z - 4),
-        w, h, d,
-        color,
-        type
+        ...getStudioPlacementDraft()
       };
       savedStudioBlocks.push(block);
       persistBlocks();
       renderStudioItem(block);
-      if (socket && socket.connected) socket.emit('addBlock', block);
     }
 
     function undoLastStudioBlock() {
       if (!savedStudioBlocks.length) return;
       savedStudioBlocks.pop();
       persistBlocks();
-      rebuildAllStudioItems();
-      if (socket && socket.connected) socket.emit('removeLastBlock');
+      buildWorld(currentGame);
     }
 
     function clearAllStudioBlocks() {
       savedStudioBlocks = [];
       persistBlocks();
       clearStudioSceneItems();
-      if (socket && socket.connected) socket.emit('clearBlocks');
     }
 
     if (publishedGameMeta) {
       renderPublishedGameCard(publishedGameMeta);
     }
+
+    // Joystick touch handling
+    const joyZone = document.getElementById('joystick-zone');
+    const joyKnob = document.getElementById('joystick-knob');
+    const maxJoyRadius = 38;
+
+    joyZone.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const t = e.changedTouches[0];
+      joyTouchId = t.identifier;
+      updateJoystickFromTouch(t);
+    }, { passive: false });
+
+    joyZone.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+          updateJoystickFromTouch(e.changedTouches[i]);
+        }
+      }
+    }, { passive: false });
+
+    function resetJoystick(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === joyTouchId) {
+          joyTouchId = null;
+          joyVector = { x: 0, z: 0 };
+          joyKnob.style.transform = 'translate(0px, 0px)';
+        }
+      }
+    }
+    joyZone.addEventListener('touchend', resetJoystick);
+    joyZone.addEventListener('touchcancel', resetJoystick);
+
+    function updateJoystickFromTouch(touch) {
+      const rect = joyZone.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      let dx = touch.clientX - centerX;
+      let dy = touch.clientY - centerY;
+      const dist = Math.hypot(dx, dy);
+      if (dist > maxJoyRadius) {
+        dx = (dx / dist) * maxJoyRadius;
+        dy = (dy / dist) * maxJoyRadius;
+      }
+      joyKnob.style.transform = `translate(${dx}px, ${dy}px)`;
+      joyVector.x = dx / maxJoyRadius;
+      joyVector.z = dy / maxJoyRadius;
+    }
+
+    // Touch camera orbit on canvas
+    renderer.domElement.addEventListener('touchstart', (e) => {
+      if (currentGame === 'lobby' || orbitTouchId !== null) return;
+      const t = e.changedTouches[0];
+      orbitTouchId = t.identifier;
+      lastOrbitX = t.clientX;
+      lastOrbitY = t.clientY;
+    }, { passive: true });
+
+    renderer.domElement.addEventListener('touchmove', (e) => {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        const t = e.changedTouches[i];
+        if (t.identifier === orbitTouchId) {
+          const dx = t.clientX - lastOrbitX;
+          const dy = t.clientY - lastOrbitY;
+          lastOrbitX = t.clientX;
+          lastOrbitY = t.clientY;
+          camYaw -= dx * 0.007;
+          camPitch = Math.max(0.18, Math.min(1.1, camPitch + dy * 0.005));
+        }
+      }
+    }, { passive: true });
+
+    function endOrbitTouch(e) {
+      for (let i = 0; i < e.changedTouches.length; i++) {
+        if (e.changedTouches[i].identifier === orbitTouchId) {
+          orbitTouchId = null;
+        }
+      }
+    }
+    renderer.domElement.addEventListener('touchend', endOrbitTouch);
+    renderer.domElement.addEventListener('touchcancel', endOrbitTouch);
 
     const keys = { w: false, a: false, s: false, d: false };
     let velocityY = 0;
@@ -1202,6 +1236,8 @@
       if (k === 'a' || e.key === 'ArrowLeft') keys.a = true;
       if (k === 'd' || e.key === 'ArrowRight') keys.d = true;
       if (e.code === 'Space') jump();
+      if (k === 'e' && currentGame === 'studio') placeStudioItem();
+      if (k === 'r' && currentGame === 'studio') rotateStudioBlock();
     });
 
     window.addEventListener('keyup', (e) => {
@@ -1223,95 +1259,45 @@
       myChar.position.set(0, 3, 0);
       velocityY = 0;
       reachedFinish = false;
-    }
-
-    if (socket) {
-      socket.on('connect', () => {
-        socket.emit('updatePlayer', {
-          game: currentGame,
-          roomCode: myRoomCode,
-          avatar: myAvatar,
-          name: myName,
-          x: myChar.position.x,
-          y: myChar.position.y,
-          z: myChar.position.z,
-          rotY: myChar.rotation.y
-        });
-      });
-
-      socket.on('initData', (data) => {
-        myId = data.id || myId;
-        allPlayersMap = data.players || {};
-        if (Array.isArray(data.customBlocks) && data.customBlocks.length > 0) {
-          savedStudioBlocks = data.customBlocks;
-          persistBlocks();
-        }
-        if (data.publishedCustomGame) {
-          renderPublishedGameCard(data.publishedCustomGame);
-          persistCustomGame();
-        }
-        if (currentGame === 'studio' || currentGame === 'custom') {
-          rebuildAllStudioItems();
-        }
-        syncRoomPlayers();
-      });
-
-      socket.on('playersList', (list) => {
-        allPlayersMap = {};
-        list.forEach(p => { allPlayersMap[p.id] = p; });
-        syncRoomPlayers();
-      });
-
-      socket.on('playerDisconnected', (id) => {
-        delete allPlayersMap[id];
-        if (remotePlayers[id]) {
-          scene.remove(remotePlayers[id].mesh);
-          delete remotePlayers[id];
-        }
-        syncRoomPlayers();
-      });
-
-      socket.on('chatMessage', (msg) => {
-        const msgRoom = sanitizeRoomCode(msg.roomCode || 'PUBLIC');
-        if ((msg.game || 'lobby') !== currentGame || msgRoom !== myRoomCode || msg.id === myId) return;
-        appendChatLine(msg.name, msg.text);
-      });
-
-      socket.on('playerMoved', (p) => {
-        allPlayersMap[p.id] = { ...(allPlayersMap[p.id] || {}), ...p };
-        if (p.id === myId) return;
-        if (!isSameSession(p)) {
-          if (remotePlayers[p.id]) {
-            scene.remove(remotePlayers[p.id].mesh);
-            delete remotePlayers[p.id];
-          }
-          syncRoomPlayers();
-          return;
-        }
-        updateRemotePlayer(p);
-      });
+      speedBoostTimer = 0;
+      camYaw = 0;
+      camPitch = 0.42;
+      syncStudioGhostPosition();
     }
 
     const clock = new THREE.Clock();
-    let lastNetEmit = 0;
 
-    function animate(now = 0) {
+    function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
+      if (speedBoostTimer > 0) speedBoostTimer -= delta;
 
-      let moveX = 0, moveZ = 0;
-      if (keys.w) moveZ -= 1;
-      if (keys.s) moveZ += 1;
-      if (keys.a) moveX -= 1;
-      if (keys.d) moveX += 1;
+      let inputX = 0, inputZ = 0;
+      if (keys.w) inputZ -= 1;
+      if (keys.s) inputZ += 1;
+      if (keys.a) inputX -= 1;
+      if (keys.d) inputX += 1;
 
-      const isMoving = moveX !== 0 || moveZ !== 0;
+      if (Math.hypot(joyVector.x, joyVector.z) > 0.12) {
+        inputX = joyVector.x;
+        inputZ = joyVector.z;
+      }
+
+      const isMoving = Math.hypot(inputX, inputZ) > 0.12;
+      const moveSpeed = speedBoostTimer > 0 ? 16.5 : 9.5;
+
       if (isMoving) {
-        const len = Math.hypot(moveX, moveZ);
-        moveX /= len; moveZ /= len;
-        myChar.position.x += moveX * 9.5 * delta;
-        myChar.position.z += moveZ * 9.5 * delta;
-        myChar.rotation.y = Math.atan2(moveX, moveZ);
+        const sinY = Math.sin(camYaw);
+        const cosY = Math.cos(camYaw);
+        let worldX = inputX * cosY + inputZ * sinY;
+        let worldZ = -inputX * sinY + inputZ * cosY;
+        const len = Math.hypot(worldX, worldZ) || 1;
+        worldX /= len;
+        worldZ /= len;
+
+        myChar.position.x += worldX * moveSpeed * delta;
+        myChar.position.z += worldZ * moveSpeed * delta;
+        myChar.rotation.y = Math.atan2(worldX, worldZ);
       }
 
       velocityY -= 28 * delta;
@@ -1331,6 +1317,9 @@
             showToast('🔥 احترقت بالحمم! إعادة المحاولة...');
             respawn();
             break;
+          }
+          if (p.type === 'speed') {
+            speedBoostTimer = 1.6;
           }
           if (p.type === 'finish' && !reachedFinish) {
             reachedFinish = true;
@@ -1364,24 +1353,18 @@
       }
 
       animateLimbs(myChar, isMoving, isGrounded, delta);
-      Object.values(remotePlayers).forEach(rp => animateLimbs(rp.mesh, rp.isMoving, true, delta));
+      syncStudioGhostPosition();
 
-      camera.position.lerp(
-        new THREE.Vector3(myChar.position.x, myChar.position.y + 6.2, myChar.position.z + 11.2),
-        0.12
+      const camDist = 12.2;
+      const horizDist = Math.cos(camPitch) * camDist;
+      const vertDist = Math.sin(camPitch) * camDist;
+      const targetCamPos = new THREE.Vector3(
+        myChar.position.x + Math.sin(camYaw) * horizDist,
+        myChar.position.y + 1.6 + vertDist,
+        myChar.position.z + Math.cos(camYaw) * horizDist
       );
+      camera.position.lerp(targetCamPos, 0.14);
       camera.lookAt(myChar.position.x, myChar.position.y + 1.6, myChar.position.z);
-
-      if (socket && socket.connected && currentGame !== 'lobby' && (isMoving || !isGrounded) && now - lastNetEmit > 60) {
-        lastNetEmit = now;
-        socket.emit('updatePlayer', {
-          x: myChar.position.x,
-          y: myChar.position.y,
-          z: myChar.position.z,
-          rotY: myChar.rotation.y,
-          roomCode: myRoomCode
-        });
-      }
 
       renderer.render(scene, camera);
     }
