@@ -238,7 +238,7 @@
           </div>
           <div>
             <div class="price-tag">$0.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_100')">شراء بـ $0.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_100', 100, 0.99)">شراء بـ $0.99</button>
           </div>
         </div>
 
@@ -249,7 +249,7 @@
           </div>
           <div>
             <div class="price-tag">$4.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_550')">شراء بـ $4.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_550', 550, 4.99)">شراء بـ $4.99</button>
           </div>
         </div>
 
@@ -260,7 +260,7 @@
           </div>
           <div>
             <div class="price-tag">$9.99</div>
-            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_1200')">شراء بـ $9.99</button>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_1200', 1200, 9.99)">شراء بـ $9.99</button>
           </div>
         </div>
       </div>
@@ -326,7 +326,7 @@
   </div>
 
   <div id="hud">
-    <h4>المتصلون في هذا العالم (<span id="player-count">1</span>)</h4>
+    <h4>حالة اللاعب في هذا العالم</h4>
     <ul id="players-ul"></ul>
     <button onclick="exitToMenu()" style="margin-top:8px; width:100%; background:#ef4444; color:#fff; border:none; padding:6px; border-radius:6px; cursor:pointer;">خروج للقائمة</button>
   </div>
@@ -356,8 +356,8 @@
         </select>
         <input type="color" id="studio-color" value="#3b82f6" title="لون العنصر" />
         <button onclick="placeStudioItem()">+ وضع أمام اللاعب</button>
-        <button class="gray" onclick="socket.emit('removeLastBlock')">تراجع عن آخر عنصر</button>
-        <button class="red" onclick="socket.emit('clearBlocks')">مسح الكل</button>
+        <button class="gray" onclick="undoLastStudioBlock()">تراجع عن آخر عنصر</button>
+        <button class="red" onclick="clearAllStudioBlocks()">مسح الكل</button>
       </div>
     </div>
     <div class="studio-row">
@@ -383,17 +383,76 @@
   </div>
 
   <script>
-    const socket = io();
-    let myId = null;
+    const isGitHubPages = window.location.hostname.endsWith('github.io');
+    const socket = (!isGitHubPages && typeof io === 'function')
+      ? io({ reconnectionAttempts: 2, timeout: 1500 })
+      : null;
+
+    const STORAGE_KEYS = {
+      profile: 'roblox_web_3d_profile_v1',
+      blocks: 'roblox_web_3d_blocks_v1',
+      customGame: 'roblox_web_3d_custom_game_v1'
+    };
+
+    function loadSavedState() {
+      try {
+        const p = JSON.parse(localStorage.getItem(STORAGE_KEYS.profile) || 'null');
+        const b = JSON.parse(localStorage.getItem(STORAGE_KEYS.blocks) || 'null');
+        const g = JSON.parse(localStorage.getItem(STORAGE_KEYS.customGame) || 'null');
+        return { p, b, g };
+      } catch (_) {
+        return { p: null, b: null, g: null };
+      }
+    }
+
+    function persistProfile() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.profile, JSON.stringify({
+          name: myName,
+          score: myScore,
+          adam: myAdam,
+          ownedHats: myOwnedHats,
+          avatar: myAvatar
+        }));
+      } catch (_) {}
+    }
+
+    function persistBlocks() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.blocks, JSON.stringify(savedStudioBlocks));
+      } catch (_) {}
+    }
+
+    function persistCustomGame() {
+      try {
+        localStorage.setItem(STORAGE_KEYS.customGame, JSON.stringify(publishedGameMeta));
+      } catch (_) {}
+    }
+
+    const initialSaved = loadSavedState();
+    let myId = 'local_player';
     let currentGame = 'lobby';
-    let myAvatar = { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none' };
-    let myName = '';
-    let myAdam = 50;
-    let myOwnedHats = ['none', 'cap', 'crown', 'tophat'];
+    let myName = (initialSaved.p && initialSaved.p.name) || 'لاعب';
+    let myScore = (initialSaved.p && typeof initialSaved.p.score === 'number') ? initialSaved.p.score : 0;
+    let myAdam = (initialSaved.p && typeof initialSaved.p.adam === 'number') ? initialSaved.p.adam : 50;
+    let myOwnedHats = (initialSaved.p && Array.isArray(initialSaved.p.ownedHats))
+      ? initialSaved.p.ownedHats
+      : ['none', 'cap', 'crown', 'tophat'];
+    let myAvatar = (initialSaved.p && initialSaved.p.avatar)
+      ? { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none', ...initialSaved.p.avatar }
+      : { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none' };
+
     let allPlayersMap = {};
-    let savedStudioBlocks = [];
-    let publishedGameMeta = null;
+    let savedStudioBlocks = Array.isArray(initialSaved.b) ? initialSaved.b : [];
+    let publishedGameMeta = initialSaved.g || null;
     let reachedFinish = false;
+
+    document.getElementById('player-name').value = myName === 'لاعب' ? '' : myName;
+    document.getElementById('skin-color').value = myAvatar.skin;
+    document.getElementById('shirt-color').value = myAvatar.shirt;
+    document.getElementById('pants-color').value = myAvatar.pants;
+    document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'none';
+    document.getElementById('adam-balance').textContent = myAdam;
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -430,50 +489,69 @@
     function updateAdamUi(balance) {
       myAdam = balance;
       document.getElementById('adam-balance').textContent = balance;
+      persistProfile();
+      refreshLocalPlayerHud();
     }
 
-    async function buyRealMoneyPack(packId) {
+    function addPlayerScore(pts) {
+      myScore += pts;
+      persistProfile();
+      refreshLocalPlayerHud();
+      if (socket && socket.connected) socket.emit('addScore', pts);
+    }
+
+    async function buyRealMoneyPack(packId, adamAmount, priceUsd) {
       const confirmed = window.confirm('تأكيد إتمام عملية الشراء الوهمية/التجريبية لحزمة ADAM؟ (اربطها ببوابة Stripe/PayPal في الإنتاج)');
       if (!confirmed) return;
 
-      try {
-        const res = await fetch('/api/adam/purchase', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ socketId: socket.id, packId })
-        });
-        const data = await res.json();
-        if (!res.ok || !data.ok) {
-          showToast('❌ فشل إتمام عملية الشراء');
-          return;
-        }
-        updateAdamUi(data.adam);
-        showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
-      } catch (err) {
-        showToast('❌ خطأ في الاتصال بالخادم');
+      if (!isGitHubPages && socket && socket.connected) {
+        try {
+          const res = await fetch('/api/adam/purchase', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ socketId: socket.id, packId })
+          });
+          const data = await res.json();
+          if (res.ok && data.ok) {
+            updateAdamUi(data.adam);
+            showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
+            return;
+          }
+        } catch (_) {}
       }
+
+      updateAdamUi(myAdam + adamAmount);
+      showToast(`🪙 تم شحن +${adamAmount} ADAM بنجاح ($${priceUsd})`);
     }
 
     function spendAdamItem(itemId) {
-      socket.emit('spendAdam', itemId);
-    }
+      const items = {
+        adam_halo: { cost: 150, hat: 'adam_halo', label: 'هالة ADAM الذهبية' },
+        vip_boost: { cost: 80, scoreBonus: 100, label: '+100 نقطة' }
+      };
+      const item = items[itemId];
+      if (!item) return;
 
-    socket.on('adamUpdated', (data) => {
-      if (typeof data.adam === 'number') updateAdamUi(data.adam);
-      if (Array.isArray(data.ownedHats)) myOwnedHats = data.ownedHats;
-      if (data.avatar) {
-        myAvatar = { ...myAvatar, ...data.avatar };
-        document.getElementById('hat-type').value = myAvatar.hat;
+      if (myAdam < item.cost) {
+        showToast('⚠️ رصيد ADAM غير كافٍ');
+        return;
+      }
+
+      updateAdamUi(myAdam - item.cost);
+      if (item.hat && !myOwnedHats.includes(item.hat)) {
+        myOwnedHats.push(item.hat);
+        myAvatar.hat = item.hat;
+        document.getElementById('hat-type').value = item.hat;
         rebuildMyCharacter();
       }
-      if (data.spent) {
-        showToast(`✅ تم الشراء! تبقى لديك ${data.adam} ADAM`);
+      if (item.scoreBonus) {
+        myScore += item.scoreBonus;
       }
-    });
-
-    socket.on('adamError', (msg) => {
-      showToast(`⚠️ ${msg}`);
-    });
+      persistProfile();
+      refreshLocalPlayerHud();
+      showToast(`✅ تم شراء ${item.label}!`);
+      if (socket && socket.connected) socket.emit('spendAdam', itemId);
+    }
 
     function renderPublishedGameCard(meta) {
       publishedGameMeta = meta;
@@ -515,10 +593,27 @@
     }
 
     function publishCustomGame() {
-      const title = document.getElementById('custom-game-title').value.trim();
-      const description = document.getElementById('custom-game-desc').value.trim();
-      socket.emit('publishGame', { title, description });
+      const title = document.getElementById('custom-game-title').value.trim() || `عالم ${myName}`;
+      const description = document.getElementById('custom-game-desc').value.trim() || 'لعبة ثلاثية الأبعاد صُنعت في Studio.';
+      const meta = { title, description, author: myName };
+      renderPublishedGameCard(meta);
+      persistCustomGame();
       showToast('✅ تم نشر لعبتك في قائمة الألعاب!');
+      if (socket && socket.connected) socket.emit('publishGame', { title, description });
+    }
+
+    function appendChatLine(authorName, text) {
+      const box = document.getElementById('chat-messages');
+      const line = document.createElement('div');
+      line.className = 'chat-line';
+      const author = document.createElement('b');
+      author.textContent = `${authorName}: `;
+      const body = document.createElement('span');
+      body.textContent = text;
+      line.append(author, body);
+      box.appendChild(line);
+      while (box.children.length > 40) box.removeChild(box.firstChild);
+      box.scrollTop = box.scrollHeight;
     }
 
     function sendChat(e) {
@@ -526,25 +621,11 @@
       const input = document.getElementById('chat-input');
       const text = input.value.trim();
       if (!text) return;
-      socket.emit('chatMessage', text);
+      appendChatLine(myName, text);
+      if (socket && socket.connected) socket.emit('chatMessage', text);
       input.value = '';
       input.blur();
     }
-
-    socket.on('chatMessage', (msg) => {
-      if ((msg.game || 'lobby') !== currentGame) return;
-      const box = document.getElementById('chat-messages');
-      const line = document.createElement('div');
-      line.className = 'chat-line';
-      const author = document.createElement('b');
-      author.textContent = `${msg.name}: `;
-      const body = document.createElement('span');
-      body.textContent = msg.text;
-      line.append(author, body);
-      box.appendChild(line);
-      while (box.children.length > 40) box.removeChild(box.firstChild);
-      box.scrollTop = box.scrollHeight;
-    });
 
     function createCharacterMesh(avatarData) {
       const group = new THREE.Group();
@@ -635,30 +716,17 @@
       }
     }
 
-    function clearRemotePlayers() {
-      Object.keys(remotePlayers).forEach(id => {
-        scene.remove(remotePlayers[id].mesh);
-        delete remotePlayers[id];
-      });
-    }
-
-    function syncRoomPlayers() {
-      clearRemotePlayers();
-      const roomList = [];
+    function refreshLocalPlayerHud() {
+      const ul = document.getElementById('players-ul');
+      const entries = [{ name: myName, score: myScore, adam: myAdam }];
       Object.values(allPlayersMap).forEach(p => {
-        if ((p.game || 'lobby') === currentGame) {
-          roomList.push(p);
-          if (p.id !== myId) {
-            updateRemotePlayer(p);
-          }
+        if (p.id !== myId && (p.game || 'lobby') === currentGame) {
+          entries.push(p);
         }
       });
-
-      document.getElementById('player-count').textContent = roomList.length || 1;
-      const ul = document.getElementById('players-ul');
-      ul.innerHTML = roomList
+      ul.innerHTML = entries
         .sort((a, b) => (b.score || 0) - (a.score || 0))
-        .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} نقطة | ${p.adam || 0} ADAM</b></li>`)
+        .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} ن | ${p.adam || 0} ADAM</b></li>`)
         .join('');
     }
 
@@ -806,11 +874,8 @@
 
     function exitToMenu() {
       currentGame = 'lobby';
-      clearRemotePlayers();
       showScreen('games-screen');
-      if (socket.connected) {
-        socket.emit('updatePlayer', { game: 'lobby' });
-      }
+      if (socket && socket.connected) socket.emit('updatePlayer', { game: 'lobby' });
     }
 
     function enterGame(gameType) {
@@ -828,12 +893,12 @@
       }
       buildWorld(gameType);
       respawn();
-      syncRoomPlayers();
-      if (socket.connected) {
+      refreshLocalPlayerHud();
+      if (socket && socket.connected) {
         socket.emit('updatePlayer', {
           game: gameType,
           avatar: myAvatar,
-          name: myName || undefined,
+          name: myName,
           x: myChar.position.x,
           y: myChar.position.y,
           z: myChar.position.z,
@@ -848,7 +913,8 @@
         showToast('⚠️ يجب شراء هذا الإكسسوار من متجر ADAM أولاً');
         return;
       }
-      myName = document.getElementById('player-name').value.trim();
+      const typedName = document.getElementById('player-name').value.trim();
+      myName = typedName || 'لاعب';
       myAvatar = {
         skin: document.getElementById('skin-color').value,
         shirt: document.getElementById('shirt-color').value,
@@ -856,8 +922,13 @@
         hat: selectedHat
       };
       rebuildMyCharacter();
-      socket.emit('updatePlayer', { name: myName || undefined, avatar: myAvatar });
+      persistProfile();
+      refreshLocalPlayerHud();
+      showToast('✅ تم حفظ مظهر شخصيتك');
       showScreen('games-screen');
+      if (socket && socket.connected) {
+        socket.emit('updatePlayer', { name: myName, avatar: myAvatar });
+      }
     }
 
     function placeStudioItem() {
@@ -866,6 +937,7 @@
       const [w, h, d] = document.getElementById('studio-size').value.split(',').map(Number);
 
       const block = {
+        id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
         x: Math.round(myChar.position.x),
         y: Math.max(0.5, Math.round(myChar.position.y)),
         z: Math.round(myChar.position.z - 4),
@@ -873,7 +945,29 @@
         color,
         type
       };
-      socket.emit('addBlock', block);
+      savedStudioBlocks.push(block);
+      persistBlocks();
+      renderStudioItem(block);
+      if (socket && socket.connected) socket.emit('addBlock', block);
+    }
+
+    function undoLastStudioBlock() {
+      if (!savedStudioBlocks.length) return;
+      savedStudioBlocks.pop();
+      persistBlocks();
+      rebuildAllStudioItems();
+      if (socket && socket.connected) socket.emit('removeLastBlock');
+    }
+
+    function clearAllStudioBlocks() {
+      savedStudioBlocks = [];
+      persistBlocks();
+      clearStudioSceneItems();
+      if (socket && socket.connected) socket.emit('clearBlocks');
+    }
+
+    if (publishedGameMeta) {
+      renderPublishedGameCard(publishedGameMeta);
     }
 
     const keys = { w: false, a: false, s: false, d: false };
@@ -911,107 +1005,45 @@
       reachedFinish = false;
     }
 
-    socket.on('connect', () => {
-      if (currentGame !== 'lobby') {
-        socket.emit('updatePlayer', {
-          game: currentGame,
-          avatar: myAvatar,
-          name: myName || undefined,
-          x: myChar.position.x,
-          y: myChar.position.y,
-          z: myChar.position.z,
-          rotY: myChar.rotation.y
-        });
-      }
-    });
-
-    socket.on('initData', (data) => {
-      myId = data.id;
-      allPlayersMap = data.players || {};
-      if (allPlayersMap[myId] && typeof allPlayersMap[myId].adam === 'number') {
-        updateAdamUi(allPlayersMap[myId].adam);
-      }
-      if (allPlayersMap[myId] && Array.isArray(allPlayersMap[myId].ownedHats)) {
-        myOwnedHats = allPlayersMap[myId].ownedHats;
-      }
-      savedStudioBlocks = Array.isArray(data.customBlocks) ? data.customBlocks : [];
-      if (data.publishedCustomGame) {
-        renderPublishedGameCard(data.publishedCustomGame);
-      }
-      if (currentGame === 'studio' || currentGame === 'custom') {
-        rebuildAllStudioItems();
-      }
-      syncRoomPlayers();
-    });
-
-    socket.on('customGamePublished', (meta) => {
-      renderPublishedGameCard(meta);
-    });
-
-    socket.on('playerMoved', (p) => {
-      allPlayersMap[p.id] = { ...(allPlayersMap[p.id] || {}), ...p };
-      if (p.id === myId) return;
-      if ((p.game || 'lobby') !== currentGame) {
-        if (remotePlayers[p.id]) {
-          scene.remove(remotePlayers[p.id].mesh);
-          delete remotePlayers[p.id];
+    if (socket) {
+      socket.on('initData', (data) => {
+        myId = data.id || myId;
+        allPlayersMap = data.players || {};
+        if (Array.isArray(data.customBlocks) && data.customBlocks.length > 0) {
+          savedStudioBlocks = data.customBlocks;
+          persistBlocks();
         }
-        return;
-      }
-      updateRemotePlayer(p);
-    });
+        if (data.publishedCustomGame) {
+          renderPublishedGameCard(data.publishedCustomGame);
+          persistCustomGame();
+        }
+        if (currentGame === 'studio' || currentGame === 'custom') {
+          rebuildAllStudioItems();
+        }
+        refreshLocalPlayerHud();
+      });
 
-    function updateRemotePlayer(p) {
-      if (!remotePlayers[p.id]) {
-        const mesh = createCharacterMesh(p.avatar || {});
-        scene.add(mesh);
-        remotePlayers[p.id] = { mesh, lastX: p.x || 0, lastZ: p.z || 0, isMoving: false };
-      }
-      const rp = remotePlayers[p.id];
-      const moved = Math.hypot((p.x || 0) - rp.lastX, (p.z || 0) - rp.lastZ) > 0.02;
-      rp.mesh.position.set(p.x || 0, p.y || 0, p.z || 0);
-      rp.mesh.rotation.y = p.rotY || 0;
-      rp.lastX = p.x || 0;
-      rp.lastZ = p.z || 0;
-      rp.isMoving = moved;
+      socket.on('chatMessage', (msg) => {
+        if ((msg.game || 'lobby') !== currentGame || msg.id === myId) return;
+        appendChatLine(msg.name, msg.text);
+      });
+
+      socket.on('playerMoved', (p) => {
+        allPlayersMap[p.id] = { ...(allPlayersMap[p.id] || {}), ...p };
+        if (p.id === myId || (p.game || 'lobby') !== currentGame) return;
+        if (!remotePlayers[p.id]) {
+          const mesh = createCharacterMesh(p.avatar || {});
+          scene.add(mesh);
+          remotePlayers[p.id] = { mesh, lastX: p.x || 0, lastZ: p.z || 0, isMoving: false };
+        }
+        const rp = remotePlayers[p.id];
+        rp.isMoving = Math.hypot((p.x || 0) - rp.lastX, (p.z || 0) - rp.lastZ) > 0.02;
+        rp.mesh.position.set(p.x || 0, p.y || 0, p.z || 0);
+        rp.mesh.rotation.y = p.rotY || 0;
+        rp.lastX = p.x || 0;
+        rp.lastZ = p.z || 0;
+      });
     }
-
-    socket.on('playerDisconnected', (id) => {
-      delete allPlayersMap[id];
-      if (remotePlayers[id]) {
-        scene.remove(remotePlayers[id].mesh);
-        delete remotePlayers[id];
-      }
-      syncRoomPlayers();
-    });
-
-    socket.on('playersList', (list) => {
-      allPlayersMap = {};
-      list.forEach(p => { allPlayersMap[p.id] = p; });
-      if (allPlayersMap[myId] && typeof allPlayersMap[myId].adam === 'number') {
-        updateAdamUi(allPlayersMap[myId].adam);
-      }
-      syncRoomPlayers();
-    });
-
-    socket.on('blockAdded', (b) => {
-      savedStudioBlocks.push(b);
-      if (currentGame === 'studio' || currentGame === 'custom') {
-        renderStudioItem(b);
-      }
-    });
-
-    socket.on('blocksSynced', (blocks) => {
-      savedStudioBlocks = Array.isArray(blocks) ? blocks : [];
-      if (currentGame === 'studio' || currentGame === 'custom') {
-        rebuildAllStudioItems();
-      }
-    });
-
-    socket.on('blocksCleared', () => {
-      savedStudioBlocks = [];
-      clearStudioSceneItems();
-    });
 
     const clock = new THREE.Clock();
     let lastNetEmit = 0;
@@ -1055,7 +1087,7 @@
           }
           if (p.type === 'finish' && !reachedFinish) {
             reachedFinish = true;
-            socket.emit('addScore', 50);
+            addPlayerScore(50);
             showToast('🏆 وصلت إلى نقطة الفوز! +50 نقطة');
           }
           myChar.position.y = topY;
@@ -1072,7 +1104,7 @@
         if (myChar.position.distanceTo(c.position) < 1.6) {
           (currentGame === 'studio' || currentGame === 'custom' ? studioGroup : worldGroup).remove(c);
           coins.splice(i, 1);
-          socket.emit('addScore', 10);
+          addPlayerScore(10);
           if (currentGame === 'coins') {
             setTimeout(() => {
               if (currentGame !== 'coins') return;
@@ -1093,7 +1125,7 @@
       );
       camera.lookAt(myChar.position.x, myChar.position.y + 1.5, myChar.position.z);
 
-      if (currentGame !== 'lobby' && (isMoving || !isGrounded) && now - lastNetEmit > 60) {
+      if (socket && socket.connected && currentGame !== 'lobby' && (isMoving || !isGrounded) && now - lastNetEmit > 60) {
         lastNetEmit = now;
         socket.emit('updatePlayer', {
           x: myChar.position.x,
