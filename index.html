@@ -3,28 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ROBLOX WEB 3D - المطوّرة</title>
+  <title>ROBLOX WEB 3D - ADAM & Studio</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; }
     body { margin: 0; overflow: hidden; background: #111827; color: #f9fafb; }
 
-    /* الشريط العلوي */
     #navbar {
       position: fixed; top: 0; left: 0; right: 0; height: 56px;
       background: rgba(17, 24, 39, 0.95); border-bottom: 1px solid #374151;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 16px; z-index: 20;
+      padding: 0 16px; z-index: 20; gap: 8px;
     }
-    .logo { font-weight: 900; font-size: 20px; color: #38bdf8; letter-spacing: 1px; }
+    .logo { font-weight: 900; font-size: 19px; color: #38bdf8; letter-spacing: 1px; white-space: nowrap; }
+    .adam-badge {
+      background: linear-gradient(45deg, #d97706, #fbbf24);
+      color: #111827; font-weight: 900; padding: 5px 12px;
+      border-radius: 999px; font-size: 13px; white-space: nowrap;
+    }
+    .nav-btns { display: flex; flex-wrap: wrap; align-items: center; }
     .nav-btns button {
       background: #1f2937; color: #fff; border: 1px solid #374151;
-      padding: 8px 14px; border-radius: 8px; cursor: pointer; margin-right: 6px; font-weight: bold;
+      padding: 7px 12px; border-radius: 8px; cursor: pointer; margin-right: 6px; font-weight: bold; font-size: 13px;
     }
     .nav-btns button.active, .nav-btns button:hover { background: #0284c7; border-color: #38bdf8; }
 
-    /* الشاشات الرئيسية */
     .screen {
       position: fixed; inset: 56px 0 0 0; padding: 24px;
       background: linear-gradient(135deg, #0f172a, #1e293b);
@@ -32,30 +36,46 @@
     }
     .screen.active { display: block; }
 
-    /* شبكة بطاقات الألعاب */
     .games-grid {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px; max-width: 1000px; margin: 20px auto;
+      gap: 20px; max-width: 1120px; margin: 20px auto;
     }
     .game-card {
       background: #1f2937; border: 1px solid #374151; border-radius: 14px;
-      overflow: hidden; transition: transform 0.2s;
+      overflow: hidden; transition: transform 0.2s, border-color 0.2s; cursor: pointer;
     }
     .game-card:hover { transform: translateY(-4px); border-color: #38bdf8; }
     .game-banner {
-      height: 130px; display: flex; align-items: center; justify-content: center;
-      font-size: 46px; font-weight: bold;
+      height: 120px; display: flex; align-items: center; justify-content: center;
+      font-size: 44px; font-weight: bold;
     }
     .game-info { padding: 16px; }
     .game-info h3 { margin: 0 0 8px; color: #f8fafc; }
     .game-info p { margin: 0 0 14px; color: #9ca3af; font-size: 14px; }
     .play-btn {
       width: 100%; padding: 10px; background: #10b981; color: #fff;
-      border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;
+      border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer;
     }
     .play-btn:hover { background: #059669; }
 
-    /* تخصيص الشخصية */
+    .store-container { max-width: 920px; margin: 16px auto; }
+    .store-section-title { margin: 22px 0 12px; color: #fbbf24; font-size: 18px; }
+    .store-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;
+    }
+    .store-card {
+      background: #1f2937; border: 1px solid #374151; border-radius: 14px;
+      padding: 18px; display: flex; flex-direction: column; justify-content: space-between; gap: 12px;
+    }
+    .price-tag { font-size: 20px; font-weight: 900; color: #34d399; }
+    .buy-btn {
+      width: 100%; padding: 10px; border: none; border-radius: 8px;
+      background: #0284c7; color: #fff; font-weight: bold; cursor: pointer;
+    }
+    .buy-btn:hover { background: #0369a1; }
+    .buy-btn.gold { background: #d97706; color: #111827; }
+    .buy-btn.gold:hover { background: #f59e0b; }
+
     .avatar-panel {
       max-width: 520px; margin: 20px auto; background: #1f2937;
       padding: 20px; border-radius: 14px; border: 1px solid #374151;
@@ -66,7 +86,6 @@
     }
     .form-row input[type="color"] { width: 60px; height: 36px; border: none; background: none; cursor: pointer; }
 
-    /* واجهة اللعب */
     #hud {
       position: fixed; top: 66px; right: 14px; background: rgba(17, 24, 39, 0.85);
       padding: 12px; border-radius: 10px; border: 1px solid #374151; z-index: 10;
@@ -76,7 +95,6 @@
     #players-ul { list-style: none; padding: 0; margin: 0; font-size: 13px; }
     #players-ul li { padding: 4px 0; border-bottom: 1px solid #374151; display: flex; justify-content: space-between; }
 
-    /* صندوق الدردشة المباشرة */
     #chat-box {
       position: fixed; top: 66px; left: 14px; width: 270px;
       background: rgba(17, 24, 39, 0.82); border: 1px solid #374151;
@@ -84,7 +102,7 @@
       flex-direction: column; gap: 6px;
     }
     #chat-messages {
-      height: 120px; overflow-y: auto; font-size: 12.5px;
+      height: 115px; overflow-y: auto; font-size: 12.5px;
       display: flex; flex-direction: column; gap: 4px; padding-left: 4px;
     }
     .chat-line { background: rgba(31, 41, 55, 0.75); padding: 4px 7px; border-radius: 6px; word-break: break-word; }
@@ -101,22 +119,28 @@
 
     #toast {
       position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
-      background: rgba(16, 185, 129, 0.92); color: #fff; padding: 8px 18px;
+      background: rgba(16, 185, 129, 0.94); color: #fff; padding: 8px 18px;
       border-radius: 999px; font-weight: bold; font-size: 14px; z-index: 25; display: none;
     }
 
-    /* شريط Studio */
     #studio-bar {
-      position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
-      background: rgba(17, 24, 39, 0.92); padding: 10px 14px; border-radius: 12px;
-      border: 1px solid #38bdf8; display: none; gap: 8px; z-index: 12; flex-wrap: wrap;
+      position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+      background: rgba(17, 24, 39, 0.95); padding: 10px 14px; border-radius: 14px;
+      border: 1px solid #38bdf8; display: none; flex-direction: column; gap: 8px;
+      z-index: 12; width: min(94vw, 760px);
     }
-    #studio-bar button {
-      background: #2563eb; color: #fff; border: none; padding: 8px 12px;
-      border-radius: 8px; cursor: pointer; font-weight: bold;
+    .studio-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+    .studio-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    #studio-bar button, #studio-bar select, #studio-bar input[type="text"] {
+      background: #1f2937; color: #fff; border: 1px solid #4b5563;
+      padding: 7px 10px; border-radius: 8px; font-size: 12.5px; font-weight: bold;
     }
+    #studio-bar button { background: #2563eb; border-color: #3b82f6; cursor: pointer; }
+    #studio-bar button.green { background: #059669; border-color: #10b981; }
+    #studio-bar button.amber { background: #d97706; border-color: #fbbf24; }
+    #studio-bar button.red { background: #dc2626; border-color: #ef4444; }
+    #studio-bar button.gray { background: #4b5563; border-color: #6b7280; }
 
-    /* أزرار التحكم للهاتف */
     #mobile-controls {
       position: fixed; bottom: 20px; left: 20px; right: 20px;
       display: none; justify-content: space-between; pointer-events: none; z-index: 11;
@@ -136,43 +160,133 @@
 <body>
 
   <div id="navbar">
-    <div class="logo">ROBLOX WEB 3D</div>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <div class="logo">ROBLOX WEB 3D</div>
+      <div class="adam-badge">🪙 <span id="adam-balance">50</span> ADAM</div>
+    </div>
     <div class="nav-btns">
       <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
+      <button id="btn-store" onclick="showScreen('store-screen')">متجر ADAM</button>
       <button id="btn-avatar" onclick="showScreen('avatar-screen')">الشخصية</button>
-      <button id="btn-studio" onclick="enterGame('studio')">Studio (بناء)</button>
+      <button id="btn-studio" onclick="enterGame('studio')">Studio</button>
     </div>
   </div>
 
   <div id="toast"></div>
 
   <div id="games-screen" class="screen active">
-    <h2 style="text-align:center;">اختر عالماً للدخول واللعب الجماعي</h2>
-    <div class="games-grid">
-      <div class="game-card">
+    <h2 style="text-align:center;">اضغط على أي لعبة للدخول فوراً أو العب عالماً من صنع المستخدمين</h2>
+    <div class="games-grid" id="games-grid">
+      <div class="game-card" onclick="enterGame('obby')">
         <div class="game-banner" style="background: linear-gradient(45deg, #0284c7, #38bdf8);">🏃‍♂️</div>
         <div class="game-info">
           <h3>باركور السماء (Obby)</h3>
           <p>اقفز فوق المنصات العائمة وتجنب السقوط للوصول إلى القمة وجمع النقاط.</p>
-          <button class="play-btn" onclick="enterGame('obby')">دخول اللعبة</button>
+          <button class="play-btn" onclick="event.stopPropagation(); enterGame('obby')">دخول اللعبة</button>
         </div>
       </div>
 
-      <div class="game-card">
+      <div class="game-card" onclick="enterGame('coins')">
         <div class="game-banner" style="background: linear-gradient(45deg, #d97706, #fbbf24);">🪙</div>
         <div class="game-info">
           <h3>صائد العملات الذهبية</h3>
           <p>اجمع أكبر عدد من العملات المتجددة في الساحة وتصدر قائمة المتصلين.</p>
-          <button class="play-btn" onclick="enterGame('coins')">دخول اللعبة</button>
+          <button class="play-btn" onclick="event.stopPropagation(); enterGame('coins')">دخول اللعبة</button>
         </div>
       </div>
 
-      <div class="game-card">
+      <div class="game-card" onclick="enterGame('lava')">
         <div class="game-banner" style="background: linear-gradient(45deg, #dc2626, #f97316);">🌋</div>
         <div class="game-info">
           <h3>ساحة الحمم والقفز</h3>
           <p>تنقل فوق الكتل الآمنة ولا تلمس الأرضية الحمراء المشتعلة!</p>
-          <button class="play-btn" onclick="enterGame('lava')">دخول اللعبة</button>
+          <button class="play-btn" onclick="event.stopPropagation(); enterGame('lava')">دخول اللعبة</button>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="enterGame('ice')">
+        <div class="game-banner" style="background: linear-gradient(45deg, #06b6d4, #a5f3fc);">❄️</div>
+        <div class="game-info">
+          <h3>متاهة الجليد والقفز</h3>
+          <p>اعبر الساحة الجليدية وتجاوز الحواجز للوصول إلى منصة التتويج وجمع العملات.</p>
+          <button class="play-btn" onclick="event.stopPropagation(); enterGame('ice')">دخول اللعبة</button>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="enterGame('tower')">
+        <div class="game-banner" style="background: linear-gradient(45deg, #7c3aed, #c084fc);">🗼</div>
+        <div class="game-info">
+          <h3>برج القفز المرتفع</h3>
+          <p>تسلق المنصات المتصاعدة في السماء واجمع العملات حتى قمة البرج.</p>
+          <button class="play-btn" onclick="event.stopPropagation(); enterGame('tower')">دخول اللعبة</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="store-screen" class="screen">
+    <div class="store-container">
+      <h2 style="text-align:center;">متجر عملة ADAM</h2>
+      <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM بالنقود الحقيقية أو استخدم رصيدك لشراء عناصر مميزة داخل اللعبة.</p>
+
+      <h3 class="store-section-title">شحن ADAM بالنقود الحقيقية</h3>
+      <div class="store-grid">
+        <div class="store-card">
+          <div>
+            <h3>100 ADAM</h3>
+            <p style="color:#9ca3af; font-size:13px;">حزمة بداية سريعة لشحن رصيدك.</p>
+          </div>
+          <div>
+            <div class="price-tag">$0.99</div>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_100')">شراء بـ $0.99</button>
+          </div>
+        </div>
+
+        <div class="store-card">
+          <div>
+            <h3>550 ADAM</h3>
+            <p style="color:#9ca3af; font-size:13px;">تتضمن 50 ADAM إضافية مجاناً.</p>
+          </div>
+          <div>
+            <div class="price-tag">$4.99</div>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_550')">شراء بـ $4.99</button>
+          </div>
+        </div>
+
+        <div class="store-card">
+          <div>
+            <h3>1200 ADAM</h3>
+            <p style="color:#9ca3af; font-size:13px;">أكبر حزمة للاعبين وصنّاع الألعاب.</p>
+          </div>
+          <div>
+            <div class="price-tag">$9.99</div>
+            <button class="buy-btn" style="margin-top:8px;" onclick="buyRealMoneyPack('pack_1200')">شراء بـ $9.99</button>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="store-section-title">صرف عملة ADAM داخل اللعبة</h3>
+      <div class="store-grid">
+        <div class="store-card">
+          <div>
+            <h3>هالة ADAM الذهبية</h3>
+            <p style="color:#9ca3af; font-size:13px;">إكسسوار رأس ذهبي مميز يظهر على شخصيتك.</p>
+          </div>
+          <div>
+            <div class="price-tag" style="color:#fbbf24;">150 ADAM</div>
+            <button class="buy-btn gold" style="margin-top:8px;" onclick="spendAdamItem('adam_halo')">شراء بـ 150 ADAM</button>
+          </div>
+        </div>
+
+        <div class="store-card">
+          <div>
+            <h3>مكافأة نقاط فورية</h3>
+            <p style="color:#9ca3af; font-size:13px;">أضف +100 نقطة فوراً إلى رصيد نقاطك.</p>
+          </div>
+          <div>
+            <div class="price-tag" style="color:#fbbf24;">80 ADAM</div>
+            <button class="buy-btn gold" style="margin-top:8px;" onclick="spendAdamItem('vip_boost')">شراء بـ 80 ADAM</button>
+          </div>
         </div>
       </div>
     </div>
@@ -204,6 +318,7 @@
           <option value="cap">قبعة رياضية حمراء</option>
           <option value="crown">تاج ذهبي</option>
           <option value="tophat">قبعة كلاسيكية</option>
+          <option value="adam_halo">هالة ADAM الذهبية (متجر ADAM)</option>
         </select>
       </div>
       <button class="play-btn" onclick="saveAvatar()">حفظ المظهر والعودة للألعاب</button>
@@ -225,10 +340,34 @@
   </div>
 
   <div id="studio-bar">
-    <button onclick="spawnStudioBlock('#3b82f6', 'normal')">+ مكعب أزرق</button>
-    <button onclick="spawnStudioBlock('#10b981', 'bounce')" style="background:#059669;">+ منصة قفز</button>
-    <button onclick="spawnStudioBlock('#ef4444', 'lava')" style="background:#dc2626;">+ مكعب خطر</button>
-    <button onclick="socket.emit('clearBlocks')" style="background:#4b5563;">مسح الكل</button>
+    <div class="studio-row">
+      <div class="studio-controls">
+        <select id="studio-type">
+          <option value="normal">منصة عادية</option>
+          <option value="bounce">منصة قفز (+)</option>
+          <option value="lava">حمم خطرة</option>
+          <option value="coin">عملة (+10)</option>
+          <option value="finish">نقطة فوز (+50)</option>
+        </select>
+        <select id="studio-size">
+          <option value="3,1,3">حجم متوسط</option>
+          <option value="6,1,6">منصة كبيرة</option>
+          <option value="2,2,2">عمود / مكعب</option>
+        </select>
+        <input type="color" id="studio-color" value="#3b82f6" title="لون العنصر" />
+        <button onclick="placeStudioItem()">+ وضع أمام اللاعب</button>
+        <button class="gray" onclick="socket.emit('removeLastBlock')">تراجع عن آخر عنصر</button>
+        <button class="red" onclick="socket.emit('clearBlocks')">مسح الكل</button>
+      </div>
+    </div>
+    <div class="studio-row">
+      <div class="studio-controls" style="flex:1;">
+        <input type="text" id="custom-game-title" placeholder="اسم لعبتك المخصصة..." maxlength="32" style="flex:1;" />
+        <input type="text" id="custom-game-desc" placeholder="وصف قصير للعبة..." maxlength="90" style="flex:1.4;" />
+        <button class="green" onclick="publishCustomGame()">نشر اللعبة في القائمة</button>
+        <button class="amber" onclick="enterGame('custom')">تجربة اللعبة الآن</button>
+      </div>
+    </div>
   </div>
 
   <div id="mobile-controls">
@@ -249,7 +388,11 @@
     let currentGame = 'lobby';
     let myAvatar = { skin: '#ffdbac', shirt: '#00a2ff', pants: '#2c3e50', hat: 'none' };
     let myName = '';
+    let myAdam = 50;
+    let myOwnedHats = ['none', 'cap', 'crown', 'tophat'];
     let allPlayersMap = {};
+    let savedStudioBlocks = [];
+    let publishedGameMeta = null;
     let reachedFinish = false;
 
     const scene = new THREE.Scene();
@@ -273,6 +416,7 @@
     let platforms = [];
     let studioPlatforms = [];
     let coins = [];
+    let finishZones = [];
     const remotePlayers = {};
 
     function showToast(msg) {
@@ -280,7 +424,101 @@
       el.textContent = msg;
       el.style.display = 'block';
       clearTimeout(el._timer);
-      el._timer = setTimeout(() => { el.style.display = 'none'; }, 2400);
+      el._timer = setTimeout(() => { el.style.display = 'none'; }, 2600);
+    }
+
+    function updateAdamUi(balance) {
+      myAdam = balance;
+      document.getElementById('adam-balance').textContent = balance;
+    }
+
+    async function buyRealMoneyPack(packId) {
+      const confirmed = window.confirm('تأكيد إتمام عملية الشراء الوهمية/التجريبية لحزمة ADAM؟ (اربطها ببوابة Stripe/PayPal في الإنتاج)');
+      if (!confirmed) return;
+
+      try {
+        const res = await fetch('/api/adam/purchase', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ socketId: socket.id, packId })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          showToast('❌ فشل إتمام عملية الشراء');
+          return;
+        }
+        updateAdamUi(data.adam);
+        showToast(`🪙 تم شحن +${data.added} ADAM بنجاح ($${data.priceUsd})`);
+      } catch (err) {
+        showToast('❌ خطأ في الاتصال بالخادم');
+      }
+    }
+
+    function spendAdamItem(itemId) {
+      socket.emit('spendAdam', itemId);
+    }
+
+    socket.on('adamUpdated', (data) => {
+      if (typeof data.adam === 'number') updateAdamUi(data.adam);
+      if (Array.isArray(data.ownedHats)) myOwnedHats = data.ownedHats;
+      if (data.avatar) {
+        myAvatar = { ...myAvatar, ...data.avatar };
+        document.getElementById('hat-type').value = myAvatar.hat;
+        rebuildMyCharacter();
+      }
+      if (data.spent) {
+        showToast(`✅ تم الشراء! تبقى لديك ${data.adam} ADAM`);
+      }
+    });
+
+    socket.on('adamError', (msg) => {
+      showToast(`⚠️ ${msg}`);
+    });
+
+    function renderPublishedGameCard(meta) {
+      publishedGameMeta = meta;
+      const existing = document.getElementById('custom-game-card');
+      if (existing) existing.remove();
+      if (!meta) return;
+
+      const grid = document.getElementById('games-grid');
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.id = 'custom-game-card';
+      card.onclick = () => enterGame('custom');
+
+      const banner = document.createElement('div');
+      banner.className = 'game-banner';
+      banner.style.background = 'linear-gradient(45deg, #7c3aed, #ec4899)';
+      banner.textContent = '🛠️';
+
+      const info = document.createElement('div');
+      info.className = 'game-info';
+
+      const titleEl = document.createElement('h3');
+      titleEl.textContent = meta.title;
+
+      const descEl = document.createElement('p');
+      descEl.textContent = `${meta.description} (بواسطة ${meta.author})`;
+
+      const btn = document.createElement('button');
+      btn.className = 'play-btn';
+      btn.textContent = 'دخول اللعبة المصنوعة';
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        enterGame('custom');
+      };
+
+      info.append(titleEl, descEl, btn);
+      card.append(banner, info);
+      grid.appendChild(card);
+    }
+
+    function publishCustomGame() {
+      const title = document.getElementById('custom-game-title').value.trim();
+      const description = document.getElementById('custom-game-desc').value.trim();
+      socket.emit('publishGame', { title, description });
+      showToast('✅ تم نشر لعبتك في قائمة الألعاب!');
     }
 
     function sendChat(e) {
@@ -302,8 +540,7 @@
       author.textContent = `${msg.name}: `;
       const body = document.createElement('span');
       body.textContent = msg.text;
-      line.appendChild(author);
-      line.appendChild(body);
+      line.append(author, body);
       box.appendChild(line);
       while (box.children.length > 40) box.removeChild(box.firstChild);
       box.scrollTop = box.scrollHeight;
@@ -342,6 +579,14 @@
         const hat = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.6, 12), new THREE.MeshLambertMaterial({ color: 0x111827 }));
         hat.position.set(0, 3.1, 0);
         group.add(hat);
+      } else if (avatarData.hat === 'adam_halo') {
+        const halo = new THREE.Mesh(
+          new THREE.TorusGeometry(0.45, 0.08, 10, 24),
+          new THREE.MeshLambertMaterial({ color: 0xfbbf24 })
+        );
+        halo.rotation.x = Math.PI / 2;
+        halo.position.set(0, 3.15, 0);
+        group.add(halo);
       }
 
       const leftArm = new THREE.Mesh(new THREE.BoxGeometry(0.35, 1.1, 0.35), skinMat);
@@ -413,14 +658,52 @@
       const ul = document.getElementById('players-ul');
       ul.innerHTML = roomList
         .sort((a, b) => (b.score || 0) - (a.score || 0))
-        .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} نقطة</b></li>`)
+        .map(p => `<li><span>${p.name || 'لاعب'}</span><b>${p.score || 0} نقطة | ${p.adam || 0} ADAM</b></li>`)
         .join('');
+    }
+
+    function clearStudioSceneItems() {
+      while (studioGroup.children.length > 0) studioGroup.remove(studioGroup.children[0]);
+      studioPlatforms = [];
+      finishZones = [];
+    }
+
+    function renderStudioItem(b) {
+      if (b.type === 'coin') {
+        const coin = new THREE.Mesh(
+          new THREE.CylinderGeometry(0.55, 0.55, 0.2, 16),
+          new THREE.MeshLambertMaterial({ color: 0xfacc15 })
+        );
+        coin.rotation.x = Math.PI / 2;
+        coin.position.set(b.x, b.y + 0.8, b.z);
+        studioGroup.add(coin);
+        coins.push(coin);
+        return;
+      }
+
+      const color = b.type === 'finish' ? 0xfacc15 : (b.type === 'lava' ? 0xef4444 : b.color);
+      const mesh = new THREE.Mesh(
+        new THREE.BoxGeometry(b.w, b.h, b.d),
+        new THREE.MeshLambertMaterial({ color })
+      );
+      mesh.position.set(b.x, b.y, b.z);
+      studioGroup.add(mesh);
+
+      const platObj = { ...b, color };
+      studioPlatforms.push(platObj);
+      if (b.type === 'finish') finishZones.push(platObj);
+    }
+
+    function rebuildAllStudioItems() {
+      clearStudioSceneItems();
+      savedStudioBlocks.forEach(renderStudioItem);
     }
 
     function buildWorld(gameType) {
       while (worldGroup.children.length > 0) worldGroup.remove(worldGroup.children[0]);
       platforms = [];
       coins = [];
+      finishZones = [];
       reachedFinish = false;
 
       function addPlat(x, y, z, w, h, d, color, type = 'normal') {
@@ -430,7 +713,9 @@
         );
         mesh.position.set(x, y, z);
         worldGroup.add(mesh);
-        platforms.push({ x, y, z, w, h, d, type });
+        const item = { x, y, z, w, h, d, type };
+        platforms.push(item);
+        if (type === 'finish') finishZones.push(item);
       }
 
       function addCoin(x, y, z) {
@@ -471,9 +756,35 @@
           addPlat((i % 2 === 0 ? 4 : -4), 0.2, -i * 4.5, 3.8, 1, 3.8, 0x94a3b8);
           addCoin((i % 2 === 0 ? 4 : -4), 1.6, -i * 4.5);
         }
+      } else if (gameType === 'ice') {
+        scene.background = new THREE.Color(0xcffafe);
+        addPlat(0, -0.5, 0, 38, 1, 38, 0x67e8f9);
+        addPlat(-6, 0.5, -8, 6, 1.5, 2, 0x0284c7);
+        addPlat(6, 0.5, -14, 6, 1.5, 2, 0x0284c7);
+        addPlat(0, 1.0, -21, 5, 1.5, 5, 0x0369a1);
+        addPlat(0, 2.0, -28, 6, 1, 6, 0xfacc15, 'finish');
+        addCoin(-6, 2.0, -8);
+        addCoin(6, 2.0, -14);
+        addCoin(0, 2.5, -21);
+      } else if (gameType === 'tower') {
+        scene.background = new THREE.Color(0xe9d5ff);
+        addPlat(0, -0.5, 0, 9, 1, 9, 0xa855f7);
+        for (let i = 1; i <= 12; i++) {
+          const angle = i * 0.7;
+          const radius = 5.5;
+          const x = Math.cos(angle) * radius;
+          const z = Math.sin(angle) * radius - 4;
+          const y = i * 1.4;
+          const isFinish = i === 12;
+          const type = isFinish ? 'finish' : (i % 3 === 0 ? 'bounce' : 'normal');
+          const color = isFinish ? 0xfacc15 : (type === 'bounce' ? 0x10b981 : 0x8b5cf6);
+          addPlat(x, y, z, 3.8, 0.8, 3.8, color, type);
+          if (!isFinish) addCoin(x, y + 1.4, z);
+        }
       } else {
         scene.background = new THREE.Color(0x93c5fd);
-        addPlat(0, -0.5, 0, 40, 1, 40, 0x86efac);
+        addPlat(0, -0.5, 0, 44, 1, 44, 0x86efac);
+        rebuildAllStudioItems();
       }
     }
 
@@ -488,6 +799,7 @@
       if (screenId) {
         document.getElementById(screenId).classList.add('active');
         if (screenId === 'games-screen') document.getElementById('btn-games').classList.add('active');
+        if (screenId === 'store-screen') document.getElementById('btn-store').classList.add('active');
         if (screenId === 'avatar-screen') document.getElementById('btn-avatar').classList.add('active');
       }
     }
@@ -496,7 +808,9 @@
       currentGame = 'lobby';
       clearRemotePlayers();
       showScreen('games-screen');
-      socket.emit('updatePlayer', { game: 'lobby' });
+      if (socket.connected) {
+        socket.emit('updatePlayer', { game: 'lobby' });
+      }
     }
 
     function enterGame(gameType) {
@@ -515,49 +829,51 @@
       buildWorld(gameType);
       respawn();
       syncRoomPlayers();
-      socket.emit('updatePlayer', {
-        game: gameType,
-        avatar: myAvatar,
-        name: myName || undefined,
-        x: myChar.position.x,
-        y: myChar.position.y,
-        z: myChar.position.z,
-        rotY: myChar.rotation.y
-      });
+      if (socket.connected) {
+        socket.emit('updatePlayer', {
+          game: gameType,
+          avatar: myAvatar,
+          name: myName || undefined,
+          x: myChar.position.x,
+          y: myChar.position.y,
+          z: myChar.position.z,
+          rotY: myChar.rotation.y
+        });
+      }
     }
 
     function saveAvatar() {
+      const selectedHat = document.getElementById('hat-type').value;
+      if (!myOwnedHats.includes(selectedHat)) {
+        showToast('⚠️ يجب شراء هذا الإكسسوار من متجر ADAM أولاً');
+        return;
+      }
       myName = document.getElementById('player-name').value.trim();
       myAvatar = {
         skin: document.getElementById('skin-color').value,
         shirt: document.getElementById('shirt-color').value,
         pants: document.getElementById('pants-color').value,
-        hat: document.getElementById('hat-type').value
+        hat: selectedHat
       };
       rebuildMyCharacter();
       socket.emit('updatePlayer', { name: myName || undefined, avatar: myAvatar });
       showScreen('games-screen');
     }
 
-    function spawnStudioBlock(color, type) {
+    function placeStudioItem() {
+      const type = document.getElementById('studio-type').value;
+      const color = document.getElementById('studio-color').value;
+      const [w, h, d] = document.getElementById('studio-size').value.split(',').map(Number);
+
       const block = {
         x: Math.round(myChar.position.x),
-        y: Math.round(myChar.position.y),
-        z: Math.round(myChar.position.z - 3),
-        w: 3, h: 1, d: 3,
-        color, type
+        y: Math.max(0.5, Math.round(myChar.position.y)),
+        z: Math.round(myChar.position.z - 4),
+        w, h, d,
+        color,
+        type
       };
       socket.emit('addBlock', block);
-    }
-
-    function renderStudioBlock(b) {
-      const mesh = new THREE.Mesh(
-        new THREE.BoxGeometry(b.w, b.h, b.d),
-        new THREE.MeshLambertMaterial({ color: b.color })
-      );
-      mesh.position.set(b.x, b.y, b.z);
-      studioGroup.add(mesh);
-      studioPlatforms.push(b);
     }
 
     const keys = { w: false, a: false, s: false, d: false };
@@ -565,7 +881,7 @@
     let isGrounded = false;
 
     window.addEventListener('keydown', (e) => {
-      if (document.activeElement && document.activeElement.tagName === 'INPUT') return;
+      if (document.activeElement && ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
       const k = e.key.toLowerCase();
       if (k === 'w' || e.key === 'ArrowUp') keys.w = true;
       if (k === 's' || e.key === 'ArrowDown') keys.s = true;
@@ -595,13 +911,41 @@
       reachedFinish = false;
     }
 
+    socket.on('connect', () => {
+      if (currentGame !== 'lobby') {
+        socket.emit('updatePlayer', {
+          game: currentGame,
+          avatar: myAvatar,
+          name: myName || undefined,
+          x: myChar.position.x,
+          y: myChar.position.y,
+          z: myChar.position.z,
+          rotY: myChar.rotation.y
+        });
+      }
+    });
+
     socket.on('initData', (data) => {
       myId = data.id;
       allPlayersMap = data.players || {};
-      studioPlatforms = [];
-      while (studioGroup.children.length > 0) studioGroup.remove(studioGroup.children[0]);
-      (data.customBlocks || []).forEach(renderStudioBlock);
+      if (allPlayersMap[myId] && typeof allPlayersMap[myId].adam === 'number') {
+        updateAdamUi(allPlayersMap[myId].adam);
+      }
+      if (allPlayersMap[myId] && Array.isArray(allPlayersMap[myId].ownedHats)) {
+        myOwnedHats = allPlayersMap[myId].ownedHats;
+      }
+      savedStudioBlocks = Array.isArray(data.customBlocks) ? data.customBlocks : [];
+      if (data.publishedCustomGame) {
+        renderPublishedGameCard(data.publishedCustomGame);
+      }
+      if (currentGame === 'studio' || currentGame === 'custom') {
+        rebuildAllStudioItems();
+      }
       syncRoomPlayers();
+    });
+
+    socket.on('customGamePublished', (meta) => {
+      renderPublishedGameCard(meta);
     });
 
     socket.on('playerMoved', (p) => {
@@ -644,13 +988,29 @@
     socket.on('playersList', (list) => {
       allPlayersMap = {};
       list.forEach(p => { allPlayersMap[p.id] = p; });
+      if (allPlayersMap[myId] && typeof allPlayersMap[myId].adam === 'number') {
+        updateAdamUi(allPlayersMap[myId].adam);
+      }
       syncRoomPlayers();
     });
 
-    socket.on('blockAdded', renderStudioBlock);
+    socket.on('blockAdded', (b) => {
+      savedStudioBlocks.push(b);
+      if (currentGame === 'studio' || currentGame === 'custom') {
+        renderStudioItem(b);
+      }
+    });
+
+    socket.on('blocksSynced', (blocks) => {
+      savedStudioBlocks = Array.isArray(blocks) ? blocks : [];
+      if (currentGame === 'studio' || currentGame === 'custom') {
+        rebuildAllStudioItems();
+      }
+    });
+
     socket.on('blocksCleared', () => {
-      while (studioGroup.children.length > 0) studioGroup.remove(studioGroup.children[0]);
-      studioPlatforms = [];
+      savedStudioBlocks = [];
+      clearStudioSceneItems();
     });
 
     const clock = new THREE.Clock();
@@ -679,7 +1039,9 @@
       myChar.position.y += velocityY * delta;
       isGrounded = false;
 
-      const activePlatforms = currentGame === 'studio' ? [...platforms, ...studioPlatforms] : platforms;
+      const activePlatforms = (currentGame === 'studio' || currentGame === 'custom')
+        ? [...platforms, ...studioPlatforms]
+        : platforms;
 
       for (const p of activePlatforms) {
         const withinX = Math.abs(myChar.position.x - p.x) < (p.w / 2 + 0.4);
@@ -694,7 +1056,7 @@
           if (p.type === 'finish' && !reachedFinish) {
             reachedFinish = true;
             socket.emit('addScore', 50);
-            showToast('🏆 وصلت إلى القمة! +50 نقطة');
+            showToast('🏆 وصلت إلى نقطة الفوز! +50 نقطة');
           }
           myChar.position.y = topY;
           velocityY = p.type === 'bounce' ? 18 : 0;
@@ -708,7 +1070,7 @@
         const c = coins[i];
         c.rotation.z += 3 * delta;
         if (myChar.position.distanceTo(c.position) < 1.6) {
-          worldGroup.remove(c);
+          (currentGame === 'studio' || currentGame === 'custom' ? studioGroup : worldGroup).remove(c);
           coins.splice(i, 1);
           socket.emit('addScore', 10);
           if (currentGame === 'coins') {
