@@ -73,6 +73,8 @@
       background: #1f2937; border: 1px solid #374151; border-radius: 14px;
       padding: 16px; display: flex; flex-direction: column; justify-content: space-between; gap: 10px;
     }
+    .skin-swatch-row { display: flex; gap: 6px; margin-top: 8px; }
+    .skin-swatch { width: 22px; height: 22px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3); }
     .price-tag { font-size: 19px; font-weight: 900; color: #34d399; }
     .buy-btn {
       width: 100%; padding: 10px; border: none; border-radius: 8px;
@@ -81,6 +83,8 @@
     .buy-btn:hover { background: #0369a1; }
     .buy-btn.gold { background: linear-gradient(90deg, #0284c7, #f97316); color: #ffffff; }
     .buy-btn.gold:hover { filter: brightness(1.08); }
+    .buy-btn.equip { background: #10b981; color: #ffffff; }
+    .buy-btn.equip:hover { background: #059669; }
 
     .avatar-panel {
       max-width: 520px; margin: 16px auto; background: #1f2937;
@@ -139,45 +143,45 @@
     }
 
     #mobile-controls {
-      position: fixed; bottom: 18px; left: 16px; right: 16px;
+      position: fixed; bottom: 12px; left: 12px; right: 12px;
       display: none; justify-content: space-between; align-items: flex-end;
       pointer-events: none; z-index: 11;
     }
-    body.mobile-mode.studio-active #mobile-controls { bottom: 38vh; }
+    body.mobile-mode.studio-active #mobile-controls { bottom: 37vh; }
 
     #joystick-zone {
-      position: relative; width: 116px; height: 116px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.14); border: 2px solid rgba(255, 255, 255, 0.35);
+      position: relative; width: 82px; height: 82px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.14); border: 1.5px solid rgba(255, 255, 255, 0.35);
       pointer-events: auto; touch-action: none; display: flex; align-items: center; justify-content: center;
     }
     #joystick-knob {
-      width: 46px; height: 46px; border-radius: 50%;
-      background: rgba(56, 189, 248, 0.85); border: 2px solid #ffffff;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.35); transform: translate(0px, 0px);
+      width: 32px; height: 32px; border-radius: 50%;
+      background: rgba(56, 189, 248, 0.85); border: 1.5px solid #ffffff;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.35); transform: translate(0px, 0px);
       pointer-events: none;
     }
 
     .mobile-right-actions {
-      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
       pointer-events: auto; touch-action: none;
     }
     #mobile-studio-quick {
-      display: none; grid-template-columns: repeat(2, 54px); gap: 6px;
+      display: none; grid-template-columns: repeat(2, 44px); gap: 4px;
     }
     body.mobile-mode.studio-active #mobile-studio-quick { display: grid; }
 
     .m-quick-btn {
-      height: 38px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.35);
-      background: rgba(37, 99, 235, 0.88); color: #fff; font-weight: 800; font-size: 11.5px;
-      cursor: pointer;
+      height: 28px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.35);
+      background: rgba(37, 99, 235, 0.88); color: #fff; font-weight: 800; font-size: 10px;
+      padding: 0 4px; cursor: pointer;
     }
     .m-quick-btn.amber { background: rgba(217, 119, 6, 0.9); }
     .m-quick-btn.gray { background: rgba(75, 85, 99, 0.9); }
 
     .jump-btn {
-      width: 74px; height: 74px; border-radius: 50%; background: rgba(16, 185, 129, 0.82);
-      border: 2px solid #fff; color: #fff; font-size: 15px; font-weight: 900;
-      box-shadow: 0 6px 16px rgba(0,0,0,0.35); cursor: pointer;
+      width: 52px; height: 52px; border-radius: 50%; background: rgba(16, 185, 129, 0.84);
+      border: 1.5px solid #fff; color: #fff; font-size: 12px; font-weight: 900;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35); cursor: pointer;
     }
 
     /* حاوية لعبة Slither.io */
@@ -419,7 +423,7 @@
     }
 
     @media (max-width: 600px) {
-      #slitherMinimap { width: 104px; height: 104px; }
+      #slitherMinimap { width: 92px; height: 92px; }
       .slither-hint { display: none; }
     }
   </style>
@@ -503,7 +507,10 @@
   <div id="store-screen" class="screen">
     <div class="store-container">
       <h2 style="text-align:center;">متجر عملة ADAM GoGo</h2>
-      <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM أو استخدم رصيدك لشراء عناصر مميزة داخل اللعبة.</p>
+      <p style="text-align:center; color:#9ca3af;">اشحن رصيد ADAM أو استخدم رصيدك لشراء السكنات والعناصر المميزة داخل اللعبة.</p>
+
+      <h3 class="store-section-title">سكنات الشخصية ثلاثية الأبعاد</h3>
+      <div class="store-grid" id="skins-store-grid"></div>
 
       <h3 class="store-section-title">شحن ADAM</h3>
       <div class="store-grid">
@@ -734,6 +741,39 @@
       activeMapId: 'roblox_web_3d_active_map_id_v2'
     };
 
+    const STORE_SKINS = [
+      {
+        id: 'cyber_volt',
+        name: 'سكن برق نيون',
+        desc: 'إطلالة كهربائية زرقاء وسماوية مع بنطال داكن.',
+        cost: 100,
+        skin: '#bae6fd',
+        shirt: '#0284c7',
+        pants: '#0f172a',
+        hat: 'adam_gogo'
+      },
+      {
+        id: 'magma_blaze',
+        name: 'سكن شفق بركاني',
+        desc: 'طقم برتقالي ناري وأحمر داكن مناسب لساحات الحمم.',
+        cost: 140,
+        skin: '#fed7aa',
+        shirt: '#ea580c',
+        pants: '#450a0a',
+        hat: 'crown'
+      },
+      {
+        id: 'emerald_ranger',
+        name: 'سكن زمرد الغابة',
+        desc: 'طقم أخضر زمردي للمغامرات والقفز السريع.',
+        cost: 120,
+        skin: '#fde68a',
+        shirt: '#059669',
+        pants: '#064e3b',
+        hat: 'backpack'
+      }
+    ];
+
     function cloneBlocks(blocksArr) {
       return Array.isArray(blocksArr) ? blocksArr.map(b => ({ ...b })) : [];
     }
@@ -769,6 +809,7 @@
           score: myScore,
           adam: myAdam,
           ownedHats: myOwnedHats,
+          ownedSkins: myOwnedSkins,
           avatar: myAvatar
         }));
       } catch (_) {}
@@ -837,6 +878,9 @@
     let myOwnedHats = (initialSaved.p && Array.isArray(initialSaved.p.ownedHats))
       ? initialSaved.p.ownedHats
       : ['none', 'cap', 'crown', 'tophat', 'backpack', 'adam_gogo'];
+    let myOwnedSkins = (initialSaved.p && Array.isArray(initialSaved.p.ownedSkins))
+      ? initialSaved.p.ownedSkins
+      : [];
     let myAvatar = (initialSaved.p && initialSaved.p.avatar)
       ? { skin: '#ffdbac', shirt: '#0284c7', pants: '#1e293b', hat: 'adam_gogo', ...initialSaved.p.avatar }
       : { skin: '#ffdbac', shirt: '#0284c7', pants: '#1e293b', hat: 'adam_gogo' };
@@ -849,11 +893,91 @@
     let studioRotationDeg = 0;
     let speedBoostTimer = 0;
 
-    document.getElementById('player-name').value = myName === 'لاعب' ? '' : myName;
-    document.getElementById('skin-color').value = myAvatar.skin;
-    document.getElementById('shirt-color').value = myAvatar.shirt;
-    document.getElementById('pants-color').value = myAvatar.pants;
-    document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'adam_gogo';
+    function syncAvatarInputs() {
+      document.getElementById('player-name').value = myName === 'لاعب' ? '' : myName;
+      document.getElementById('skin-color').value = myAvatar.skin;
+      document.getElementById('shirt-color').value = myAvatar.shirt;
+      document.getElementById('pants-color').value = myAvatar.pants;
+      document.getElementById('hat-type').value = myOwnedHats.includes(myAvatar.hat) ? myAvatar.hat : 'adam_gogo';
+    }
+    syncAvatarInputs();
+
+    function renderSkinsStore() {
+      const container = document.getElementById('skins-store-grid');
+      if (!container) return;
+      container.innerHTML = '';
+
+      STORE_SKINS.forEach((skinItem) => {
+        const owned = myOwnedSkins.includes(skinItem.id);
+        const card = document.createElement('div');
+        card.className = 'store-card';
+
+        const top = document.createElement('div');
+        const title = document.createElement('h3');
+        title.textContent = skinItem.name;
+        const desc = document.createElement('p');
+        desc.style.cssText = 'color:#9ca3af; font-size:13px; margin:4px 0 0;';
+        desc.textContent = skinItem.desc;
+
+        const swatches = document.createElement('div');
+        swatches.className = 'skin-swatch-row';
+        [skinItem.skin, skinItem.shirt, skinItem.pants].forEach((hex) => {
+          const dot = document.createElement('span');
+          dot.className = 'skin-swatch';
+          dot.style.background = hex;
+          swatches.appendChild(dot);
+        });
+
+        top.append(title, desc, swatches);
+
+        const bottom = document.createElement('div');
+        const price = document.createElement('div');
+        price.className = 'price-tag';
+        price.style.color = '#38bdf8';
+        price.textContent = owned ? 'مملوك' : `${skinItem.cost} ADAM`;
+
+        const btn = document.createElement('button');
+        btn.className = owned ? 'buy-btn equip' : 'buy-btn gold';
+        btn.style.marginTop = '8px';
+        btn.textContent = owned ? 'تفعيل السكن الآن' : `شراء بـ ${skinItem.cost} ADAM`;
+        btn.onclick = () => buyOrEquipSkin(skinItem.id);
+
+        bottom.append(price, btn);
+        card.append(top, bottom);
+        container.appendChild(card);
+      });
+    }
+
+    function buyOrEquipSkin(skinId) {
+      const skinItem = STORE_SKINS.find(s => s.id === skinId);
+      if (!skinItem) return;
+
+      const owned = myOwnedSkins.includes(skinId);
+      if (!owned) {
+        if (myAdam < skinItem.cost) {
+          showToast('⚠️ رصيد ADAM غير كافٍ لشراء هذا السكن');
+          return;
+        }
+        myAdam -= skinItem.cost;
+        myOwnedSkins.push(skinId);
+        if (!myOwnedHats.includes(skinItem.hat)) {
+          myOwnedHats.push(skinItem.hat);
+        }
+      }
+
+      myAvatar = {
+        skin: skinItem.skin,
+        shirt: skinItem.shirt,
+        pants: skinItem.pants,
+        hat: skinItem.hat
+      };
+      rebuildMyCharacter();
+      syncAvatarInputs();
+      persistProfile();
+      updateHudStats();
+      renderSkinsStore();
+      showToast(`✅ تم تفعيل ${skinItem.name}!`);
+    }
 
     function sanitizeSlug(name) {
       return (name || 'custom_map')
@@ -1034,6 +1158,7 @@
 
     updateHudStats();
     updateStudioLabels();
+    renderSkinsStore();
 
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0x87ceeb);
@@ -1310,7 +1435,6 @@
         pocket.position.set(0, 1.32, -0.62);
         bodyRig.add(pack, pocket);
       } else if (avatarData.hat === 'adam_gogo') {
-        // هيئة ADAM GoGo: هالة طاقة زرقاء + أجنحة سرعة برتقالية
         haloMesh = new THREE.Mesh(
           new THREE.TorusGeometry(0.52, 0.085, 12, 28),
           new THREE.MeshLambertMaterial({ color: 0x38bdf8 })
@@ -1723,8 +1847,14 @@
           renderAllSavedMapCards();
           document.getElementById('btn-games').classList.add('active');
         }
-        if (screenId === 'store-screen') document.getElementById('btn-store').classList.add('active');
-        if (screenId === 'avatar-screen') document.getElementById('btn-avatar').classList.add('active');
+        if (screenId === 'store-screen') {
+          renderSkinsStore();
+          document.getElementById('btn-store').classList.add('active');
+        }
+        if (screenId === 'avatar-screen') {
+          syncAvatarInputs();
+          document.getElementById('btn-avatar').classList.add('active');
+        }
       }
     }
 
@@ -1819,7 +1949,7 @@
 
     const joyZone = document.getElementById('joystick-zone');
     const joyKnob = document.getElementById('joystick-knob');
-    const maxJoyRadius = 38;
+    const maxJoyRadius = 26;
 
     joyZone.addEventListener('touchstart', (e) => {
       e.preventDefault();
