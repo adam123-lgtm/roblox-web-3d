@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>ROBLOX WEB 3D - ADAM GoGo, Pro Studio & Slither</title>
+  <title>ROBLOX WEB 3D - ADAM GoGo, Pro Studio, Slither & VECK.IO</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <style>
     * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -426,6 +426,361 @@
       #slitherMinimap { width: 92px; height: 92px; }
       .slither-hint { display: none; }
     }
+
+    /* حاوية لعبة VECK.IO 3D */
+    #veck-container {
+      position: fixed;
+      inset: 56px 0 0 0;
+      background-color: #090d16;
+      z-index: 26;
+      display: none;
+      overflow: hidden;
+    }
+
+    #veck-canvas-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #veck-crosshair {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      pointer-events: none;
+    }
+
+    .veck-ch-line {
+      position: absolute;
+      background: #00ffcc;
+      box-shadow: 0 0 5px rgba(0, 255, 204, 0.8);
+      transition: all 0.08s ease;
+    }
+
+    .veck-ch-top { width: 2px; height: 8px; left: -1px; top: -14px; }
+    .veck-ch-bottom { width: 2px; height: 8px; left: -1px; top: 6px; }
+    .veck-ch-left { width: 8px; height: 2px; left: -14px; top: -1px; }
+    .veck-ch-right { width: 8px; height: 2px; left: 6px; top: -1px; }
+
+    #veck-hitmarker {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      left: -13px;
+      top: -13px;
+      opacity: 0;
+      transition: opacity 0.1s;
+    }
+
+    #veck-hitmarker::before, #veck-hitmarker::after {
+      content: '';
+      position: absolute;
+      background: #ff3355;
+      width: 2px;
+      height: 26px;
+      left: 12px;
+    }
+
+    #veck-hitmarker::before { transform: rotate(45deg); }
+    #veck-hitmarker::after { transform: rotate(-45deg); }
+
+    #veck-damage-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      pointer-events: none;
+      box-shadow: inset 0 0 100px rgba(255, 0, 40, 0);
+      transition: box-shadow 0.15s ease-out;
+    }
+
+    #veck-toast-banner {
+      position: absolute;
+      top: 72px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 12;
+      pointer-events: none;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid #00ffcc;
+      color: #00ffcc;
+      padding: 8px 22px;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      box-shadow: 0 8px 25px rgba(0, 255, 204, 0.2);
+    }
+
+    #veck-toast-banner.show {
+      opacity: 1;
+      transform: translate(-50%, -6px);
+    }
+
+    #veck-hud {
+      position: absolute;
+      inset: 0;
+      z-index: 8;
+      pointer-events: none;
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px 24px;
+    }
+
+    .veck-hud-top {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .veck-stat-box {
+      background: rgba(15, 23, 42, 0.82);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 13.5px;
+      backdrop-filter: blur(6px);
+    }
+
+    .veck-mode-badge { color: #00ffcc; border-color: rgba(0, 255, 204, 0.4); }
+    .veck-zone-badge { color: #38bdf8; border-color: rgba(56, 189, 248, 0.4); }
+    .veck-streak-badge { color: #fbbf24; border-color: rgba(251, 191, 36, 0.4); }
+
+    .veck-exit-btn {
+      pointer-events: auto;
+      background: rgba(220, 38, 38, 0.9);
+      color: #fff;
+      border: 1px solid rgba(248, 113, 113, 0.5);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 12.5px;
+      cursor: pointer;
+    }
+
+    #veck-killfeed {
+      position: absolute;
+      top: 68px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .veck-kill-item {
+      background: rgba(0, 0, 0, 0.72);
+      border-right: 3px solid #00ffcc;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12.5px;
+      animation: fadeIn 0.2s ease;
+    }
+
+    .veck-hud-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .veck-vitals-container {
+      width: 280px;
+      background: rgba(15, 23, 42, 0.86);
+      padding: 12px 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .veck-bar-row .veck-label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .veck-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #1e293b;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    #veck-health-bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, #00ffcc, #00b894);
+      transition: width 0.2s ease;
+    }
+
+    #veck-shield-bar {
+      width: 50%;
+      height: 100%;
+      background: linear-gradient(90deg, #38bdf8, #2563eb);
+      transition: width 0.2s ease;
+    }
+
+    #veck-boost-status {
+      font-size: 12px;
+      color: #fbbf24;
+      font-weight: bold;
+      min-height: 15px;
+    }
+
+    .veck-weapon-container {
+      text-align: left;
+      background: rgba(15, 23, 42, 0.86);
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    #veck-weapon-name {
+      color: #00ffcc;
+      font-weight: bold;
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    #veck-ammo-count {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 2px 0 6px;
+    }
+
+    .veck-weapon-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      font-size: 11.5px;
+    }
+
+    .veck-slot {
+      padding: 3px 7px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 4px;
+      color: #94a3b8;
+    }
+
+    .veck-slot.active {
+      background: #00ffcc;
+      color: #0f172a;
+      font-weight: bold;
+    }
+
+    #veck-menu-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: radial-gradient(circle at center, rgba(15, 23, 42, 0.88), #050811);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      padding: 16px;
+    }
+
+    .veck-menu-card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(0, 255, 204, 0.28);
+      padding: 28px;
+      border-radius: 16px;
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65);
+    }
+
+    .veck-title { font-size: 42px; font-weight: 900; letter-spacing: 2px; }
+    .veck-title span { color: #00ffcc; }
+    .veck-subtitle { color: #94a3b8; margin: 6px 0 18px; font-size: 13.5px; }
+
+    .veck-mode-selector {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .veck-mode-btn {
+      flex: 1;
+      padding: 9px 7px;
+      background: #1e293b;
+      color: #cbd5e1;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 12.5px;
+      transition: 0.2s;
+    }
+
+    .veck-mode-btn.active {
+      border-color: #00ffcc;
+      color: #00ffcc;
+      background: rgba(0, 255, 204, 0.12);
+    }
+
+    #veck-play-btn {
+      width: 100%;
+      padding: 13px;
+      font-size: 17px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #00ffcc, #00b894);
+      color: #06090f;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 10px;
+      transition: transform 0.15s;
+    }
+
+    #veck-play-btn:hover { transform: scale(1.02); }
+
+    .veck-back-btn {
+      width: 100%;
+      padding: 10px;
+      font-size: 13px;
+      font-weight: bold;
+      background: #1e293b;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-bottom: 16px;
+    }
+
+    .veck-controls-guide {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      text-align: right;
+      font-size: 12px;
+      color: #cbd5e1;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 12px;
+      border-radius: 8px;
+    }
+
+    .veck-controls-guide span {
+      background: #334155;
+      color: #00ffcc;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
   </style>
 </head>
 <body>
@@ -499,6 +854,15 @@
           <h3>Slither.io — ADAM GoGo</h3>
           <p>اجمع النقاط المضيئة، حاصر المنافسين، وكن الأطول بهيئة GoGo السريعة.</p>
           <button class="play-btn" onclick="event.stopPropagation(); openSlitherGame()">دخول لعبة Slither</button>
+        </div>
+      </div>
+
+      <div class="game-card" onclick="openVeckGame()">
+        <div class="game-banner" style="background: linear-gradient(45deg, #0f172a, #00b894);">🎯🔫</div>
+        <div class="game-info">
+          <h3>VECK.IO 3D — Arena & Rewards</h3>
+          <p>تصويب سريع ثلاثي الأبعاد مع 6 أسلحة، مكافآت، وشريط صحة فوق الأعداء.</p>
+          <button class="play-btn" onclick="event.stopPropagation(); openVeckGame()">دخول لعبة VECK.IO</button>
         </div>
       </div>
     </div>
@@ -725,6 +1089,87 @@
 
         <button id="slitherPlayBtn">ابدأ اللعب GoGo</button>
         <button class="slither-back-menu" onclick="closeSlitherGame()">العودة إلى قائمة الألعاب</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- شاشة لعبة VECK.IO 3D -->
+  <div id="veck-container">
+    <div id="veck-canvas-wrap"></div>
+
+    <div id="veck-crosshair">
+      <div class="veck-ch-line veck-ch-top"></div>
+      <div class="veck-ch-line veck-ch-bottom"></div>
+      <div class="veck-ch-line veck-ch-left"></div>
+      <div class="veck-ch-line veck-ch-right"></div>
+      <div id="veck-hitmarker"></div>
+    </div>
+
+    <div id="veck-damage-overlay"></div>
+    <div id="veck-toast-banner"></div>
+
+    <div id="veck-hud">
+      <div class="veck-hud-top">
+        <div class="veck-stat-box">النقاط: <span id="veck-score">0</span></div>
+        <div class="veck-stat-box veck-streak-badge">سلسلة القتل: <span id="veck-streak">0</span></div>
+        <div class="veck-stat-box veck-zone-badge">المنطقة: <span id="veck-zone-name">البرج المركزي</span></div>
+        <div class="veck-stat-box veck-mode-badge" id="veck-mode-display">FFA</div>
+        <div class="veck-stat-box">الأعداء: <span id="veck-enemies-left">0</span></div>
+        <button class="veck-exit-btn" onclick="closeVeckGame()">خروج للقائمة</button>
+      </div>
+
+      <div id="veck-killfeed"></div>
+
+      <div class="veck-hud-bottom">
+        <div class="veck-vitals-container">
+          <div class="veck-bar-row">
+            <div class="veck-label"><span>الصحة (HP)</span><span id="veck-hp-text">100</span></div>
+            <div class="veck-bar-bg"><div id="veck-health-bar"></div></div>
+          </div>
+          <div class="veck-bar-row">
+            <div class="veck-label"><span>الدرع (Shield)</span><span id="veck-shield-text">50</span></div>
+            <div class="veck-bar-bg"><div id="veck-shield-bar"></div></div>
+          </div>
+          <div id="veck-boost-status"></div>
+        </div>
+
+        <div class="veck-weapon-container">
+          <div id="veck-weapon-name">X-9 PULSE RIFLE</div>
+          <div id="veck-ammo-count">32 / 32</div>
+          <div class="veck-weapon-slots">
+            <span class="veck-slot active" data-slot="0">[1] رشاش</span>
+            <span class="veck-slot" data-slot="1">[2] قناصة</span>
+            <span class="veck-slot" data-slot="2">[3] شوتغن</span>
+            <span class="veck-slot" data-slot="3">[4] صواريخ</span>
+            <span class="veck-slot" data-slot="4">[5] بلازما</span>
+            <span class="veck-slot" data-slot="5">[6] كاتانا</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="veck-menu-overlay">
+      <div class="veck-menu-card">
+        <h1 class="veck-title">VECK<span>.IO</span></h1>
+        <p class="veck-subtitle">ساحة أوسع، أماكن متعددة، أسلحة مطورة، ومكافآت فورية</p>
+
+        <div class="veck-mode-selector">
+          <button class="veck-mode-btn active" data-mode="ffa">مواجهة حرة (FFA)</button>
+          <button class="veck-mode-btn" data-mode="gungame">سباق الأسلحة (Gun Game)</button>
+          <button class="veck-mode-btn" data-mode="duel">1 ضد 1 (Duel)</button>
+        </div>
+
+        <button id="veck-play-btn">ابدأ اللعب الآن</button>
+        <button class="veck-back-btn" onclick="closeVeckGame()">العودة إلى قائمة الألعاب</button>
+
+        <div class="veck-controls-guide">
+          <div><span>WASD</span> التحرك السريع</div>
+          <div><span>SPACE</span> القفز</div>
+          <div><span>SHIFT / C</span> الانزلاق (Slide)</div>
+          <div><span>زر الفأرة الأيسر</span> إطلاق النار</div>
+          <div><span>زر الفأرة الأيمن / E</span> التصويب المقرب</div>
+          <div><span>1 - 6 / R</span> الأسلحة والتعبئة</div>
+        </div>
       </div>
     </div>
   </div>
@@ -1828,6 +2273,10 @@
         stopSlitherLoop();
         document.getElementById('slither-container').style.display = 'none';
       }
+      if (currentGame === 'veck') {
+        stopVeckLoop();
+        document.getElementById('veck-container').style.display = 'none';
+      }
       currentGame = 'lobby';
       document.body.classList.remove('studio-active');
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -1996,7 +2445,7 @@
     }
 
     renderer.domElement.addEventListener('touchstart', (e) => {
-      if (currentGame === 'lobby' || currentGame === 'slither' || orbitTouchId !== null) return;
+      if (currentGame === 'lobby' || currentGame === 'slither' || currentGame === 'veck' || orbitTouchId !== null) return;
       const t = e.changedTouches[0];
       orbitTouchId = t.identifier;
       lastOrbitX = t.clientX;
@@ -2032,7 +2481,7 @@
     let isGrounded = false;
 
     window.addEventListener('keydown', (e) => {
-      if (currentGame === 'slither') return;
+      if (currentGame === 'slither' || currentGame === 'veck') return;
       if (document.activeElement && ['INPUT', 'SELECT'].includes(document.activeElement.tagName)) return;
       const k = e.key.toLowerCase();
       if (k === 'w' || e.key === 'ArrowUp') keys.w = true;
@@ -2045,7 +2494,7 @@
     });
 
     window.addEventListener('keyup', (e) => {
-      if (currentGame === 'slither') return;
+      if (currentGame === 'slither' || currentGame === 'veck') return;
       const k = e.key.toLowerCase();
       if (k === 'w' || e.key === 'ArrowUp') keys.w = false;
       if (k === 's' || e.key === 'ArrowDown') keys.s = false;
@@ -2075,7 +2524,7 @@
     function animate() {
       requestAnimationFrame(animate);
       const delta = Math.min(clock.getDelta(), 0.05);
-      if (currentGame === 'slither') {
+      if (currentGame === 'slither' || currentGame === 'veck') {
         renderer.render(scene, camera);
         return;
       }
@@ -2179,15 +2628,6 @@
       renderer.render(scene, camera);
     }
     requestAnimationFrame(animate);
-
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      if (currentGame === 'slither') {
-        resizeSlitherCanvas();
-      }
-    });
 
     /* ==================== لعبة Slither.io بهيئة ADAM GoGo ==================== */
     const slitherContainer = document.getElementById('slither-container');
@@ -2816,6 +3256,910 @@
 
     initSlitherSkinsUI();
     resizeSlitherCanvas();
+
+    /* ==================== لعبة VECK.IO 3D ==================== */
+    const veckContainer = document.getElementById('veck-container');
+    const veckCanvasWrap = document.getElementById('veck-canvas-wrap');
+    const veckHud = document.getElementById('veck-hud');
+    const veckMenuOverlay = document.getElementById('veck-menu-overlay');
+    const veckPlayBtn = document.getElementById('veck-play-btn');
+
+    const veckScene = new THREE.Scene();
+    veckScene.background = new THREE.Color(0x090e1a);
+    veckScene.fog = new THREE.FogExp2(0x090e1a, 0.011);
+
+    const veckCamera = new THREE.PerspectiveCamera(75, window.innerWidth / Math.max(1, window.innerHeight - 56), 0.1, 1000);
+    const veckRenderer = new THREE.WebGLRenderer({ antialias: true });
+    veckRenderer.shadowMap.enabled = true;
+    veckCanvasWrap.appendChild(veckRenderer.domElement);
+
+    veckScene.add(new THREE.AmbientLight(0xffffff, 0.55));
+    const veckDirLight = new THREE.DirectionalLight(0x00ffcc, 0.85);
+    veckDirLight.position.set(45, 70, 35);
+    veckDirLight.castShadow = true;
+    veckScene.add(veckDirLight);
+
+    const veckAccentLight = new THREE.PointLight(0x38bdf8, 1.2, 70);
+    veckAccentLight.position.set(0, 14, 0);
+    veckScene.add(veckAccentLight);
+
+    let veckAudioCtx = null;
+    function playVeckSound(freq, type, duration, vol = 0.14) {
+      try {
+        if (!veckAudioCtx) {
+          veckAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (veckAudioCtx.state === 'suspended') veckAudioCtx.resume();
+        const osc = veckAudioCtx.createOscillator();
+        const gain = veckAudioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, veckAudioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(38, veckAudioCtx.currentTime + duration);
+        gain.gain.setValueAtTime(vol, veckAudioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, veckAudioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(veckAudioCtx.destination);
+        osc.start();
+        osc.stop(veckAudioCtx.currentTime + duration);
+      } catch (_) {}
+    }
+
+    const VECK_WEAPONS = [
+      { name: 'X-9 PULSE RIFLE', damage: 28, fireRate: 105, ammo: 32, maxAmmo: 32, spread: 0.012, auto: true, range: 140, color: 0x00ffcc, freq: 240, recoil: 0.07 },
+      { name: 'RAIL SNIPER MK-II', damage: 120, fireRate: 780, ammo: 6, maxAmmo: 6, spread: 0.0005, auto: false, range: 240, color: 0xff3366, freq: 130, recoil: 0.16 },
+      { name: 'OMEGA SHOTGUN', damage: 22, pellets: 8, fireRate: 580, ammo: 8, maxAmmo: 8, spread: 0.075, auto: false, range: 45, color: 0xffaa00, freq: 105, recoil: 0.14 },
+      { name: 'HYDRA ROCKET LAUNCHER', damage: 110, splashRadius: 11, fireRate: 950, ammo: 3, maxAmmo: 3, spread: 0.005, auto: false, range: 160, color: 0xff5500, freq: 85, recoil: 0.2 },
+      { name: 'VOLT PLASMA CARBINE', damage: 34, fireRate: 145, ammo: 24, maxAmmo: 24, spread: 0.008, auto: true, range: 150, color: 0x38bdf8, freq: 520, recoil: 0.06 },
+      { name: 'NEON KATANA', damage: 100, fireRate: 300, ammo: Infinity, maxAmmo: Infinity, spread: 0, auto: false, range: 5.5, color: 0xc084fc, freq: 480, recoil: 0.12 }
+    ];
+
+    let veckMode = 'ffa';
+    let veckPlaying = false;
+    let veckScore = 0;
+    let veckStreak = 0;
+    let veckWeaponIdx = 0;
+    let veckLastShotTime = 0;
+    let veckReloading = false;
+    let veckADS = false;
+    let veckMouseDown = false;
+    let veckZoneName = 'البرج المركزي';
+    let veckRunning = false;
+    let veckRafId = null;
+    let veckPrevTime = 0;
+
+    const veckPlayer = {
+      pos: new THREE.Vector3(0, 2, 18),
+      vel: new THREE.Vector3(),
+      yaw: 0,
+      pitch: 0,
+      hp: 100,
+      maxHp: 100,
+      shield: 50,
+      maxShield: 100,
+      height: 1.8,
+      onGround: false,
+      isSliding: false,
+      slideTimer: 0,
+      speedBoostTimer: 0,
+      doublePointsTimer: 0
+    };
+
+    const veckObstacles = [];
+    const veckPlatforms = [];
+    const veckWallMeshes = [];
+
+    function addVeckBlock(x, y, z, w, h, d, color = 0x24344d, isPlatform = false, emissive = 0x000000) {
+      const geo = new THREE.BoxGeometry(w, h, d);
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: 0.45,
+        emissive,
+        emissiveIntensity: emissive ? 0.25 : 0
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, y, z);
+      mesh.castShadow = true;
+      mesh.receiveShadow = true;
+      veckScene.add(mesh);
+      veckWallMeshes.push(mesh);
+
+      const box = new THREE.Box3().setFromObject(mesh);
+      veckObstacles.push(box);
+      if (isPlatform) {
+        veckPlatforms.push({ box, topY: box.max.y });
+      }
+      return mesh;
+    }
+
+    function buildVeckArena() {
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(180, 180),
+        new THREE.MeshStandardMaterial({ color: 0x131d31, roughness: 0.8 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.receiveShadow = true;
+      veckScene.add(floor);
+
+      const grid = new THREE.GridHelper(180, 60, 0x00ffcc, 0x1e293b);
+      grid.position.y = 0.01;
+      veckScene.add(grid);
+
+      addVeckBlock(0, 5, -90, 180, 10, 3, 0x1e293b);
+      addVeckBlock(0, 5, 90, 180, 10, 3, 0x1e293b);
+      addVeckBlock(-90, 5, 0, 3, 10, 180, 0x1e293b);
+      addVeckBlock(90, 5, 0, 3, 10, 180, 0x1e293b);
+
+      addVeckBlock(0, 1.5, 0, 10, 3, 10, 0x24344d, true, 0x00332b);
+      addVeckBlock(0, 4.2, 0, 5, 2.4, 5, 0x1e3a5f, true, 0x002233);
+
+      addVeckBlock(0, 2.2, -52, 24, 4.4, 14, 0x263854, true);
+      addVeckBlock(-9, 5.2, -52, 3, 1.6, 3, 0x334155, false);
+      addVeckBlock(9, 5.2, -52, 3, 1.6, 3, 0x334155, false);
+
+      addVeckBlock(-16, 1.5, 48, 8, 3, 5, 0x2a3f5f, true);
+      addVeckBlock(0, 2.5, 54, 10, 5, 6, 0x24344d, true);
+      addVeckBlock(16, 1.5, 48, 8, 3, 5, 0x2a3f5f, true);
+
+      addVeckBlock(52, 4, -22, 5, 8, 5, 0x1f324d, false, 0x001b2e);
+      addVeckBlock(52, 4, 0, 5, 8, 5, 0x1f324d, false, 0x001b2e);
+      addVeckBlock(52, 4, 22, 5, 8, 5, 0x1f324d, false, 0x001b2e);
+      addVeckBlock(65, 2, 0, 10, 4, 26, 0x2b3a55, true);
+
+      addVeckBlock(-46, 1.8, -24, 10, 3.6, 10, 0x283a58, true);
+      addVeckBlock(-56, 3.4, 0, 12, 6.8, 12, 0x1e334d, true);
+      addVeckBlock(-46, 1.8, 24, 10, 3.6, 10, 0x283a58, true);
+
+      [[-62, -62], [62, -62], [-62, 62], [62, 62]].forEach(([cx, cz]) => {
+        addVeckBlock(cx, 2, cz, 12, 4, 12, 0x233552, true);
+        addVeckBlock(cx, 5, cz, 4, 2, 4, 0x3b4d6b, false);
+      });
+    }
+    buildVeckArena();
+
+    function detectVeckZone(pos) {
+      if (pos.length() < 18) return 'البرج المركزي';
+      if (pos.z < -36 && Math.abs(pos.x) < 25) return 'منصة القنص الشمالية';
+      if (pos.z > 36 && Math.abs(pos.x) < 30) return 'مخابئ الجنوب';
+      if (pos.x > 38) return 'الحي الشرقي';
+      if (pos.x < -38) return 'المنصات الغربية';
+      if (Math.abs(pos.x) > 48 && Math.abs(pos.z) > 48) return 'الزاوية المتقدمة';
+      return 'ساحة المناورة';
+    }
+
+    const VECK_REWARD_TYPES = [
+      { type: 'heal', label: '+45 صحة (Medkit)', color: 0x10b981 },
+      { type: 'shield', label: '+50 درع طاقة (Shield)', color: 0x38bdf8 },
+      { type: 'speed', label: 'اندفاع فائق للسرعة (Speed Boost)', color: 0xfbbf24 },
+      { type: 'points', label: '+3 نقاط مكافأة (Bonus Points)', color: 0xc084fc },
+      { type: 'double', label: 'نقاط مضاعفة x2 (10 ثوانٍ)', color: 0xf43f5e }
+    ];
+
+    const veckRewardSpots = [
+      [0, 5.8, 0], [0, 4.8, -52], [0, 5.4, 54],
+      [52, 1.2, 0], [-56, 7.2, 0],
+      [-25, 1.2, -25], [25, 1.2, -25], [-25, 1.2, 25], [25, 1.2, 25],
+      [-62, 4.4, -62], [62, 4.4, -62], [-62, 4.4, 62], [62, 4.4, 62]
+    ];
+
+    const veckPickups = [];
+    function spawnVeckPickups() {
+      veckPickups.forEach(p => veckScene.remove(p.mesh));
+      veckPickups.length = 0;
+
+      veckRewardSpots.forEach(([x, y, z], i) => {
+        const cfg = VECK_REWARD_TYPES[i % VECK_REWARD_TYPES.length];
+        const mesh = new THREE.Mesh(
+          new THREE.OctahedronGeometry(0.95, 0),
+          new THREE.MeshStandardMaterial({
+            color: cfg.color,
+            emissive: cfg.color,
+            emissiveIntensity: 0.45,
+            roughness: 0.2
+          })
+        );
+        mesh.position.set(x, y, z);
+        mesh.castShadow = true;
+        veckScene.add(mesh);
+
+        veckPickups.push({ mesh, baseY: y, cfg, active: true, respawnAt: 0 });
+      });
+    }
+    spawnVeckPickups();
+
+    function showVeckToast(text) {
+      const toast = document.getElementById('veck-toast-banner');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(showVeckToast._timer);
+      showVeckToast._timer = setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function applyVeckReward(cfg) {
+      playVeckSound(740, 'sine', 0.18, 0.18);
+      if (cfg.type === 'heal') {
+        veckPlayer.hp = Math.min(veckPlayer.maxHp, veckPlayer.hp + 45);
+      } else if (cfg.type === 'shield') {
+        veckPlayer.shield = Math.min(veckPlayer.maxShield, veckPlayer.shield + 50);
+      } else if (cfg.type === 'speed') {
+        veckPlayer.speedBoostTimer = 7;
+      } else if (cfg.type === 'points') {
+        veckScore += veckPlayer.doublePointsTimer > 0 ? 6 : 3;
+      } else if (cfg.type === 'double') {
+        veckPlayer.doublePointsTimer = 10;
+      }
+      VECK_WEAPONS.forEach(w => {
+        if (w.maxAmmo !== Infinity) w.ammo = w.maxAmmo;
+      });
+      showVeckToast(`مكافأة: ${cfg.label}`);
+      updateVeckHUD();
+    }
+
+    const veckGunMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.16, 0.72),
+      new THREE.MeshStandardMaterial({ color: 0x00ffcc, roughness: 0.3 })
+    );
+    veckGunMesh.position.set(0.28, -0.24, -0.45);
+    veckCamera.add(veckGunMesh);
+    veckScene.add(veckCamera);
+
+    function createVeckExplosion(pos, color = 0xff5500, radius = 11) {
+      const sphere = new THREE.Mesh(
+        new THREE.SphereGeometry(radius * 0.45, 16, 16),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.7 })
+      );
+      sphere.position.copy(pos);
+      veckScene.add(sphere);
+      playVeckSound(75, 'sawtooth', 0.35, 0.22);
+      setTimeout(() => veckScene.remove(sphere), 160);
+    }
+
+    let veckEnemies = [];
+    const VECK_HP_BAR_WIDTH = 1.3;
+    const VECK_HP_BAR_HEIGHT = 0.14;
+
+    function createVeckEnemyHealthBar() {
+      const barGroup = new THREE.Group();
+      barGroup.position.set(0, 2.75, 0);
+
+      const bgMesh = new THREE.Mesh(
+        new THREE.PlaneGeometry(VECK_HP_BAR_WIDTH + 0.06, VECK_HP_BAR_HEIGHT + 0.05),
+        new THREE.MeshBasicMaterial({ color: 0x090d16, side: THREE.DoubleSide })
+      );
+      bgMesh.position.z = -0.01;
+
+      const fillGeo = new THREE.PlaneGeometry(VECK_HP_BAR_WIDTH, VECK_HP_BAR_HEIGHT);
+      fillGeo.translate(VECK_HP_BAR_WIDTH / 2, 0, 0);
+      const fillMat = new THREE.MeshBasicMaterial({ color: 0x22c55e, side: THREE.DoubleSide });
+      const fillMesh = new THREE.Mesh(fillGeo, fillMat);
+      fillMesh.position.x = -VECK_HP_BAR_WIDTH / 2;
+
+      barGroup.add(bgMesh, fillMesh);
+      return { barGroup, fillMesh, fillMat };
+    }
+
+    function updateVeckEnemyHealthBar(enemyObj) {
+      if (!enemyObj.hpBar) return;
+      const ratio = Math.max(0, Math.min(1, enemyObj.hp / enemyObj.maxHp));
+      enemyObj.hpBar.fillMesh.scale.x = Math.max(0.0001, ratio);
+
+      if (ratio > 0.55) {
+        enemyObj.hpBar.fillMat.color.setHex(0x22c55e);
+      } else if (ratio > 0.25) {
+        enemyObj.hpBar.fillMat.color.setHex(0xfbbf24);
+      } else {
+        enemyObj.hpBar.fillMat.color.setHex(0xef4444);
+      }
+
+      enemyObj.hpBar.barGroup.quaternion.copy(veckCamera.quaternion);
+    }
+
+    function spawnVeckEnemy() {
+      const group = new THREE.Group();
+      const body = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 1.8, 1.1),
+        new THREE.MeshStandardMaterial({ color: 0xff3355 })
+      );
+      body.position.y = 0.9;
+      body.castShadow = true;
+      group.add(body);
+
+      const head = new THREE.Mesh(
+        new THREE.BoxGeometry(0.65, 0.65, 0.65),
+        new THREE.MeshStandardMaterial({ color: 0xffaa00 })
+      );
+      head.position.y = 2.12;
+      head.userData.isHead = true;
+      group.add(head);
+
+      const hpBar = createVeckEnemyHealthBar();
+      group.add(hpBar.barGroup);
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 28 + Math.random() * 45;
+      group.position.set(
+        Math.max(-82, Math.min(82, Math.cos(angle) * dist)),
+        0,
+        Math.max(-82, Math.min(82, Math.sin(angle) * dist))
+      );
+
+      veckScene.add(group);
+      const enemyObj = {
+        mesh: group,
+        hp: 110,
+        maxHp: 110,
+        hpBar,
+        lastFire: 0,
+        speed: 7 + Math.random() * 3.5
+      };
+      updateVeckEnemyHealthBar(enemyObj);
+      veckEnemies.push(enemyObj);
+      updateVeckHUD();
+    }
+
+    function resetVeckEnemies() {
+      veckEnemies.forEach(e => veckScene.remove(e.mesh));
+      veckEnemies = [];
+      const count = veckMode === 'duel' ? 1 : 6;
+      for (let i = 0; i < count; i++) spawnVeckEnemy();
+    }
+
+    function resetVeckPlayerState() {
+      veckPlayer.pos.set(0, 2, 18);
+      veckPlayer.vel.set(0, 0, 0);
+      veckPlayer.yaw = 0;
+      veckPlayer.pitch = 0;
+      veckPlayer.hp = veckPlayer.maxHp;
+      veckPlayer.shield = 50;
+      veckPlayer.onGround = false;
+      veckPlayer.isSliding = false;
+      veckPlayer.slideTimer = 0;
+      veckPlayer.speedBoostTimer = 0;
+      veckPlayer.doublePointsTimer = 0;
+      veckStreak = 0;
+      VECK_WEAPONS.forEach(w => {
+        if (w.maxAmmo !== Infinity) w.ammo = w.maxAmmo;
+      });
+      switchVeckWeapon(0);
+      spawnVeckPickups();
+      updateVeckHUD();
+    }
+
+    function damageVeckPlayer(amount) {
+      if (!veckPlaying) return;
+      let rem = amount;
+      if (veckPlayer.shield > 0) {
+        const absorbed = Math.min(veckPlayer.shield, rem);
+        veckPlayer.shield -= absorbed;
+        rem -= absorbed;
+      }
+      if (rem > 0) {
+        veckPlayer.hp = Math.max(0, veckPlayer.hp - rem);
+      }
+
+      playVeckSound(120, 'sawtooth', 0.14, 0.16);
+      const overlay = document.getElementById('veck-damage-overlay');
+      overlay.style.boxShadow = 'inset 0 0 110px rgba(255, 0, 40, 0.55)';
+      setTimeout(() => {
+        overlay.style.boxShadow = 'inset 0 0 100px rgba(255, 0, 40, 0)';
+      }, 150);
+
+      updateVeckHUD();
+
+      if (veckPlayer.hp <= 0) {
+        showVeckToast('تمت تصفيتك! إعادة نشر...');
+        veckScore = Math.max(0, veckScore - 1);
+        resetVeckPlayerState();
+        resetVeckEnemies();
+      }
+    }
+
+    function createVeckTracer(start, end, color) {
+      const mat = new THREE.LineBasicMaterial({ color });
+      const geo = new THREE.BufferGeometry().setFromPoints([start, end]);
+      const line = new THREE.Line(geo, mat);
+      veckScene.add(line);
+      setTimeout(() => veckScene.remove(line), 75);
+    }
+
+    const veckRaycaster = new THREE.Raycaster();
+    function shootVeck() {
+      if (!veckPlaying || veckReloading) return;
+      const w = VECK_WEAPONS[veckWeaponIdx];
+      const now = performance.now();
+      if (now - veckLastShotTime < w.fireRate) return;
+
+      if (w.ammo <= 0) {
+        reloadVeckWeapon();
+        return;
+      }
+
+      veckLastShotTime = now;
+      if (w.ammo !== Infinity) w.ammo--;
+      updateVeckHUD();
+      playVeckSound(w.freq, 'sawtooth', 0.12);
+
+      veckGunMesh.position.z = -0.34;
+      veckPlayer.pitch = Math.min(Math.PI / 2.1, veckPlayer.pitch + (w.recoil || 0.05) * 0.18);
+      setTimeout(() => { veckGunMesh.position.z = veckADS ? -0.35 : -0.45; }, 85);
+
+      const pellets = w.pellets || 1;
+      for (let p = 0; p < pellets; p++) {
+        const spreadX = (Math.random() - 0.5) * w.spread * (veckADS ? 0.25 : 1);
+        const spreadY = (Math.random() - 0.5) * w.spread * (veckADS ? 0.25 : 1);
+
+        veckRaycaster.setFromCamera(new THREE.Vector2(spreadX, spreadY), veckCamera);
+        veckRaycaster.far = w.range;
+
+        const enemyMeshes = veckEnemies.flatMap(e => e.mesh.children.filter(c => c.geometry && c.geometry.type !== 'PlaneGeometry'));
+        const hits = veckRaycaster.intersectObjects(enemyMeshes);
+
+        const startPoint = new THREE.Vector3();
+        veckGunMesh.getWorldPosition(startPoint);
+        let endPoint = veckRaycaster.ray.origin.clone().add(veckRaycaster.ray.direction.clone().multiplyScalar(w.range));
+
+        if (hits.length > 0) {
+          endPoint = hits[0].point;
+        }
+
+        if (w.splashRadius) {
+          createVeckExplosion(endPoint, w.color, w.splashRadius);
+          veckEnemies.slice().forEach(enemyObj => {
+            const d = enemyObj.mesh.position.distanceTo(endPoint);
+            if (d <= w.splashRadius) {
+              const falloff = 1 - (d / w.splashRadius) * 0.5;
+              enemyObj.hp -= w.damage * falloff;
+              updateVeckEnemyHealthBar(enemyObj);
+              showVeckHitmarker();
+              if (enemyObj.hp <= 0) killVeckEnemy(enemyObj);
+            }
+          });
+        } else if (hits.length > 0) {
+          const hit = hits[0];
+          const enemyObj = veckEnemies.find(e => e.mesh === hit.object.parent);
+          if (enemyObj) {
+            const isHead = hit.object.userData.isHead;
+            const dmg = isHead ? w.damage * 1.6 : w.damage;
+            enemyObj.hp -= dmg;
+            updateVeckEnemyHealthBar(enemyObj);
+            showVeckHitmarker();
+            if (enemyObj.hp <= 0) killVeckEnemy(enemyObj);
+          }
+        }
+
+        if (w.range > 10) createVeckTracer(startPoint, endPoint, w.color);
+      }
+    }
+
+    function showVeckHitmarker() {
+      const hm = document.getElementById('veck-hitmarker');
+      hm.style.opacity = '1';
+      playVeckSound(640, 'sine', 0.06, 0.18);
+      setTimeout(() => { hm.style.opacity = '0'; }, 120);
+    }
+
+    function killVeckEnemy(enemy) {
+      if (!veckEnemies.includes(enemy)) return;
+      veckScene.remove(enemy.mesh);
+      veckEnemies = veckEnemies.filter(e => e !== enemy);
+
+      veckStreak++;
+      const mult = veckPlayer.doublePointsTimer > 0 ? 2 : 1;
+      const streakBonus = veckStreak >= 3 ? 1 : 0;
+      const ptsEarned = (1 + streakBonus) * mult;
+      veckScore += ptsEarned;
+      addPlayerScore(ptsEarned);
+
+      veckPlayer.shield = Math.min(veckPlayer.maxShield, veckPlayer.shield + 15);
+      if (veckStreak % 3 === 0) {
+        veckPlayer.hp = Math.min(veckPlayer.maxHp, veckPlayer.hp + 20);
+        showVeckToast(`سلسلة قتل ${veckStreak}! +20 صحة إضافية`);
+      }
+
+      const feed = document.getElementById('veck-killfeed');
+      const item = document.createElement('div');
+      item.className = 'veck-kill-item';
+      item.textContent = `قضيت على خصم بواسطة ${VECK_WEAPONS[veckWeaponIdx].name} (سلسلة: ${veckStreak})`;
+      feed.prepend(item);
+      setTimeout(() => item.remove(), 3500);
+
+      if (veckMode === 'gungame') {
+        switchVeckWeapon((veckWeaponIdx + 1) % VECK_WEAPONS.length);
+      }
+
+      updateVeckHUD();
+      setTimeout(() => {
+        if (currentGame === 'veck') spawnVeckEnemy();
+      }, 1400);
+    }
+
+    function switchVeckWeapon(idx) {
+      if (idx < 0 || idx >= VECK_WEAPONS.length || veckReloading) return;
+      veckWeaponIdx = idx;
+      const w = VECK_WEAPONS[idx];
+      veckGunMesh.material.color.setHex(w.color);
+      document.querySelectorAll('.veck-slot').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+      updateVeckHUD();
+    }
+
+    function reloadVeckWeapon() {
+      const w = VECK_WEAPONS[veckWeaponIdx];
+      if (veckReloading || w.ammo === w.maxAmmo || w.ammo === Infinity) return;
+      veckReloading = true;
+      document.getElementById('veck-ammo-count').textContent = 'جاري التعبئة...';
+      setTimeout(() => {
+        w.ammo = w.maxAmmo;
+        veckReloading = false;
+        updateVeckHUD();
+      }, 900);
+    }
+
+    function updateVeckHUD() {
+      const w = VECK_WEAPONS[veckWeaponIdx];
+      document.getElementById('veck-score').textContent = veckScore;
+      document.getElementById('veck-streak').textContent = veckStreak;
+      document.getElementById('veck-zone-name').textContent = veckZoneName;
+      document.getElementById('veck-enemies-left').textContent = veckEnemies.length;
+      document.getElementById('veck-hp-text').textContent = Math.max(0, Math.round(veckPlayer.hp));
+      document.getElementById('veck-health-bar').style.width = `${Math.max(0, (veckPlayer.hp / veckPlayer.maxHp) * 100)}%`;
+      document.getElementById('veck-shield-text').textContent = Math.max(0, Math.round(veckPlayer.shield));
+      document.getElementById('veck-shield-bar').style.width = `${Math.max(0, (veckPlayer.shield / veckPlayer.maxShield) * 100)}%`;
+      document.getElementById('veck-weapon-name').textContent = w.name;
+      document.getElementById('veck-ammo-count').textContent = w.ammo === Infinity ? '∞' : `${w.ammo} / ${w.maxAmmo}`;
+
+      const boosts = [];
+      if (veckPlayer.speedBoostTimer > 0) boosts.push(`سرعة (${veckPlayer.speedBoostTimer.toFixed(1)}ث)`);
+      if (veckPlayer.doublePointsTimer > 0) boosts.push(`نقاط x2 (${veckPlayer.doublePointsTimer.toFixed(1)}ث)`);
+      document.getElementById('veck-boost-status').textContent = boosts.length ? `مؤثرات نشطة: ${boosts.join(' | ')}` : '';
+    }
+
+    const veckKeys = {};
+    function toggleVeckADS(active) {
+      veckADS = active;
+      veckCamera.fov = active ? (veckWeaponIdx === 1 ? 28 : 52) : 75;
+      veckCamera.updateProjectionMatrix();
+      veckGunMesh.position.x = active ? 0 : 0.28;
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (currentGame !== 'veck') return;
+      veckKeys[e.code] = true;
+      if (!veckPlaying) return;
+
+      if (e.code === 'Digit1') switchVeckWeapon(0);
+      if (e.code === 'Digit2') switchVeckWeapon(1);
+      if (e.code === 'Digit3') switchVeckWeapon(2);
+      if (e.code === 'Digit4') switchVeckWeapon(3);
+      if (e.code === 'Digit5') switchVeckWeapon(4);
+      if (e.code === 'Digit6') switchVeckWeapon(5);
+      if (e.code === 'KeyR') reloadVeckWeapon();
+      if (e.code === 'KeyE') toggleVeckADS(true);
+
+      if (e.code === 'Space' && veckPlayer.onGround) {
+        veckPlayer.vel.y = 12;
+        veckPlayer.onGround = false;
+      }
+
+      if ((e.code === 'ShiftLeft' || e.code === 'KeyC') && veckPlayer.onGround && !veckPlayer.isSliding) {
+        veckPlayer.isSliding = true;
+        veckPlayer.slideTimer = 0.6;
+        playVeckSound(190, 'triangle', 0.25, 0.1);
+      }
+    });
+
+    window.addEventListener('keyup', (e) => {
+      if (currentGame !== 'veck') return;
+      veckKeys[e.code] = false;
+      if (e.code === 'KeyE') toggleVeckADS(false);
+    });
+
+    veckRenderer.domElement.addEventListener('mousedown', (e) => {
+      if (currentGame !== 'veck' || !veckPlaying) return;
+      if (e.button === 0) {
+        veckMouseDown = true;
+        shootVeck();
+      } else if (e.button === 2) {
+        toggleVeckADS(true);
+      }
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (e.button === 0) veckMouseDown = false;
+      if (e.button === 2 && currentGame === 'veck') toggleVeckADS(false);
+    });
+
+    veckRenderer.domElement.addEventListener('contextmenu', (e) => e.preventDefault());
+
+    window.addEventListener('mousemove', (e) => {
+      if (currentGame !== 'veck' || !veckPlaying || document.pointerLockElement !== veckRenderer.domElement) return;
+      const sens = veckADS ? 0.0012 : 0.0022;
+      veckPlayer.yaw -= e.movementX * sens;
+      veckPlayer.pitch -= e.movementY * sens;
+      veckPlayer.pitch = Math.max(-Math.PI / 2.1, Math.min(Math.PI / 2.1, veckPlayer.pitch));
+    });
+
+    document.querySelectorAll('.veck-mode-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.veck-mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        veckMode = btn.dataset.mode;
+        document.getElementById('veck-mode-display').textContent = veckMode.toUpperCase();
+        if (veckEnemies.length > 0) resetVeckEnemies();
+      });
+    });
+
+    veckPlayBtn.addEventListener('click', () => {
+      if (veckRenderer.domElement.requestPointerLock) {
+        veckRenderer.domElement.requestPointerLock();
+      }
+    });
+
+    document.addEventListener('pointerlockchange', () => {
+      if (currentGame !== 'veck') return;
+      const locked = document.pointerLockElement === veckRenderer.domElement;
+      veckPlaying = locked;
+      if (!locked) {
+        veckMouseDown = false;
+        toggleVeckADS(false);
+      }
+      veckMenuOverlay.style.display = locked ? 'none' : 'flex';
+      veckHud.style.display = locked ? 'flex' : 'none';
+      if (locked) {
+        if (veckPlayer.hp <= 0) resetVeckPlayerState();
+        if (veckEnemies.length === 0) resetVeckEnemies();
+        updateVeckHUD();
+      }
+    });
+
+    function resolveVeckHorizontalCollisions(pos, radius) {
+      const minX = -87.5 + radius;
+      const maxX = 87.5 - radius;
+      const minZ = -87.5 + radius;
+      const maxZ = 87.5 - radius;
+      pos.x = Math.max(minX, Math.min(maxX, pos.x));
+      pos.z = Math.max(minZ, Math.min(maxZ, pos.z));
+
+      const footY = pos.y - veckPlayer.height + 0.25;
+      const headY = pos.y - 0.1;
+
+      for (const box of veckObstacles) {
+        if (headY < box.min.y || footY > box.max.y) continue;
+        const closestX = Math.max(box.min.x, Math.min(pos.x, box.max.x));
+        const closestZ = Math.max(box.min.z, Math.min(pos.z, box.max.z));
+        const dx = pos.x - closestX;
+        const dz = pos.z - closestZ;
+        const distSq = dx * dx + dz * dz;
+
+        if (distSq < radius * radius) {
+          const dist = Math.sqrt(distSq) || 0.001;
+          const overlap = radius - dist;
+          pos.x += (dx / dist) * overlap;
+          pos.z += (dz / dist) * overlap;
+        }
+      }
+    }
+
+    function updateVeckPlayer(dt, now) {
+      if (!veckPlaying) return;
+
+      if (veckMouseDown && VECK_WEAPONS[veckWeaponIdx].auto) {
+        shootVeck();
+      }
+
+      if (veckPlayer.speedBoostTimer > 0) veckPlayer.speedBoostTimer = Math.max(0, veckPlayer.speedBoostTimer - dt);
+      if (veckPlayer.doublePointsTimer > 0) veckPlayer.doublePointsTimer = Math.max(0, veckPlayer.doublePointsTimer - dt);
+
+      if (veckPlayer.isSliding) {
+        veckPlayer.slideTimer -= dt;
+        if (veckPlayer.slideTimer <= 0) veckPlayer.isSliding = false;
+      }
+
+      let moveForward = 0;
+      let moveRight = 0;
+      if (veckKeys['KeyW'] || veckKeys['ArrowUp']) moveForward += 1;
+      if (veckKeys['KeyS'] || veckKeys['ArrowDown']) moveForward -= 1;
+      if (veckKeys['KeyD'] || veckKeys['ArrowRight']) moveRight += 1;
+      if (veckKeys['KeyA'] || veckKeys['ArrowLeft']) moveRight -= 1;
+
+      const forwardVec = new THREE.Vector3(-Math.sin(veckPlayer.yaw), 0, -Math.cos(veckPlayer.yaw));
+      const rightVec = new THREE.Vector3(Math.cos(veckPlayer.yaw), 0, -Math.sin(veckPlayer.yaw));
+
+      const wishDir = new THREE.Vector3()
+        .addScaledVector(forwardVec, moveForward)
+        .addScaledVector(rightVec, moveRight);
+      if (wishDir.lengthSq() > 0) wishDir.normalize();
+
+      const baseSpeed = veckPlayer.speedBoostTimer > 0 ? 22 : 14.5;
+      const moveSpeed = veckPlayer.isSliding ? baseSpeed * 1.45 : baseSpeed;
+
+      veckPlayer.vel.x = wishDir.x * moveSpeed;
+      veckPlayer.vel.z = wishDir.z * moveSpeed;
+      veckPlayer.vel.y -= 28 * dt;
+
+      veckPlayer.pos.x += veckPlayer.vel.x * dt;
+      veckPlayer.pos.z += veckPlayer.vel.z * dt;
+      resolveVeckHorizontalCollisions(veckPlayer.pos, 0.65);
+
+      const prevBottom = veckPlayer.pos.y - veckPlayer.height;
+      veckPlayer.pos.y += veckPlayer.vel.y * dt;
+      const nextBottom = veckPlayer.pos.y - veckPlayer.height;
+
+      let landed = false;
+      if (veckPlayer.vel.y <= 0) {
+        for (const p of veckPlatforms) {
+          const withinX = veckPlayer.pos.x >= p.box.min.x - 0.45 && veckPlayer.pos.x <= p.box.max.x + 0.45;
+          const withinZ = veckPlayer.pos.z >= p.box.min.z - 0.45 && veckPlayer.pos.z <= p.box.max.z + 0.45;
+          if (withinX && withinZ && prevBottom >= p.topY - 0.45 && nextBottom <= p.topY + 0.05) {
+            veckPlayer.pos.y = p.topY + veckPlayer.height;
+            veckPlayer.vel.y = 0;
+            landed = true;
+            break;
+          }
+        }
+      }
+
+      if (!landed && veckPlayer.pos.y <= veckPlayer.height) {
+        veckPlayer.pos.y = veckPlayer.height;
+        veckPlayer.vel.y = 0;
+        landed = true;
+      }
+
+      veckPlayer.onGround = landed;
+
+      const currentHeight = veckPlayer.isSliding ? 1.05 : 1.8;
+      veckPlayer.height += (currentHeight - veckPlayer.height) * Math.min(1, dt * 16);
+
+      const euler = new THREE.Euler(veckPlayer.pitch, veckPlayer.yaw, 0, 'YXZ');
+      veckCamera.quaternion.setFromEuler(euler);
+      veckCamera.position.copy(veckPlayer.pos);
+
+      const zone = detectVeckZone(veckPlayer.pos);
+      if (zone !== veckZoneName) {
+        veckZoneName = zone;
+        updateVeckHUD();
+      }
+
+      for (const pk of veckPickups) {
+        if (!pk.active) continue;
+        if (veckPlayer.pos.distanceTo(pk.mesh.position) < 2.2) {
+          pk.active = false;
+          pk.mesh.visible = false;
+          pk.respawnAt = now + 12000;
+          applyVeckReward(pk.cfg);
+        }
+      }
+
+      if (veckPlayer.speedBoostTimer > 0 || veckPlayer.doublePointsTimer > 0) {
+        updateVeckHUD();
+      }
+    }
+
+    function updateVeckEnemies(dt, now) {
+      if (!veckPlaying) return;
+
+      for (const enemy of veckEnemies) {
+        const toPlayer = new THREE.Vector3().subVectors(veckPlayer.pos, enemy.mesh.position);
+        toPlayer.y = 0;
+        const dist = toPlayer.length();
+        if (dist > 0.001) {
+          toPlayer.normalize();
+          enemy.mesh.rotation.y = Math.atan2(toPlayer.x, toPlayer.z);
+        }
+
+        if (dist > 14) {
+          enemy.mesh.position.x += toPlayer.x * enemy.speed * dt;
+          enemy.mesh.position.z += toPlayer.z * enemy.speed * dt;
+          resolveVeckHorizontalCollisions(enemy.mesh.position, 0.75);
+        }
+
+        updateVeckEnemyHealthBar(enemy);
+
+        if (dist < 75 && now - enemy.lastFire > 1350) {
+          enemy.lastFire = now;
+          const enemyOrigin = enemy.mesh.position.clone().add(new THREE.Vector3(0, 1.5, 0));
+          const aimTarget = veckPlayer.pos.clone().add(new THREE.Vector3(
+            (Math.random() - 0.5) * 2.2,
+            (Math.random() - 0.5) * 1.2,
+            (Math.random() - 0.5) * 2.2
+          ));
+          const dir = aimTarget.sub(enemyOrigin).normalize();
+
+          veckRaycaster.set(enemyOrigin, dir);
+          veckRaycaster.far = 75;
+          const wallHits = veckRaycaster.intersectObjects(veckWallMeshes);
+          const playerDist = veckPlayer.pos.distanceTo(enemyOrigin);
+          const blockedByWall = wallHits.length > 0 && wallHits[0].distance < playerDist - 0.6;
+
+          const endPos = blockedByWall
+            ? wallHits[0].point
+            : enemyOrigin.clone().addScaledVector(dir, Math.min(75, playerDist));
+          createVeckTracer(enemyOrigin, endPos, 0xff3355);
+
+          if (!blockedByWall && playerDist < 65 && Math.random() < 0.65) {
+            damageVeckPlayer(8);
+          }
+        }
+      }
+    }
+
+    function resizeVeckRenderer() {
+      const w = veckContainer.clientWidth || window.innerWidth;
+      const h = veckContainer.clientHeight || Math.max(1, window.innerHeight - 56);
+      veckCamera.aspect = w / h;
+      veckCamera.updateProjectionMatrix();
+      veckRenderer.setSize(w, h);
+    }
+
+    function stopVeckLoop() {
+      veckRunning = false;
+      veckPlaying = false;
+      veckMouseDown = false;
+      if (document.pointerLockElement === veckRenderer.domElement && document.exitPointerLock) {
+        document.exitPointerLock();
+      }
+      if (veckRafId) {
+        cancelAnimationFrame(veckRafId);
+        veckRafId = null;
+      }
+    }
+
+    function openVeckGame() {
+      showScreen(null);
+      currentGame = 'veck';
+      veckContainer.style.display = 'block';
+      veckMenuOverlay.style.display = 'flex';
+      veckHud.style.display = 'none';
+      resizeVeckRenderer();
+      resetVeckPlayerState();
+      resetVeckEnemies();
+      stopVeckLoop();
+      currentGame = 'veck';
+      veckRunning = true;
+      veckPrevTime = performance.now();
+      veckRafId = requestAnimationFrame(veckGameLoop);
+    }
+
+    function closeVeckGame() {
+      stopVeckLoop();
+      veckContainer.style.display = 'none';
+      currentGame = 'lobby';
+      showScreen('games-screen');
+    }
+
+    function veckGameLoop(now) {
+      if (!veckRunning || currentGame !== 'veck') return;
+      const dt = Math.min((now - veckPrevTime) / 1000, 0.1);
+      veckPrevTime = now;
+
+      veckPickups.forEach((p) => {
+        if (!p.active && now >= p.respawnAt) {
+          p.active = true;
+          p.mesh.visible = true;
+        }
+        if (p.active) {
+          p.mesh.rotation.y += 2.2 * dt;
+          p.mesh.position.y = p.baseY + Math.sin(now * 0.004 + p.baseY) * 0.25;
+        }
+      });
+
+      updateVeckPlayer(dt, now);
+      updateVeckEnemies(dt, now);
+      veckRenderer.render(veckScene, veckCamera);
+      veckRafId = requestAnimationFrame(veckGameLoop);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      if (currentGame === 'slither') {
+        resizeSlitherCanvas();
+      }
+      if (currentGame === 'veck') {
+        resizeVeckRenderer();
+      }
+    });
   </script>
 </body>
 </html>
