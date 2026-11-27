@@ -3,54 +3,54 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>منصة الألعاب ثلاثية الأبعاد - ADAM GoGo</title>
+  <title>ADAM GoGo — منصة ألعاب ثلاثية الأبعاد</title>
+
+  <!-- Google Tag Manager -->
+  <script async src="https://www.googletagmanager.com/gtm.js?id=GTM-N8PQ8W8T"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L4YS2S6QJ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-L4YS2S6QJ5');
+  </script>
+
   <style>
-    * {
-      box-sizing: border-box;
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
       margin: 0;
       padding: 0;
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    body {
-      font-family: system-ui, -apple-system, "Segoe UI", Tahoma, Arial, sans-serif;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Tahoma, Arial, sans-serif;
       background: #0f172a;
-      color: #ffffff;
-      overflow: hidden;
-      width: 100vw;
-      height: 100vh;
+      color: #fff;
+      user-select: none;
     }
 
-    body.forced-landscape {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vh;
-      height: 100vw;
-      transform: rotate(90deg) translateY(-100vw);
-      transform-origin: top left;
-      overflow: hidden;
-    }
-
-    canvas {
-      display: block;
-    }
-
-    .top-nav {
+    #top-nav {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       height: 56px;
-      background: rgba(15, 23, 42, 0.9);
-      backdrop-filter: blur(10px);
+      background: rgba(15, 23, 42, 0.92);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 14px;
-      z-index: 50;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 0 12px;
+      z-index: 60;
       gap: 8px;
     }
 
@@ -58,7 +58,6 @@
       font-weight: 800;
       font-size: 16px;
       color: #38bdf8;
-      letter-spacing: 0.4px;
       white-space: nowrap;
     }
 
@@ -68,74 +67,49 @@
       flex-wrap: nowrap;
       overflow-x: auto;
       scrollbar-width: none;
-      align-items: center;
+      -ms-overflow-style: none;
     }
-
-    .nav-btns::-webkit-scrollbar {
-      display: none;
-    }
+    .nav-btns::-webkit-scrollbar { display: none; }
 
     .nav-btns button {
       background: #1e293b;
-      color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      padding: 6px 10px;
+      color: #f8fafc;
+      border: 1px solid rgba(255,255,255,0.16);
       border-radius: 8px;
-      cursor: pointer;
-      font-size: 12px;
+      padding: 7px 11px;
+      font-size: 13px;
       font-weight: 700;
-      transition: 0.2s;
+      cursor: pointer;
       white-space: nowrap;
     }
-
-    .nav-btns button:hover,
     .nav-btns button.active {
       background: #0284c7;
-      border-color: #7dd3fc;
+      border-color: #38bdf8;
     }
 
     .screen {
+      display: none;
       position: fixed;
       inset: 56px 0 0 0;
-      background: linear-gradient(160deg, #0f172a 0%, #1e293b 55%, #0f172a 100%);
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 20px 16px 32px;
       overflow-y: auto;
+      padding: 18px 14px 36px;
+      background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
       z-index: 40;
     }
+    .screen.active { display: block; }
 
-    .screen.active {
-      display: flex;
-    }
-
-    .screen-title {
-      font-size: 24px;
-      margin-bottom: 8px;
-      color: #f8fafc;
-      text-align: center;
-    }
-
-    .screen-sub {
-      color: #94a3b8;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 14px;
-      max-width: 640px;
-    }
+    .container { max-width: 920px; margin: 0 auto; }
+    h1, h2, h3 { margin: 0 0 10px; }
 
     .games-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 14px;
-      width: 100%;
-      max-width: 980px;
+      margin-top: 14px;
     }
 
     .game-card {
-      background: rgba(30, 41, 59, 0.88);
+      background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255, 255, 255, 0.14);
       border-radius: 14px;
       padding: 16px;
@@ -143,1584 +117,557 @@
       flex-direction: column;
       justify-content: space-between;
       gap: 12px;
-      transition: transform 0.2s, border-color 0.2s;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.28);
     }
 
-    .game-card:hover {
-      transform: translateY(-3px);
-      border-color: #38bdf8;
-    }
-
-    .game-card h3 {
-      font-size: 17px;
+    .game-badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.18);
       color: #7dd3fc;
+      margin-bottom: 8px;
+      font-weight: 700;
     }
 
-    .game-card p {
-      font-size: 13px;
-      color: #cbd5e1;
-      line-height: 1.5;
-    }
-
-    .game-card button {
+    .play-btn {
       background: #22c55e;
       color: #052e16;
       border: none;
-      padding: 9px 12px;
-      border-radius: 8px;
+      border-radius: 10px;
+      padding: 10px 12px;
       font-weight: 800;
+      font-size: 14px;
       cursor: pointer;
-      font-size: 13px;
-    }
-
-    .game-card button:hover {
-      background: #4ade80;
-    }
-
-    .avatar-panel {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
       width: 100%;
-      max-width: 720px;
-      background: rgba(30, 41, 59, 0.9);
-      padding: 20px;
-      border-radius: 14px;
+    }
+
+    .form-card {
+      background: rgba(30, 41, 59, 0.95);
       border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+      margin-bottom: 16px;
     }
 
-    @media (max-width: 640px) {
-      .avatar-panel {
-        grid-template-columns: 1fr;
-      }
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
     }
 
-    .field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 12px;
-    }
-
-    .field label {
-      font-size: 13px;
-      color: #cbd5e1;
-    }
-
-    .field input[type="text"],
-    .field input[type="color"],
-    .field select,
-    .field textarea {
+    label { display: block; font-size: 13px; margin-bottom: 5px; color: #cbd5e1; }
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 9px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.2);
       background: #0f172a;
       color: #fff;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 8px;
-      padding: 8px 10px;
       font-size: 14px;
-      font-family: inherit;
     }
-
-    .field input[type="color"] {
-      height: 38px;
-      padding: 3px;
-      cursor: pointer;
-    }
-
-    .primary-btn {
-      background: #38bdf8;
-      color: #082f49;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 14px;
+    input[type="color"] {
       width: 100%;
-    }
-
-    .primary-btn:hover {
-      background: #7dd3fc;
-    }
-
-    .secondary-btn {
-      background: #334155;
-      color: #f8fafc;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 8px 12px;
+      height: 40px;
+      border: none;
       border-radius: 8px;
-      font-weight: 700;
+      background: transparent;
       cursor: pointer;
-      font-size: 12px;
-    }
-
-    .secondary-btn:hover {
-      background: #475569;
     }
 
     .skins-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
-      gap: 14px;
-      width: 100%;
-      max-width: 820px;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
     }
-
     .skin-card {
-      background: rgba(30, 41, 59, 0.9);
-      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(255,255,255,0.14);
       border-radius: 12px;
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
-
     .skin-preview {
-      height: 54px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      height: 76px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
       font-weight: 800;
-      font-size: 13px;
+      font-size: 14px;
       color: #fff;
-      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+      text-shadow: 0 2px 6px rgba(0,0,0,0.65);
     }
-
     .skin-card button {
-      background: #f59e0b;
-      color: #1e1b4b;
-      border: none;
-      padding: 8px;
+      padding: 8px 10px;
       border-radius: 8px;
+      border: none;
       font-weight: 800;
       cursor: pointer;
+      background: #38bdf8;
+      color: #082f49;
     }
-
     .skin-card button.owned {
-      background: #10b981;
-      color: #022c22;
+      background: #22c55e;
+      color: #052e16;
     }
 
     #hud {
-      position: fixed;
-      top: 66px;
-      right: 14px;
-      background: rgba(15, 23, 42, 0.82);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 10px 14px;
-      border-radius: 10px;
-      z-index: 20;
       display: none;
+      position: fixed;
+      top: 64px;
+      right: 12px;
+      z-index: 30;
+      background: rgba(15, 23, 42, 0.78);
+      border: 1px solid rgba(255,255,255,0.16);
+      border-radius: 12px;
+      padding: 10px 12px;
+      min-width: 190px;
       font-size: 13px;
-      line-height: 1.65;
-      max-width: 260px;
+    }
+    #hud .hud-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    #hud .hud-actions button {
+      flex: 1;
+      padding: 6px 8px;
+      border-radius: 7px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 12px;
     }
 
     #studio-bar {
-      position: fixed;
-      top: 66px;
-      left: 14px;
-      background: rgba(15, 23, 42, 0.92);
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      padding: 10px;
-      border-radius: 12px;
-      z-index: 25;
       display: none;
+      position: fixed;
+      top: 64px;
+      left: 12px;
+      z-index: 30;
+      background: rgba(15, 23, 42, 0.88);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 12px;
+      padding: 10px;
       flex-direction: column;
-      gap: 7px;
-      width: 248px;
-      max-height: calc(100vh - 150px);
+      gap: 8px;
+      width: 240px;
+      max-height: calc(100vh - 80px);
       overflow-y: auto;
-      font-size: 12px;
     }
-
-    #studio-bar select,
-    #studio-bar input[type="color"],
-    #studio-bar input[type="text"],
-    #studio-bar button {
-      width: 100%;
+    #studio-bar .row {
+      display: flex;
+      gap: 6px;
+    }
+    #studio-bar button, #studio-bar select {
+      font-size: 12px;
       padding: 6px 8px;
-      border-radius: 7px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: #1e293b;
-      color: #fff;
-      font-size: 12px;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    #studio-bar .studio-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
-    }
-
-    #studio-bar button.place-btn {
-      background: #22c55e;
-      color: #052e16;
-      font-weight: 800;
+      border-radius: 8px;
       border: none;
-    }
-
-    #studio-bar button.share-btn {
-      background: #0284c7;
-      color: #ffffff;
-      font-weight: 800;
-      border: none;
-    }
-
-    #studio-bar button.new-map-btn {
-      background: #8b5cf6;
-      color: #ffffff;
-      font-weight: 800;
-      border: none;
-    }
-
-    #studio-bar button.danger-btn {
-      background: #991b1b;
-      color: #fee2e2;
       font-weight: 700;
-      border: none;
+    }
+    #studio-bar select {
+      background: #0f172a;
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      flex: 1;
     }
 
-    .saved-maps-box {
-      background: rgba(15, 23, 42, 0.75);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 10px;
-      padding: 8px;
-      margin-top: 8px;
+    .saved-maps-list {
       display: flex;
       flex-direction: column;
       gap: 6px;
+      margin-top: 6px;
+      max-height: 140px;
+      overflow-y: auto;
     }
-
     .saved-map-item {
+      background: rgba(30, 41, 59, 0.9);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 8px;
+      padding: 6px 8px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      background: #0f172a;
-      padding: 6px 8px;
-      border-radius: 8px;
-      font-size: 12px;
+      font-size: 11.5px;
     }
-
     .saved-map-item.active-map {
-      border: 1px solid #38bdf8;
+      border-color: #38bdf8;
+      background: rgba(2, 132, 199, 0.22);
     }
-
     .saved-map-actions {
       display: flex;
       gap: 4px;
+      flex-shrink: 0;
     }
-
     .saved-map-actions button {
-      padding: 4px 7px;
-      font-size: 11px;
-      border-radius: 6px;
-      border: none;
+      padding: 4px 6px !important;
+      font-size: 11px !important;
+      border-radius: 6px !important;
       cursor: pointer;
-      font-weight: 700;
     }
 
     #mobile-controls {
-      position: fixed;
-      bottom: 16px;
-      left: 16px;
-      right: 16px;
       display: none;
+      position: fixed;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 30;
       justify-content: space-between;
       align-items: flex-end;
-      z-index: 30;
       pointer-events: none;
     }
-
     #joystick-zone {
+      position: relative;
       width: 112px;
       height: 112px;
       border-radius: 50%;
       background: rgba(15, 23, 42, 0.55);
-      border: 2px solid rgba(255, 255, 255, 0.25);
-      position: relative;
+      border: 2px solid rgba(255, 255, 255, 0.28);
       pointer-events: auto;
       touch-action: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-
     #joystick-knob {
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: rgba(56, 189, 248, 0.88);
-      position: absolute;
-      top: 34px;
-      left: 34px;
+      background: rgba(56, 189, 248, 0.85);
+      border: 2px solid #ffffff;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+      transform: translate(0px, 0px);
       pointer-events: none;
     }
-
-    .action-pad {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      pointer-events: auto;
-    }
-
-    .action-pad button {
+    #jump-btn {
       width: 68px;
-      height: 48px;
-      border-radius: 12px;
-      border: none;
-      font-weight: 800;
-      font-size: 13px;
-      color: #fff;
-      background: rgba(34, 197, 94, 0.9);
+      height: 68px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.85);
+      color: #052e16;
+      border: 2px solid #fff;
+      font-weight: 900;
+      font-size: 15px;
+      pointer-events: auto;
       touch-action: manipulation;
-    }
-
-    .action-pad button.secondary-act {
-      background: rgba(59, 130, 246, 0.9);
-      height: 40px;
-      font-size: 12px;
     }
 
     #toast {
       position: fixed;
-      bottom: 24px;
+      bottom: 96px;
       left: 50%;
       transform: translateX(-50%);
-      background: #0284c7;
+      background: rgba(15, 23, 42, 0.92);
       color: #fff;
-      padding: 9px 18px;
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 8px 14px;
       border-radius: 999px;
       font-size: 13px;
       font-weight: 700;
-      z-index: 60;
+      z-index: 70;
       display: none;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
       white-space: nowrap;
-    }
-
-    #slither-container {
-      display: none;
-      position: fixed;
-      inset: 56px 0 0 0;
-      width: 100vw;
-      height: calc(100vh - 56px);
-      z-index: 25;
-      background: #090d16;
-      overflow: hidden;
-    }
-
-    #slitherCanvas {
-      display: block;
-      width: 100%;
-      height: 100%;
-      touch-action: none;
-      cursor: crosshair;
-    }
-
-    .slither-hud {
-      position: fixed;
-      top: 68px;
-      left: 14px;
-      right: 14px;
-      display: none;
-      justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
-      z-index: 30;
-    }
-
-    .slither-stats-card {
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(148, 163, 184, 0.22);
-      border-radius: 12px;
-      padding: 10px 14px;
-      min-width: 145px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      color: #f8fafc;
-    }
-
-    .slither-stat-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      font-size: 13px;
-      margin-bottom: 4px;
-      color: #cbd5e1;
-    }
-
-    .slither-stat-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .slither-stat-value {
-      font-weight: 700;
-      font-size: 15px;
-      color: #38bdf8;
-    }
-
-    .slither-leaderboard-card {
-      background: rgba(15, 23, 42, 0.78);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(148, 163, 184, 0.22);
-      border-radius: 12px;
-      padding: 10px 14px;
-      min-width: 185px;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-      color: #f8fafc;
-    }
-
-    .slither-lb-title {
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      color: #94a3b8;
-      margin-bottom: 6px;
-    }
-
-    .slither-lb-list {
-      list-style: none;
-      font-size: 13px;
-    }
-
-    .slither-lb-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 2px 0;
-      color: #e2e8f0;
-    }
-
-    .slither-lb-item.is-player {
-      color: #4ade80;
-      font-weight: 700;
-    }
-
-    #slitherMinimap {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      width: 124px;
-      height: 124px;
-      border-radius: 50%;
-      background: rgba(15, 23, 42, 0.78);
-      border: 2px solid rgba(148, 163, 184, 0.32);
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
-      pointer-events: none;
-      z-index: 30;
-    }
-
-    #slitherOverlay {
-      position: fixed;
-      inset: 56px 0 0 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(9, 13, 22, 0.72);
-      backdrop-filter: blur(6px);
-      z-index: 35;
-      padding: 16px;
-    }
-
-    .slither-menu-card {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.94);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 18px;
-      padding: 22px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
-      text-align: center;
-      color: #f8fafc;
-    }
-
-    .slither-game-title {
-      font-size: 28px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #38bdf8, #4ade80);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 6px;
-    }
-
-    .slither-subtitle {
-      font-size: 13px;
-      color: #94a3b8;
-      margin-bottom: 16px;
-    }
-
-    .slither-death-banner {
-      background: rgba(239, 68, 68, 0.16);
-      border: 1px solid rgba(239, 68, 68, 0.45);
-      color: #fecaca;
-      border-radius: 10px;
-      padding: 8px 12px;
-      font-size: 13px;
-      margin-bottom: 14px;
-      display: none;
-    }
-
-    .slither-input-group {
-      text-align: right;
-      margin-bottom: 14px;
-    }
-
-    .slither-input-group label {
-      display: block;
-      font-size: 12px;
-      color: #cbd5e1;
-      margin-bottom: 6px;
-    }
-
-    .slither-input-group input {
-      width: 100%;
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(148, 163, 184, 0.35);
-      background: rgba(30, 41, 59, 0.9);
-      color: #f8fafc;
-      font-size: 14px;
-      outline: none;
-    }
-
-    .slither-skins-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .slither-skin-option {
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 2px solid transparent;
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease;
-      position: relative;
-    }
-
-    .slither-skin-option:hover {
-      transform: scale(1.08);
-    }
-
-    .slither-skin-option.selected {
-      border-color: #ffffff;
-      transform: scale(1.12);
-      box-shadow: 0 0 0 2px #38bdf8;
-    }
-
-    .slither-play-btn {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #0284c7, #16a34a);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: filter 0.15s ease, transform 0.1s ease;
-    }
-
-    .slither-play-btn:hover {
-      filter: brightness(1.08);
-    }
-
-    .slither-controls-hint {
-      margin-top: 12px;
-      font-size: 12px;
-      color: #94a3b8;
-      line-height: 1.5;
-    }
-
-    #veck-container {
-      display: none;
-      position: fixed;
-      inset: 56px 0 0 0;
-      width: 100vw;
-      height: calc(100vh - 56px);
-      z-index: 25;
-      background: #090d16;
-      overflow: hidden;
-    }
-
-    #veck-canvas-wrap {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .veck-hud {
-      position: fixed;
-      inset: 56px 0 0 0;
-      pointer-events: none;
-      display: none;
-      z-index: 28;
-    }
-
-    .veck-crosshair {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 24px;
-      height: 24px;
-      transform: translate(-50%, -50%);
-      pointer-events: none;
-    }
-
-    .veck-crosshair::before,
-    .veck-crosshair::after {
-      content: "";
-      position: absolute;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: 0 0 6px rgba(0, 255, 204, 0.8);
-    }
-
-    .veck-crosshair::before {
-      width: 2px;
-      height: 12px;
-      top: 6px;
-      left: 11px;
-    }
-
-    .veck-crosshair::after {
-      width: 12px;
-      height: 2px;
-      top: 11px;
-      left: 6px;
-    }
-
-    .veck-hitmarker {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      width: 28px;
-      height: 28px;
-      transform: translate(-50%, -50%) rotate(45deg);
-      opacity: 0;
-      transition: opacity 0.08s ease;
-      pointer-events: none;
-    }
-
-    .veck-hitmarker::before,
-    .veck-hitmarker::after {
-      content: "";
-      position: absolute;
-      background: #ff2a55;
-    }
-
-    .veck-hitmarker::before {
-      width: 2px;
-      height: 28px;
-      left: 13px;
-      top: 0;
-    }
-
-    .veck-hitmarker::after {
-      width: 28px;
-      height: 2px;
-      top: 13px;
-      left: 0;
-    }
-
-    .veck-damage-overlay {
-      position: fixed;
-      inset: 56px 0 0 0;
-      pointer-events: none;
-      box-shadow: inset 0 0 100px rgba(255, 0, 40, 0);
-      transition: box-shadow 0.15s ease;
-    }
-
-    .veck-top-bar {
-      position: fixed;
-      top: 68px;
-      left: 18px;
-      right: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    .veck-panel {
-      background: rgba(12, 18, 32, 0.72);
-      border: 1px solid rgba(0, 255, 204, 0.25);
-      backdrop-filter: blur(8px);
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #eef4ff;
-    }
-
-    .veck-mode-badge {
-      font-size: 12px;
-      letter-spacing: 1.2px;
-      color: #00ffcc;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-
-    .veck-zone-name {
-      font-size: 15px;
-      font-weight: 700;
-      margin-top: 2px;
-    }
-
-    .veck-stats-row {
-      display: flex;
-      gap: 16px;
-      font-size: 13px;
-    }
-
-    .veck-stats-row strong {
-      color: #00ffcc;
-      font-size: 15px;
-    }
-
-    .veck-killfeed {
-      position: fixed;
-      top: 126px;
-      right: 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      align-items: flex-end;
-    }
-
-    .veck-kill-item {
-      background: rgba(12, 18, 32, 0.82);
-      border-right: 3px solid #00ffcc;
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      color: #eef4ff;
-    }
-
-    .veck-bottom-bar {
-      position: fixed;
-      bottom: 18px;
-      left: 18px;
-      right: 18px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-    }
-
-    .veck-vitals {
-      min-width: 230px;
-    }
-
-    .veck-bar-label {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      margin-bottom: 4px;
-    }
-
-    .veck-bar-track {
-      width: 100%;
-      height: 9px;
-      background: rgba(255, 255, 255, 0.12);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 8px;
-    }
-
-    .veck-bar-fill {
-      height: 100%;
-      transition: width 0.12s ease;
-    }
-
-    .veck-health-fill {
-      background: linear-gradient(90deg, #ff2a55, #ff6b81);
-      width: 100%;
-    }
-
-    .veck-shield-fill {
-      background: linear-gradient(90deg, #00a8ff, #00ffcc);
-      width: 50%;
-    }
-
-    .veck-weapon-box {
-      min-width: 245px;
-      text-align: left;
-    }
-
-    .veck-weapon-name {
-      font-size: 15px;
-      font-weight: 700;
-      color: #00ffcc;
-    }
-
-    .veck-ammo-count {
-      font-size: 20px;
-      font-weight: 700;
-      margin-top: 2px;
-    }
-
-    .veck-weapon-slots {
-      display: flex;
-      gap: 5px;
-      margin-top: 8px;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .veck-slot {
-      font-size: 11px;
-      padding: 3px 7px;
-      border-radius: 5px;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      opacity: 0.65;
-    }
-
-    .veck-slot.active {
-      background: rgba(0, 255, 204, 0.2);
-      border-color: #00ffcc;
-      opacity: 1;
-      font-weight: 700;
-    }
-
-    .veck-toast {
-      position: fixed;
-      top: 22%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: rgba(12, 18, 32, 0.9);
-      border: 1px solid #00ffcc;
-      color: #00ffcc;
-      padding: 8px 18px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 700;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-      pointer-events: none;
-    }
-
-    .veck-toast.show {
-      opacity: 1;
-    }
-
-    #veck-menu-overlay {
-      position: fixed;
-      inset: 56px 0 0 0;
-      background: radial-gradient(circle at center, rgba(16, 26, 48, 0.88), rgba(6, 9, 17, 0.96));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 35;
-      padding: 16px;
-    }
-
-    .veck-menu-card {
-      width: 100%;
-      max-width: 540px;
-      background: rgba(13, 20, 36, 0.92);
-      border: 1px solid rgba(0, 255, 204, 0.35);
-      border-radius: 16px;
-      padding: 28px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65);
-      text-align: center;
-      color: #eef4ff;
-    }
-
-    .veck-menu-card h1 {
-      font-size: 32px;
-      letter-spacing: 2px;
-      color: #00ffcc;
-      margin-bottom: 6px;
-    }
-
-    .veck-menu-card p.sub {
-      color: #9fb0cc;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
-
-    .veck-mode-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .veck-mode-btn {
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      color: #eef4ff;
-      padding: 10px 8px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 13px;
-      transition: all 0.15s ease;
-    }
-
-    .veck-mode-btn:hover {
-      border-color: #00ffcc;
-    }
-
-    .veck-mode-btn.active {
-      background: rgba(0, 255, 204, 0.18);
-      border-color: #00ffcc;
-      color: #00ffcc;
-    }
-
-    .veck-play-btn {
-      width: 100%;
-      padding: 14px;
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: #061018;
-      background: linear-gradient(90deg, #00ffcc, #00b8ff);
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: transform 0.12s ease, filter 0.12s ease;
-    }
-
-    .veck-play-btn:hover {
-      filter: brightness(1.08);
-      transform: translateY(-1px);
-    }
-
-    .veck-controls-hint {
-      margin-top: 18px;
-      text-align: right;
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 10px;
-      padding: 12px 14px;
-      font-size: 12.5px;
-      line-height: 1.7;
-      color: #c6d4ec;
-    }
-
-    .veck-controls-hint span.key {
-      color: #00ffcc;
-      font-weight: 700;
-    }
-
-    #supergoal-container {
-      display: none;
-      position: fixed;
-      inset: 56px 0 0 0;
-      width: 100vw;
-      height: calc(100vh - 56px);
-      z-index: 25;
-      background: #090d16;
-      overflow: hidden;
-    }
-
-    #supergoal-canvas-wrap {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      touch-action: none;
-      cursor: crosshair;
-    }
-
-    .sg-hud {
-      position: fixed;
-      top: 68px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: calc(100% - 24px);
-      max-width: 560px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(8px);
-      padding: 10px 14px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
-      z-index: 30;
-    }
-
-    .sg-stat {
-      font-size: 14px;
-      font-weight: 700;
-      white-space: nowrap;
-      color: #fff;
-    }
-
-    .sg-stat span {
-      color: #38bdf8;
-      font-size: 16px;
-    }
-
-    .sg-hud-actions {
-      display: flex;
-      gap: 6px;
-    }
-
-    .sg-btn {
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #ffffff;
-      border: none;
-      padding: 7px 11px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 12px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.35);
-      white-space: nowrap;
-    }
-
-    .sg-btn.secondary {
-      background: linear-gradient(135deg, #3b82f6, #2563eb);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);
-    }
-
-    .sg-btn.exit {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
-    }
-
-    .sg-banner {
-      position: fixed;
-      inset: 56px 0 0 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: rgba(9, 13, 22, 0.72);
-      backdrop-filter: blur(6px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      text-align: center;
-      padding: 20px;
-      z-index: 40;
-    }
-
-    .sg-banner.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .sg-banner-card {
-      background: #1e293b;
-      border: 1px solid #334155;
-      padding: 26px 30px;
-      border-radius: 22px;
-      box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6);
-      max-width: 360px;
-      width: 100%;
-      color: #fff;
-    }
-
-    .sg-banner h2 {
-      font-size: 28px;
-      margin-bottom: 10px;
-    }
-
-    .sg-banner p {
-      font-size: 14px;
-      color: #cbd5e1;
-      margin-bottom: 20px;
-    }
-
-    .sg-banner button {
-      width: 100%;
-      padding: 11px;
-      font-size: 15px;
-    }
-
-    .sg-hint {
-      position: fixed;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(15, 23, 42, 0.85);
-      padding: 8px 16px;
-      border-radius: 999px;
-      font-size: 13px;
-      color: #e2e8f0;
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      white-space: nowrap;
-      z-index: 30;
-      pointer-events: none;
-    }
-
-    @media (max-width: 900px) and (orientation: landscape) {
-      .top-nav {
-        height: 46px;
-        padding: 0 10px;
-        gap: 6px;
-      }
-
-      .brand {
-        font-size: 13px;
-      }
-
-      .nav-btns button {
-        padding: 5px 8px;
-        font-size: 11px;
-        border-radius: 7px;
-      }
-
-      .screen,
-      #slither-container,
-      #slitherOverlay,
-      #veck-container,
-      #veck-menu-overlay,
-      #supergoal-container,
-      .sg-banner {
-        top: 46px;
-        height: calc(100vh - 46px);
-      }
-
-      .veck-hud,
-      .veck-damage-overlay {
-        top: 46px;
-        height: calc(100vh - 46px);
-      }
-
-      #hud {
-        top: 54px;
-        right: 10px;
-        padding: 7px 10px;
-        font-size: 11px;
-        line-height: 1.45;
-        max-width: 215px;
-      }
-
-      #studio-bar {
-        top: 54px;
-        left: 10px;
-        width: 210px;
-        max-height: calc(100vh - 66px);
-        padding: 8px;
-        gap: 5px;
-        font-size: 11px;
-      }
-
-      body.studio-active #mobile-controls {
-        left: 226px;
-      }
-
-      #mobile-controls {
-        bottom: 10px;
-        left: 12px;
-        right: 12px;
-      }
-
-      #joystick-zone {
-        width: 88px;
-        height: 88px;
-      }
-
-      #joystick-knob {
-        width: 34px;
-        height: 34px;
-        top: 27px;
-        left: 27px;
-      }
-
-      .action-pad {
-        gap: 6px;
-      }
-
-      .action-pad button {
-        width: 58px;
-        height: 38px;
-        font-size: 11px;
-        border-radius: 10px;
-      }
-
-      .action-pad button.secondary-act {
-        height: 34px;
-        font-size: 10px;
-      }
-
-      .slither-hud {
-        top: 54px;
-        left: 10px;
-        right: 10px;
-      }
-
-      .slither-stats-card,
-      .slither-leaderboard-card {
-        padding: 7px 10px;
-        border-radius: 10px;
-        min-width: 120px;
-      }
-
-      .slither-stat-row,
-      .slither-lb-item {
-        font-size: 11px;
-      }
-
-      #slitherMinimap {
-        width: 84px;
-        height: 84px;
-        bottom: 10px;
-        right: 10px;
-      }
-
-      .slither-menu-card {
-        max-width: 520px;
-        padding: 14px 18px;
-        border-radius: 14px;
-      }
-
-      .slither-game-title {
-        font-size: 21px;
-        margin-bottom: 4px;
-      }
-
-      .slither-subtitle {
-        font-size: 11px;
-        margin-bottom: 10px;
-      }
-
-      .slither-input-group {
-        margin-bottom: 10px;
-      }
-
-      .slither-input-group input {
-        padding: 7px 10px;
-        font-size: 12px;
-      }
-
-      .slither-skins-grid {
-        gap: 6px;
-        margin-bottom: 10px;
-      }
-
-      .slither-play-btn {
-        padding: 9px;
-        font-size: 13px;
-      }
-
-      .slither-controls-hint {
-        margin-top: 8px;
-        font-size: 11px;
-        line-height: 1.35;
-      }
-
-      .veck-top-bar {
-        top: 54px;
-        left: 10px;
-        right: 10px;
-      }
-
-      .veck-panel {
-        padding: 6px 10px;
-      }
-
-      .veck-zone-name {
-        font-size: 12px;
-      }
-
-      .veck-stats-row {
-        gap: 10px;
-        font-size: 11px;
-      }
-
-      .veck-stats-row strong {
-        font-size: 12px;
-      }
-
-      .veck-killfeed {
-        top: 96px;
-        right: 10px;
-      }
-
-      .veck-bottom-bar {
-        bottom: 10px;
-        left: 10px;
-        right: 10px;
-      }
-
-      .veck-vitals {
-        min-width: 170px;
-      }
-
-      .veck-weapon-box {
-        min-width: 185px;
-      }
-
-      .veck-weapon-name {
-        font-size: 12px;
-      }
-
-      .veck-ammo-count {
-        font-size: 15px;
-      }
-
-      .veck-menu-card {
-        max-width: 620px;
-        padding: 14px 18px;
-      }
-
-      .veck-menu-card h1 {
-        font-size: 22px;
-        margin-bottom: 4px;
-      }
-
-      .veck-menu-card p.sub {
-        font-size: 12px;
-        margin-bottom: 12px;
-      }
-
-      .veck-mode-grid {
-        gap: 6px;
-        margin-bottom: 12px;
-      }
-
-      .veck-mode-btn {
-        padding: 7px 6px;
-        font-size: 11px;
-      }
-
-      .veck-play-btn {
-        padding: 10px;
-        font-size: 13px;
-      }
-
-      .veck-controls-hint {
-        margin-top: 10px;
-        padding: 8px 10px;
-        font-size: 11px;
-        line-height: 1.4;
-      }
-
-      .sg-hud {
-        top: 54px;
-        padding: 7px 10px;
-      }
-
-      .sg-stat {
-        font-size: 12px;
-      }
-
-      .sg-stat span {
-        font-size: 13px;
-      }
     }
   </style>
 </head>
 <body>
-  <div class="top-nav">
-    <div class="brand">⚡ ADAM GoGo 3D</div>
+  <div id="top-nav">
+    <div class="brand">⚡ ADAM GoGo</div>
     <div class="nav-btns">
       <button id="btn-games" class="active" onclick="showScreen('games-screen')">الألعاب</button>
       <button id="btn-studio" onclick="startNewOrCurrentStudio()">الاستوديو</button>
-      <button id="btn-avatar" onclick="showScreen('avatar-screen')">الشخصية</button>
       <button id="btn-store" onclick="showScreen('store-screen')">المتجر</button>
-      <button id="btn-orient" onclick="toggleMobileOrientation()">قلب الشاشة</button>
+      <button id="btn-avatar" onclick="showScreen('avatar-screen')">شخصيتي</button>
+      <button id="btn-rotate" onclick="toggleMobileOrientation()">🔄 قلب الشاشة</button>
     </div>
   </div>
 
   <div id="games-screen" class="screen active">
-    <h1 class="screen-title">اختر لعبتك ثلاثية الأبعاد</h1>
-    <p class="screen-sub">تنقل بين المغامرات، أو افتح الاستوديو لبناء ماب مستقل ومشاركته مع أصدقائك، أو عدّل شخصيتك واطوّرها من المتجر.</p>
+    <div class="container">
+      <h1>اختر لعبتك الثلاثية الأبعاد</h1>
+      <p style="color:#cbd5e1; font-size:14px;">العب، اجمع النقاط وعملة ADAM، أو ابنِ مابك المستقل في الاستوديو.</p>
 
-    <div class="games-grid">
-      <div class="game-card">
-        <h3>🏃 مغامرة القفز (Obby)</h3>
-        <p>اقفز بين المنصات الملونة، وتفادى السقوط، واصل إلى منصة النهاية الخضراء.</p>
-        <button onclick="enterGame('obby')">تشغيل Obby</button>
+      <div class="games-grid">
+        <div class="game-card">
+          <div>
+            <span class="game-badge">مغامرة</span>
+            <h3>🏃 مغامرة القفز (Obby)</h3>
+            <p style="color:#cbd5e1; font-size:13px;">اقفز بين المنصات وتفادى السقوط للوصول إلى منصة النهاية.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('obby')">تشغيل Obby</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">سباق</span>
+            <h3>🪙 سباق جمع العملات</h3>
+            <p style="color:#cbd5e1; font-size:13px;">اجمع أكبر عدد من العملات الذهبية في أسرع وقت ممكن.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('coins')">تشغيل السباق</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">تحدي</span>
+            <h3>🔥 أرض الحمم (Lava Escape)</h3>
+            <p style="color:#cbd5e1; font-size:13px;">اعبر فوق الحمم المشتعلة بدقة وسرعة دون لمس الخطر.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('lava')">تشغيل أرض الحمم</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">تزلج</span>
+            <h3>❄️ متاهة الجليد</h3>
+            <p style="color:#cbd5e1; font-size:13px;">انطلق عبر المنصات الجليدية السريعة واقفز نحو القمة.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('ice')">تشغيل متاهة الجليد</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">تصاعدي</span>
+            <h3>🗼 برج التحدي الحلزوني</h3>
+            <p style="color:#cbd5e1; font-size:13px;">تسلّق المنصات الحلزونية حتى قمة البرج الذهبية.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('tower')">تشغيل البرج</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">أركيد</span>
+            <h3>🐍 Slither Arena</h3>
+            <p style="color:#cbd5e1; font-size:13px;">اجمع الطاقة، كبّر طولك، وتصدّر قائمة المتصدرين.</p>
+          </div>
+          <button class="play-btn" onclick="openSlitherGame()">تشغيل Slither</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">تصويب 3D</span>
+            <h3>🎯 Veck.io 3D</h3>
+            <p style="color:#cbd5e1; font-size:13px;">مواجهات تصويب سريعة وحماسية في ساحة ثلاثية الأبعاد.</p>
+          </div>
+          <button class="play-btn" onclick="openVeckGame()">تشغيل Veck.io</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">سيارات 3D</span>
+            <h3>🏎️ Racing Limits</h3>
+            <p style="color:#cbd5e1; font-size:13px;">سباقات سيارات عالية السرعة وتجاوز حركة المرور.</p>
+          </div>
+          <button class="play-btn" onclick="openRacingLimitsGame()">تشغيل Racing Limits</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">كرة قدم 3D</span>
+            <h3>⚽ Super Goal 3D</h3>
+            <p style="color:#cbd5e1; font-size:13px;">ارسم مسار الكرة بإصبعك أو بالماوس لتجاوز الدفاع وتسجيل الأهداف.</p>
+          </div>
+          <button class="play-btn" onclick="openSuperGoalGame()">تشغيل Super Goal 3D</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">صدمات 3D</span>
+            <h3>💥 حلبة الصدمات (Bumper Arena)</h3>
+            <p style="color:#cbd5e1; font-size:13px;">ادفع الكرات وتفادى السقوط خارج الحلبة مع جمع النجوم الذهبية.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('bumper')">تشغيل Bumper Arena</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">كرة قدم 3D</span>
+            <h3>⚽ eFootball 26 3D</h3>
+            <p style="color:#cbd5e1; font-size:13px;">تشكيلة تكتيكية، فتح باكات اللاعبين، ومباريات أو ركلات ترجيح ثلاثية الأبعاد.</p>
+          </div>
+          <button class="play-btn" onclick="openEfootballGame()">تشغيل eFootball 26 3D</button>
+        </div>
+
+        <div class="game-card">
+          <div>
+            <span class="game-badge">ماب مستقل</span>
+            <h3>🛠️ مابي المستقل (لعبتي)</h3>
+            <p style="color:#cbd5e1; font-size:13px;">العب الماب المستقل الذي قمت ببنائه وحفظه ومشاركته.</p>
+          </div>
+          <button class="play-btn" onclick="enterGame('custom')">تشغيل مابي المستقل</button>
+        </div>
       </div>
 
-      <div class="game-card">
-        <h3>🪙 سباق جمع العملات</h3>
-        <p>اجمع أكبر عدد ممكن من العملات الذهبية في ساحة مفتوحة مليئة بالمنصات.</p>
-        <button onclick="enterGame('coins')">تشغيل جمع العملات</button>
-      </div>
+      <div id="horror-section" style="margin-top: 28px; padding-top: 20px; border-top: 1px solid rgba(248, 113, 113, 0.35);">
+        <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <div>
+            <h2 style="color:#f87171; margin:0;">👻 قسم ألعاب الرعب</h2>
+            <p style="color:#cbd5e1; font-size:13px; margin:4px 0 0;">أجواء ليلية مظلمة، مطاردات، ومفاتيح للنجاة في الظلام.</p>
+          </div>
+          <span style="background:rgba(239, 68, 68, 0.2); color:#fca5a5; border:1px solid rgba(248, 113, 113, 0.45); padding:4px 10px; border-radius:999px; font-size:12px; font-weight:800;">HORROR ZONE</span>
+        </div>
 
-      <div class="game-card">
-        <h3>🔥 أرض الحمم (Lava Escape)</h3>
-        <p>اعبر فوق الحمم المشتعلة بسرعة ودقة دون أن تلمس السطح الأحمر.</p>
-        <button onclick="enterGame('lava')">تشغيل أرض الحمم</button>
-      </div>
+        <div class="games-grid">
+          <div class="game-card" style="border-color: rgba(248, 113, 113, 0.35);">
+            <div>
+              <span class="game-badge" style="background:rgba(239, 68, 68, 0.2); color:#fca5a5;">رعب 3D</span>
+              <h3>🕯️ المتاهة المظلمة (Dark Maze)</h3>
+              <p style="color:#cbd5e1; font-size:13px;">اجمع القطع المضيئة وسط الظلام واهرب من الشبح المطارد نحو بوابة النجاة.</p>
+            </div>
+            <button type="button" class="play-btn" style="background:#ef4444; color:#ffffff;" onclick="enterGame('horror')">تشغيل المتاهة المظلمة</button>
+          </div>
 
-      <div class="game-card">
-        <h3>❄️ متاهة الجليد</h3>
-        <p>تحكم بحركتك فوق مسارات جليدية سريعة وقفزات متتالية نحو النهاية.</p>
-        <button onclick="enterGame('ice')">تشغيل متاهة الجليد</button>
-      </div>
+          <div class="game-card" style="border-color: rgba(248, 113, 113, 0.35);">
+            <div>
+              <span class="game-badge" style="background:rgba(239, 68, 68, 0.2); color:#fca5a5;">نجاة</span>
+              <h3>🌑 ممر الأشباح الليلي</h3>
+              <p style="color:#cbd5e1; font-size:13px;">اعبر الممر الليلي الموحش وتفادى ملامسة الأرواح الشاردة للوصول إلى النهاية.</p>
+            </div>
+            <button type="button" class="play-btn" style="background:#dc2626; color:#ffffff;" onclick="enterGame('horror')">دخول الممر المظلم</button>
+          </div>
 
-      <div class="game-card">
-        <h3>🗼 برج التحدي الحلزوني</h3>
-        <p>اصعد في مسار حلزوني متصاعد حتى قمة البرج الذهبية.</p>
-        <button onclick="enterGame('tower')">تشغيل البرج</button>
-      </div>
+          <div class="game-card" style="border-color: rgba(248, 113, 113, 0.35);">
+            <div>
+              <span class="game-badge" style="background:rgba(239, 68, 68, 0.2); color:#fca5a5;">رعب خارجي</span>
+              <h3>👵 Granny Horror</h3>
+              <p style="color:#cbd5e1; font-size:13px;">تسلل بهدوء وتفادى الجدة للخروج من المنزل عبر Granny Games.</p>
+            </div>
+            <button type="button" class="play-btn" style="background:#ef4444; color:#ffffff;" onclick="openGrannyGame()">تشغيل Granny</button>
+          </div>
 
-      <div class="game-card">
-        <h3>🐍 Slither Arena</h3>
-        <p>اجمع الطاقة لتكبير طولك، وحاصر الخصوم، وتصدر قائمة المتصدرين في ساحة دائرية.</p>
-        <button onclick="openSlitherGame()">تشغيل Slither Arena</button>
+          <div class="game-card" style="border-color: rgba(248, 113, 113, 0.35);">
+            <div>
+              <span class="game-badge" style="background:rgba(239, 68, 68, 0.2); color:#fca5a5;">رعب وبقاء</span>
+              <h3>🌲 99 Nights Bloxd.io</h3>
+              <p style="color:#cbd5e1; font-size:13px;">ابقَ على قيد الحياة لمدة 99 ليلة في أجواء Bloxd.io عبر CrazyGames.</p>
+            </div>
+            <button type="button" class="play-btn" style="background:#ef4444; color:#ffffff;" onclick="openNinetyNineNightsGame()">تشغيل 99 Nights</button>
+          </div>
+        </div>
       </div>
-
-      <div class="game-card">
-        <h3>🎯 Veck.io Arena</h3>
-        <p>تصويب سريع ثلاثي الأبعاد بأسلحة متعددة، انزلاق، ودروع وطاقة داخل ساحة قتال.</p>
-        <button onclick="openVeckGame()">تشغيل Veck.io</button>
-      </div>
-
-      <div class="game-card">
-        <h3>⚽ Super Goal 3D</h3>
-        <p>ارسم مسار التسديدة بلمسة أو سحب لتجاوز المدافعين والحارس وتسجيل الأهداف عبر المراحل.</p>
-        <button onclick="openSuperGoalGame()">تشغيل Super Goal 3D</button>
-      </div>
-
-      <div class="game-card">
-        <h3>🏎️ Racing Limits</h3>
-        <p>انطلق في سباقات سرعة وتجاوز حركة المرور في تجربة قيادة مثيرة.</p>
-        <button onclick="openRacingLimitsGame()">تشغيل Racing Limits</button>
-      </div>
-
-      <div class="game-card">
-        <h3>🛠️ استوديو بناء المابات</h3>
-        <p>أنشئ ماباً مستقلاً خاصاً بك، أضف منصات وحمم وقفزات ونقطة نهاية، واحفظه أو شاركه برابط.</p>
-        <button onclick="startNewOrCurrentStudio()">فتح الاستوديو</button>
-      </div>
+    </div>
+  </div>
+  <div id="store-screen" class="screen">
+    <div class="container">
+      <h1>متجر الهيئات والإضافات</h1>
+      <p style="color:#cbd5e1; font-size:14px;">اشترِ الهيئات والقبعات والأجنحة بعملة ADAM أو اشحن رصيدك لتخصيص شخصيتك.</p>
+      <div id="skins-grid" class="skins-grid"></div>
     </div>
   </div>
 
   <div id="avatar-screen" class="screen">
-    <h1 class="screen-title">تخصيص الشخصية</h1>
-    <p class="screen-sub">غيّر اسمك ولون بشرتك وملابسك وقبعتك أو أجنحتك لتظهر مباشرة داخل الألعاب.</p>
-
-    <div class="avatar-panel">
-      <div>
-        <div class="field">
+    <div class="container">
+      <h1>تخصيص الشخصية</h1>
+      <div class="form-card">
+        <div>
           <label for="player-name">اسم اللاعب</label>
-          <input id="player-name" type="text" maxlength="18" value="ADAM GoGo" />
+          <input id="player-name" type="text" maxlength="20" placeholder="اكتب اسمك" />
         </div>
-
-        <div class="field">
-          <label for="skin-color">لون البشرة</label>
-          <input id="skin-color" type="color" value="#f5cba7" />
+        <div class="form-row">
+          <div>
+            <label for="skin-color">لون البشرة</label>
+            <input id="skin-color" type="color" value="#f5cba7" />
+          </div>
+          <div>
+            <label for="shirt-color">لون القميص</label>
+            <input id="shirt-color" type="color" value="#3b82f6" />
+          </div>
+          <div>
+            <label for="pants-color">لون البنطال</label>
+            <input id="pants-color" type="color" value="#1e293b" />
+          </div>
+          <div>
+            <label for="hat-type">الإضافة / الرأس</label>
+            <select id="hat-type">
+              <option value="none">بدون إضافة</option>
+              <option value="cap">قبعة رياضية حمراء</option>
+              <option value="backpack">حقيبة مغامر</option>
+              <option value="tophat">قبعة كلاسيكية</option>
+              <option value="crown">تاج ذهبي ملكي</option>
+              <option value="adam_gogo">أجنحة ونفاثات ADAM GoGo ⚡</option>
+            </select>
+          </div>
         </div>
-
-        <div class="field">
-          <label for="shirt-color">لون القميص</label>
-          <input id="shirt-color" type="color" value="#3b82f6" />
-        </div>
-      </div>
-
-      <div>
-        <div class="field">
-          <label for="pants-color">لون البنطال</label>
-          <input id="pants-color" type="color" value="#1e293b" />
-        </div>
-
-        <div class="field">
-          <label for="hat-type">القبعة / الإضافة</label>
-          <select id="hat-type">
-            <option value="none">بدون إضافة</option>
-            <option value="cap">قبعة رياضية حمراء</option>
-            <option value="crown">تاج ذهبي</option>
-            <option value="tophat">قبعة كلاسيكية</option>
-            <option value="backpack">حقيبة ظهر</option>
-            <option value="adam_gogo">أجنحة ونفاثات ADAM GoGo ⚡</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>&nbsp;</label>
-          <button class="primary-btn" onclick="saveAvatar()">حفظ وتطبيق الشخصية</button>
-        </div>
+        <button class="play-btn" onclick="saveAvatar()">حفظ وتطبيق الشخصية</button>
       </div>
     </div>
   </div>
 
-  <div id="store-screen" class="screen">
-    <h1 class="screen-title">متجر ADAM GoGo</h1>
-    <p class="screen-sub">استخدم نقاطك وعملة ADAM لفتح هيئات ومظاهر وتعزيزات جديدة.</p>
-
-    <div class="skins-grid" id="skins-grid"></div>
-  </div>
-
   <div id="hud">
-    <div><strong id="hud-title">ساحة البداية</strong></div>
-    <div>الاسم: <span id="hud-name">ADAM GoGo</span></div>
-    <div>النقاط: <span id="hud-score">0</span> | ADAM: <span id="hud-adam">0</span></div>
-    <div style="margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap;">
-      <button class="secondary-btn" onclick="respawn()">إعادة</button>
-      <button class="secondary-btn" onclick="exitToMenu()">القائمة</button>
+    <div><strong>اللاعب:</strong> <span id="hud-name">ADAM GoGo</span></div>
+    <div><strong>الطور:</strong> <span id="hud-title">ساحة البداية</span></div>
+    <div><strong>النقاط:</strong> <span id="hud-score">0</span> | <strong>ADAM:</strong> <span id="hud-adam">150</span></div>
+    <div class="hud-actions">
+      <button style="background:#f59e0b; color:#111827;" onclick="respawn()">إعادة</button>
+      <button style="background:#ef4444; color:#fff;" onclick="exitToMenu()">خروج</button>
     </div>
   </div>
 
   <div id="studio-bar">
-    <div><strong>🛠️ استوديو المابات المستقلة</strong></div>
-    <div id="studio-active-map-label" style="color:#7dd3fc; font-weight:700;">الماب الحالي: مابي المستقل 1</div>
+    <div style="font-weight:800; font-size:13px; color:#38bdf8;">🛠️ استوديو بناء المابات المستقلة</div>
+    <div id="studio-active-map-label" style="font-size:11.5px; color:#facc15; font-weight:700;">الماب الحالي: مابي المستقل 1</div>
 
-    <button type="button" class="new-map-btn" onclick="createBlankIsolatedMap()">➕ إنشاء ماب جديد مستقل</button>
-
-    <input id="custom-game-title" type="text" placeholder="اسم الماب الحالي..." oninput="syncActiveMapRecord()" />
-    <input id="custom-game-desc" type="text" placeholder="وصف قصير للماب..." oninput="syncActiveMapRecord()" />
-
-    <select id="studio-type" onchange="updateStudioGhost()">
-      <option value="normal">منصة عادية</option>
-      <option value="bounce">منصة قفز عالي</option>
-      <option value="speed">منصة سرعة</option>
-      <option value="lava">حمم خطرة</option>
-      <option value="coin">عملة ذهبية</option>
-      <option value="finish">نقطة النهاية</option>
-    </select>
-
-    <select id="studio-size" onchange="updateStudioGhost()">
-      <option value="4,1,4">حجم متوسط (4×1×4)</option>
-      <option value="7,1,7">حجم كبير (7×1×7)</option>
-      <option value="2.5,1,2.5">حجم صغير (2.5×1×2.5)</option>
-      <option value="12,1,3">جسر طويل (12×1×3)</option>
-    </select>
-
-    <input id="studio-color" type="color" value="#38bdf8" onchange="updateStudioGhost()" />
-
-    <div class="studio-row">
-      <button type="button" onclick="adjustStudioOffsetY(1)">⬆️ رفع الارتفاع</button>
-      <button type="button" onclick="adjustStudioOffsetY(-1)">⬇️ خفض الارتفاع</button>
-    </div>
-    <div id="studio-height-label" style="color:#cbd5e1; text-align:center;">فارق الارتفاع: 0</div>
-
-    <div class="studio-row">
-      <button type="button" onclick="rotateStudioBlock()">🔄 تدوير 45°</button>
-      <button type="button" onclick="undoLastStudioBlock()">↩️ تراجع</button>
+    <div class="row">
+      <button type="button" style="background:#38bdf8; color:#082f49; flex:1;" onclick="createBlankIsolatedMap()">+ ماب مستقل جديد</button>
+      <button type="button" style="background:#22c55e; color:#052e16; flex:1;" onclick="registerCurrentMap()">💾 تسجيل الماب</button>
     </div>
 
-    <button type="button" class="place-btn" onclick="placeStudioItem()">➕ وضع القطعة (E)</button>
+    <button type="button" style="background:#facc15; color:#0f172a; width:100%;" onclick="copyShareableMapLink()">🔗 نسخ رابط مشاركة الماب</button>
 
-    <div class="studio-row">
-      <button type="button" onclick="loadStudioPreset('obby')">قالب Obby</button>
-      <button type="button" onclick="loadStudioPreset('lava')">قالب Lava</button>
+    <input id="custom-game-title" type="text" placeholder="اسم الماب المستقل" style="font-size:12px; padding:6px 8px;" oninput="syncActiveMapRecord()" />
+    <textarea id="custom-game-desc" rows="2" placeholder="وصف الماب المستقل..." style="font-size:12px; padding:6px 8px; resize:none;" oninput="syncActiveMapRecord()"></textarea>
+
+    <div class="row">
+      <select id="studio-type">
+        <option value="normal">منصة عادية</option>
+        <option value="bounce">منصة قفز عالٍ</option>
+        <option value="speed">منصة سرعة</option>
+        <option value="lava">منصة حمم</option>
+        <option value="coin">عملة ذهبية</option>
+        <option value="finish">نقطة نهاية</option>
+      </select>
+      <select id="studio-size">
+        <option value="4,1,4">متوسط</option>
+        <option value="7,1,7">كبير</option>
+        <option value="2.5,1,2.5">صغير</option>
+      </select>
+    </div>
+    <div class="row">
+      <input id="studio-color" type="color" value="#38bdf8" style="height:32px; padding:0;" />
+      <button type="button" style="background:#a855f7; color:#fff; flex:1;" onclick="rotateStudioBlock()">تدوير 45°</button>
+    </div>
+    <div class="row">
+      <button type="button" style="background:#334155; color:#fff; flex:1;" onclick="adjustStudioOffsetY(1)">رفع (+1)</button>
+      <button type="button" style="background:#334155; color:#fff; flex:1;" onclick="adjustStudioOffsetY(-1)">خفض (-1)</button>
+    </div>
+    <div id="studio-height-label" style="font-size:11px; color:#cbd5e1; text-align:center;">فارق الارتفاع: +0</div>
+    <button type="button" style="background:#22c55e; color:#052e16;" onclick="placeStudioItem()">+ إضافة قطعة للماب</button>
+    <div class="row">
+      <button type="button" style="background:#f59e0b; color:#111827; flex:1;" onclick="undoLastStudioBlock()">تراجع</button>
+      <button type="button" style="background:#ef4444; color:#fff; flex:1;" onclick="clearAllStudioBlocks()">مسح الكل</button>
+    </div>
+    <div class="row">
+      <button type="button" style="background:#0284c7; color:#fff; flex:1;" onclick="loadStudioPreset('obby')">قالب Obby</button>
+      <button type="button" style="background:#dc2626; color:#fff; flex:1;" onclick="loadStudioPreset('lava')">قالب Lava</button>
     </div>
 
-    <button type="button" class="share-btn" onclick="registerCurrentMap()">💾 حفظ الماب المستقل</button>
-    <button type="button" class="share-btn" onclick="copyShareableMapLink()">🔗 نسخ رابط مشاركة الماب</button>
-    <button type="button" class="danger-btn" onclick="clearAllStudioBlocks()">🗑️ مسح قطع الماب الحالي</button>
-
-    <div class="saved-maps-box">
-      <div style="font-weight:700; color:#f8fafc;">ماباتي المستقلة المحفوظة:</div>
-      <div id="saved-maps-list" style="display:flex; flex-direction:column; gap:5px; max-height:140px; overflow-y:auto;"></div>
-    </div>
+    <div style="font-size:11.5px; color:#93c5fd; font-weight:700; margin-top:2px;">المابات المستقلة المحفوظة:</div>
+    <div id="saved-maps-list" class="saved-maps-list"></div>
   </div>
 
   <div id="mobile-controls">
     <div id="joystick-zone">
       <div id="joystick-knob"></div>
     </div>
-    <div class="action-pad">
-      <button type="button" class="secondary-act" onclick="toggleMobileOrientation()">قلب</button>
-      <button type="button" onclick="jump()">قفز</button>
-    </div>
+    <button id="jump-btn" onclick="jump()">قفز</button>
   </div>
 
   <div id="toast"></div>
@@ -1728,157 +675,79 @@
   <div id="slither-container">
     <canvas id="slitherCanvas"></canvas>
 
-    <div class="slither-hud" id="slitherHud">
-      <div class="slither-stats-card">
-        <div class="slither-stat-row">
-          <span>الطول</span>
-          <span class="slither-stat-value" id="slitherScoreDisplay">10</span>
-        </div>
-        <div class="slither-stat-row">
-          <span>الأفضل</span>
-          <span class="slither-stat-value" id="slitherBestDisplay">10</span>
-        </div>
+    <div id="slitherHud">
+      <div class="slither-score-box">
+        <div class="slither-score-label">الطول الحالي</div>
+        <div class="slither-score-value" id="slitherScoreDisplay">10</div>
+        <div class="slither-best-value">الأفضل: <span id="slitherBestDisplay">10</span></div>
       </div>
 
-      <div class="slither-leaderboard-card">
-        <div class="slither-lb-title">المتصدرون</div>
-        <ol class="slither-lb-list" id="slitherLeaderboardList"></ol>
+      <div class="slither-leaderboard-box">
+        <div class="slither-leaderboard-title">المتصدرون</div>
+        <ul class="slither-leaderboard-list" id="slitherLeaderboardList"></ul>
       </div>
     </div>
 
-    <canvas id="slitherMinimap" width="124" height="124"></canvas>
+    <canvas id="slitherMinimap" width="128" height="128"></canvas>
 
     <div id="slitherOverlay">
-      <div class="slither-menu-card">
-        <div class="slither-game-title">SLITHER ARENA</div>
-        <div class="slither-subtitle">اجمع الطاقة لتنمو، وحاصر الخصوم لتجعلهم يصطدمون بك.</div>
+      <div class="slither-card">
+        <h2>Slither Arena</h2>
+        <p>حرّك المؤشر أو الإصبع للتوجيه • اضغط كليك أيسر أو Space للاندفاع</p>
 
-        <div class="slither-death-banner" id="slitherDeathStats"></div>
+        <div class="slither-death-stats" id="slitherDeathStats"></div>
 
         <div class="slither-input-group">
           <label for="slitherPlayerName">اسم اللاعب</label>
-          <input id="slitherPlayerName" type="text" maxlength="16" placeholder="أدخل اسمك" value="ADAM GoGo" />
+          <input id="slitherPlayerName" type="text" maxlength="16" placeholder="أدخل اسمك" />
         </div>
 
-        <div class="slither-skins-grid" id="slitherSkinsGrid"></div>
-
-        <button type="button" class="slither-play-btn" id="slitherPlayBtn">ابدأ اللعب</button>
-
-        <div class="slither-controls-hint">
-          حرّك الماوس أو الإصبع للتوجيه • اضغط زر الماوس الأيسر أو <strong>Space</strong> للاندفاع السريع
+        <div class="slither-input-group">
+          <label>اختر لون السحلية</label>
+          <div class="slither-skins-grid" id="slitherSkinsGrid"></div>
         </div>
+
+        <button class="slither-play-btn" id="slitherPlayBtn">ابدأ اللعب</button>
+        <button class="slither-exit-btn" onclick="closeSlitherGame()">العودة إلى قائمة الألعاب</button>
       </div>
     </div>
   </div>
 
   <div id="veck-container">
     <div id="veck-canvas-wrap"></div>
-
-    <div class="veck-damage-overlay" id="veck-damage-overlay"></div>
-
-    <div class="veck-hud" id="veck-hud">
-      <div class="veck-crosshair"></div>
-      <div class="veck-hitmarker" id="veck-hitmarker"></div>
-
-      <div class="veck-top-bar">
-        <div class="veck-panel">
-          <div class="veck-mode-badge" id="veck-mode-display">FFA</div>
-          <div class="veck-zone-name" id="veck-zone-name">الساحة الرئيسية</div>
-        </div>
-
-        <div class="veck-panel veck-stats-row">
-          <div>النقاط: <strong id="veck-score">0</strong></div>
-          <div>السلسلة: <strong id="veck-streak">0</strong></div>
-          <div>الأعداء: <strong id="veck-enemies-left">0</strong></div>
-        </div>
-      </div>
-
-      <div class="veck-killfeed" id="veck-killfeed"></div>
-      <div class="veck-toast" id="veck-toast-banner"></div>
-
-      <div class="veck-bottom-bar">
-        <div class="veck-panel veck-vitals">
-          <div class="veck-bar-label">
-            <span>الصحة (HP)</span>
-            <span id="veck-hp-text">100</span>
-          </div>
-          <div class="veck-bar-track">
-            <div class="veck-bar-fill veck-health-fill" id="veck-health-bar"></div>
-          </div>
-
-          <div class="veck-bar-label">
-            <span>الدرع (SHIELD)</span>
-            <span id="veck-shield-text">50</span>
-          </div>
-          <div class="veck-bar-track" style="margin-bottom: 0;">
-            <div class="veck-bar-fill veck-shield-fill" id="veck-shield-bar"></div>
-          </div>
-          <div id="veck-boost-status" style="margin-top: 6px; font-size: 11px; color: #00ffcc;"></div>
-        </div>
-
-        <div class="veck-panel veck-weapon-box">
-          <div class="veck-weapon-name" id="veck-weapon-name">X-9 PULSE RIFLE</div>
-          <div class="veck-ammo-count" id="veck-ammo-count">32 / 32</div>
-          <div class="veck-weapon-slots" id="veck-weapon-slots">
-            <div class="veck-slot active">1 Pulse</div>
-            <div class="veck-slot">2 Sniper</div>
-            <div class="veck-slot">3 Shotgun</div>
-            <div class="veck-slot">4 Rocket</div>
-            <div class="veck-slot">5 Plasma</div>
-            <div class="veck-slot">6 Katana</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div id="veck-menu-overlay">
-      <div class="veck-menu-card">
-        <h1>VECK 3D ARENA</h1>
-        <p class="sub">ساحة قتال سريعة ثلاثية الأبعاد — اختر النمط وابدأ المواجهة</p>
-
-        <div class="veck-mode-grid">
-          <button type="button" class="veck-mode-btn active" data-mode="ffa">Free For All</button>
-          <button type="button" class="veck-mode-btn" data-mode="gungame">Gun Game</button>
-          <button type="button" class="veck-mode-btn" data-mode="duel">1v1 Duel</button>
-        </div>
-
-        <button type="button" class="veck-play-btn" id="veck-play-btn">دخول الساحة</button>
-
-        <div class="veck-controls-hint">
-          <span class="key">WASD / الأسهم</span> للحركة • <span class="key">SPACE</span> للقفز • <span class="key">SHIFT / C</span> للانزلاق • <span class="key">1-6</span> لتبديل الأسلحة • <span class="key">R</span> لإعادة التلقيم • <span class="key">Click</span> لإطلاق النار
-        </div>
-      </div>
-    </div>
   </div>
 
   <div id="supergoal-container">
     <div id="supergoal-canvas-wrap"></div>
-
-    <div class="sg-hud">
-      <div class="sg-stat">المرحلة: <span id="sgLevelText">1</span></div>
-      <div class="sg-stat">الأهداف: <span id="sgScoreText">0</span></div>
-      <div class="sg-hud-actions">
-        <button type="button" class="sg-btn secondary" id="sgCamBtn">زاوية الكاميرا</button>
-        <button type="button" class="sg-btn" id="sgResetBtn">إعادة</button>
-        <button type="button" class="sg-btn exit" id="sgExitBtn">خروج</button>
+    <div id="supergoal-hud">
+      <div class="sg-panel">
+        <div><strong>⚽ Super Goal 3D</strong> • المرحلة: <span id="sgLevelText">1</span> • النقاط: <span id="sgScoreText">0</span></div>
+        <div style="font-size:11.5px; color:#cbd5e1; margin-top:2px;">اسحب من الكرة لرسم مسار التسديد نحو المرمى</div>
+      </div>
+      <div class="sg-panel" style="display:flex; gap:6px;">
+        <button type="button" class="sg-btn warn" id="sgResetBtn">إعادة</button>
+        <button type="button" class="sg-btn" id="sgCamBtn">📷 الكاميرا</button>
+        <button type="button" class="sg-btn danger" id="sgExitBtn">خروج</button>
       </div>
     </div>
-
-    <div class="sg-banner" id="sgBanner">
-      <div class="sg-banner-card">
-        <h2 id="sgBannerTitle">هدف رائع! ⚽</h2>
-        <p id="sgBannerSub">تسديدة متقنة في الشباك (+10 ADAM)</p>
-        <button type="button" class="sg-btn" id="sgNextBtn">المرحلة التالية</button>
-      </div>
+    <div id="sgBanner">
+      <div id="sgBannerTitle" style="font-size:22px; font-weight:900; color:#4ade80;">هدف!</div>
+      <div id="sgBannerSub" style="font-size:13px; color:#e2e8f0; margin:6px 0 14px;">تسديدة رائعة</div>
+      <button type="button" class="sg-btn" id="sgNextBtn" style="width:100%; padding:10px;">المرحلة التالية</button>
     </div>
-
-    <div class="sg-hint">اضغط على الكرة واسحب نحو المرمى</div>
   </div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
+  <div id="efootball-container">
+    <iframe id="efootball-frame" style="width:100%; height:100%; border:none; display:block;" title="eFootball 26 3D"></iframe>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script>
-    const RACING_LIMITS_URL = 'https://www.google.com/goto?url=CAESUwHEIkXXHwm0UmyFsUer38aHyjbyg3iXkavx93e1noQXJZ8cwznUUG-LRM6H_cpyhy8xXthDqPn0QcmPH27efylSfWtJ868Pt1ypQLRjWN8TbRj6&gsessionid=1Z12e5LN4l0jqPEJ6vhlRPemYhgLH0EXCemVdwBXAaHVnVrDHXZTlQ';
-    const VECK_EXTERNAL_URL = 'https://www.google.com/goto?url=CAESTAHEIkXXKn_bdzQZuARMPxYN_IixwwH3moeZ7A8yWU0SS2vCsY5IlTB3gVaPYYAQpPXdH_KiEi473zTX8Easi9h1sqPntsI9QltZQw4&gsessionid=hNAMH7wswd9tFoShH3nwBRGkEZuPwsmPzpry6TYxIyzoTNaU_iQ_1w';
+    const RACING_LIMITS_URL = 'https://racinglimits.io/';
+    const VECK_EXTERNAL_URL = 'https://veck.io/';
+    const GRANNY_URL = 'https://granny-games.com/';
+    const NINETY_NINE_NIGHTS_URL = 'https://www.crazygames.com/fr/game/99-nights-bloxd-io';
+
     const STORAGE_KEY_MAPS = 'adam_gogo_isolated_maps_v1';
     const STORAGE_KEY_ACTIVE_MAP = 'adam_gogo_active_map_id_v1';
     const STORAGE_KEY_PROFILE = 'adam_gogo_player_profile_v1';
@@ -2004,28 +873,6 @@
         saveMapsLibrary();
       }
       return current;
-    }
-
-    function injectDefaultSharedMaps() {
-      const defaults = [
-        {
-          id: 'default_shared_sky_obby',
-          title: 'ماب السماء والقفز (مشترك)',
-          description: 'مسار قفز ومنصات سرعة وقفز عالٍ مع نقطة نهاية.',
-          author: 'ADAM GoGo',
-          blocks: [
-            { x: 0, y: 1, z: -7, w: 4, h: 1, d: 4, color: '#3b82f6', type: 'normal', rotDeg: 0 },
-            { x: 3, y: 2.2, z: -14, w: 4, h: 1, d: 4, color: '#8b5cf6', type: 'bounce', rotDeg: 0 },
-            { x: 0, y: 4.5, z: -22, w: 5, h: 1, d: 5, color: '#06b6d4', type: 'speed', rotDeg: 0 },
-            { x: 0, y: 5.5, z: -30, w: 6, h: 1, d: 6, color: '#22c55e', type: 'finish', rotDeg: 0 }
-          ]
-        }
-      ];
-      defaults.forEach(def => {
-        if (!mapsLibrary.some(m => m.id === def.id)) {
-          mapsLibrary.push(def);
-        }
-      });
     }
 
     function loadMapsLibrary() {
@@ -2230,6 +1077,7 @@
     scene.fog = new THREE.FogExp2(0x87ceeb, 0.008);
 
     const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2));
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -2334,6 +1182,13 @@
       }
     }
 
+    function stopAllActiveGameLoops() {
+      if (typeof stopSlitherLoop === 'function') stopSlitherLoop();
+      if (typeof stopVeckLoop === 'function') stopVeckLoop();
+      if (typeof stopSuperGoalLoop === 'function') stopSuperGoalLoop();
+      if (typeof stopEfootballLoop === 'function') stopEfootballLoop();
+    }
+
     function hideOverlays() {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById('studio-bar').style.display = 'none';
@@ -2345,6 +1200,11 @@
       if (typeof closeSuperGoalOverlayOnly === 'function') closeSuperGoalOverlayOnly();
       const sgWrap = document.getElementById('supergoal-container');
       if (sgWrap) sgWrap.style.display = 'none';
+      const efWrap = document.getElementById('efootball-container');
+      if (efWrap) {
+        efWrap.style.display = 'none';
+        if (typeof stopEfootballLoop === 'function') stopEfootballLoop();
+      }
     }
 
     function showScreen(screenId) {
@@ -2365,11 +1225,28 @@
       }
     }
 
+    function openExternalGameUrl(url) {
+      stopAllActiveGameLoops();
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
+      if (!win) {
+        window.location.href = url;
+      }
+    }
+
     function openRacingLimitsGame() {
-      if (typeof stopSlitherLoop === 'function') stopSlitherLoop();
-      if (typeof stopVeckLoop === 'function') stopVeckLoop();
-      if (typeof stopSuperGoalLoop === 'function') stopSuperGoalLoop();
-      window.location.href = RACING_LIMITS_URL;
+      openExternalGameUrl(RACING_LIMITS_URL);
+    }
+
+    function openVeckGame() {
+      openExternalGameUrl(VECK_EXTERNAL_URL);
+    }
+
+    function openGrannyGame() {
+      openExternalGameUrl(GRANNY_URL);
+    }
+
+    function openNinetyNineNightsGame() {
+      openExternalGameUrl(NINETY_NINE_NIGHTS_URL);
     }
 
     function buyRealMoneyPack(adamAmount, price) {
@@ -2436,6 +1313,7 @@
       platforms = [];
       coins = [];
       finishObj = null;
+      window._horrorGhost = null;
     }
 
     function createPlatform(x, y, z, w, h, d, color, type = 'normal', rotDeg = 0) {
@@ -2834,6 +1712,7 @@
       speedBoostTimer = 0;
       player.position.set(0, 2, 4);
       playerVel.set(0, 0, 0);
+      scene.fog = new THREE.FogExp2(0x87ceeb, 0.008);
 
       const hudTitle = document.getElementById('hud-title');
 
@@ -2900,6 +1779,40 @@
         }
         createPlatform(0, 16.5, 0, 7, 1, 7, 0xfacc15);
         createFinishPad(0, 17.2, 0);
+      } else if (mode === 'bumper') {
+        hudTitle.textContent = 'حلبة الصدمات (Bumper Arena)';
+        scene.background = new THREE.Color(0x0f172a);
+        createPlatform(0, 0, 0, 26, 1, 26, 0x1e293b);
+        createPlatform(0, 0.6, -8, 5, 1.2, 5, 0x38bdf8, 'bounce');
+        createPlatform(-7, 0.5, 5, 4.5, 1, 4.5, 0xf97316, 'speed');
+        createPlatform(7, 0.5, 5, 4.5, 1, 4.5, 0xef4444, 'lava');
+        createCoin(-5, 1.5, -5);
+        createCoin(5, 1.5, -5);
+        createCoin(0, 2.2, -8);
+        createCoin(0, 1.5, 8);
+        createFinishPad(0, 0.7, -11);
+      } else if (mode === 'horror') {
+        hudTitle.textContent = '👻 المتاهة المظلمة (Horror 3D)';
+        scene.background = new THREE.Color(0x070a12);
+        scene.fog = new THREE.FogExp2(0x070a12, 0.042);
+        createPlatform(0, 0, 0, 32, 1, 32, 0x1e1b4b);
+
+        const wallCoords = [
+          [-5, 2, -4, 6, 4, 1],
+          [6, 2, -6, 6, 4, 1],
+          [0, 2, -11, 10, 4, 1],
+          [-7, 2, 4, 1, 4, 7],
+          [7, 2, 3, 1, 4, 7]
+        ];
+        wallCoords.forEach(([wx, wy, wz, ww, wh, wd]) => {
+          createPlatform(wx, wy, wz, ww, wh, wd, 0x312e81);
+        });
+
+        createCoin(-8, 1.5, -8);
+        createCoin(8, 1.5, -8);
+        createCoin(0, 1.5, 6);
+        createFinishPad(0, 0.6, -13.5);
+        player.position.set(0, 2, 6);
       } else if (mode === 'custom' || mode === 'studio') {
         const current = ensureActiveMap();
         savedStudioBlocks = cloneBlocks(current.blocks);
@@ -2918,12 +1831,11 @@
     }
 
     function enterGame(mode) {
-      if (typeof stopSlitherLoop === 'function') stopSlitherLoop();
-      if (typeof stopVeckLoop === 'function') stopVeckLoop();
-      if (typeof stopSuperGoalLoop === 'function') stopSuperGoalLoop();
+      stopAllActiveGameLoops();
       document.getElementById('slither-container').style.display = 'none';
       document.getElementById('veck-container').style.display = 'none';
       document.getElementById('supergoal-container').style.display = 'none';
+      document.getElementById('efootball-container').style.display = 'none';
 
       showScreen(null);
       buildGame(mode);
@@ -2964,7 +1876,7 @@
     window.addEventListener('keydown', (e) => {
       const k = e.key.toLowerCase();
       keys[k] = true;
-      if (currentGame !== 'slither' && currentGame !== 'veck' && currentGame !== 'supergoal') {
+      if (currentGame !== 'slither' && currentGame !== 'veck' && currentGame !== 'supergoal' && currentGame !== 'efootball') {
         if (e.code === 'Space') {
           e.preventDefault();
           jump();
@@ -3050,343 +1962,301 @@
     const SLITHER_BOT_COUNT = 16;
 
     const SLITHER_SKINS = [
-      { name: 'ADAM GoGo ⚡', colors: ['#0ea5e9', '#f97316', '#facc15', '#38bdf8'] },
-      { name: 'Emerald Surge', colors: ['#22c55e', '#16a34a', '#4ade80', '#15803d'] },
-      { name: 'Cyber Cyan', colors: ['#06b6d4', '#0284c7', '#22d3ee', '#0369a1'] },
-      { name: 'Neon Magenta', colors: ['#ec4899', '#db2777', '#f472b6', '#be185d'] },
-      { name: 'Solar Amber', colors: ['#f59e0b', '#d97706', '#fbbf24', '#b45309'] },
-      { name: 'Royal Violet', colors: ['#8b5cf6', '#7c3aed', '#a78bfa', '#6d28d9'] },
-      { name: 'Crimson Viper', colors: ['#ef4444', '#dc2626', '#f87171', '#b91c1c'] }
+      { name: 'ADAM GoGo', primary: '#38bdf8', secondary: '#0284c7', glow: 'rgba(56, 189, 248, 0.45)' },
+      { name: 'Emerald', primary: '#22c55e', secondary: '#15803d', glow: 'rgba(34, 197, 94, 0.45)' },
+      { name: 'Crimson', primary: '#ef4444', secondary: '#b91c1c', glow: 'rgba(239, 68, 68, 0.45)' },
+      { name: 'Solar', primary: '#facc15', secondary: '#ca8a04', glow: 'rgba(250, 204, 21, 0.45)' },
+      { name: 'Violet', primary: '#a855f7', secondary: '#7e22ce', glow: 'rgba(168, 85, 247, 0.45)' },
+      { name: 'Coral', primary: '#fb7185', secondary: '#e11d48', glow: 'rgba(251, 113, 133, 0.45)' },
+      { name: 'Mint', primary: '#2dd4bf', secondary: '#0f766e', glow: 'rgba(45, 212, 191, 0.45)' }
     ];
 
     const SLITHER_BOT_NAMES = [
-      'ViperX', 'Nyx', 'Kobra', 'Zephyr', 'Nova', 'Fang', 'Echo', 'Orion',
-      'Jinx', 'Atlas', 'Mamba', 'Blitz', 'Lyra', 'Sable', 'Pyro', 'Rex'
+      'ViperX', 'Nyx', 'Krait', 'Cobra99', 'Shadow', 'Slinky', 'Zephyr', 'Mamba',
+      'Nova', 'Fang', 'Echo', 'Orion', 'Pulse', 'Drift', 'Titan', 'Apex', 'Hydra', 'Blitz'
     ];
-
+  </script>
+  let slitherAnimId = null;
+    let slitherRunning = false;
+    let slitherLastTime = 0;
+    let slitherBestScore = Number(localStorage.getItem('slitherBestScore') || 10);
     let slitherSelectedSkin = 0;
     let slitherFoods = [];
     let slitherSnakes = [];
-    let slitherPlayerSnake = null;
-    let slitherBestScore = Number(localStorage.getItem('slither_best_score_v1') || 10);
-    let slitherPointerActive = false;
-    let slitherPointerScreenX = 0;
-    let slitherPointerScreenY = 0;
-    let slitherBoostPressed = false;
-    let slitherLastTime = 0;
-    let slitherRunning = false;
-    let slitherRafId = null;
-    let slitherCamera = { x: 0, y: 0, zoom: 1 };
+    let slitherHuman = null;
+    let slitherCamera = { x: 0, y: 0 };
+    let slitherPointer = { active: false, screenX: 0, screenY: 0 };
+    let slitherBoostKey = false;
 
-    function resizeSlitherCanvas() {
-      const vp = getViewportDimensions();
-      const isLandscapeNow = vp.width > vp.height;
-      const navHeight = (vp.width <= 900 && isLandscapeNow) ? 46 : 56;
-      slitherCanvas.width = vp.width;
-      slitherCanvas.height = Math.max(1, vp.height - navHeight);
-    }
-
-    function initSlitherSkinPicker() {
+    function buildSlitherSkinsUI() {
       slitherSkinsGrid.innerHTML = '';
       SLITHER_SKINS.forEach((skin, idx) => {
-        const el = document.createElement('button');
-        el.type = 'button';
+        const el = document.createElement('div');
         el.className = 'slither-skin-option' + (idx === slitherSelectedSkin ? ' selected' : '');
-        el.style.background = `linear-gradient(135deg, ${skin.colors[0]}, ${skin.colors[1]})`;
+        el.style.background = `linear-gradient(135deg, ${skin.primary}, ${skin.secondary})`;
         el.title = skin.name;
-        el.addEventListener('click', () => {
+        el.onclick = () => {
           slitherSelectedSkin = idx;
-          document.querySelectorAll('.slither-skin-option').forEach((node, i) => {
-            node.classList.toggle('selected', i === idx);
-          });
-        });
+          buildSlitherSkinsUI();
+        };
         slitherSkinsGrid.appendChild(el);
       });
     }
 
-    function randRange(min, max) { return Math.random() * (max - min) + min; }
-    function normalizeAngle(a) {
-      while (a > Math.PI) a -= Math.PI * 2;
-      while (a < -Math.PI) a += Math.PI * 2;
-      return a;
+    function randomPointInSlitherWorld(margin = 140) {
+      const r = Math.sqrt(Math.random()) * Math.max(100, SLITHER_WORLD_RADIUS - margin);
+      const a = Math.random() * Math.PI * 2;
+      return { x: Math.cos(a) * r, y: Math.sin(a) * r };
     }
 
-    function createSlitherFood(x, y, value, color) {
-      const angle = randRange(0, Math.PI * 2);
-      const radiusDist = Math.sqrt(Math.random()) * (SLITHER_WORLD_RADIUS - 40);
-      const palette = ['#4ade80', '#38bdf8', '#f472b6', '#facc15', '#a78bfa', '#fb923c'];
-      const val = value || (Math.random() < 0.14 ? 2.5 : 1);
-      return {
-        x: x !== undefined ? x : Math.cos(angle) * radiusDist,
-        y: y !== undefined ? y : Math.sin(angle) * radiusDist,
-        value: val,
-        radius: val > 1.5 ? 6.5 : 4.2,
+    function spawnSlitherFood(x, y, value = 1, color = null) {
+      const palette = ['#f43f5e', '#fb923c', '#facc15', '#4ade80', '#38bdf8', '#c084fc'];
+      const pt = (typeof x === 'number' && typeof y === 'number') ? { x, y } : randomPointInSlitherWorld(80);
+      slitherFoods.push({
+        x: pt.x,
+        y: pt.y,
+        value,
+        radius: Math.min(11, 4.5 + value * 1.4),
         color: color || palette[Math.floor(Math.random() * palette.length)],
-        pulseOffset: randRange(0, Math.PI * 2)
-      };
+        phase: Math.random() * Math.PI * 2
+      });
     }
 
-    function createSlitherSnake({ name, isBot, skinIndex, startX, startY }) {
+    function populateSlitherFoods() {
+      slitherFoods = [];
+      for (let i = 0; i < SLITHER_FOOD_COUNT; i++) {
+        spawnSlitherFood();
+      }
+    }
+
+    function createSlitherSnake({ name, skinIndex, isBot, startPos }) {
       const skin = SLITHER_SKINS[skinIndex % SLITHER_SKINS.length];
-      const angle = randRange(-Math.PI, Math.PI);
+      const pos = startPos || randomPointInSlitherWorld(260);
+      const angle = Math.random() * Math.PI * 2;
       const segments = [];
       for (let i = 0; i < SLITHER_INITIAL_LENGTH; i++) {
-        segments.push({ x: startX - Math.cos(angle) * i * SLITHER_SEGMENT_SPACING, y: startY - Math.sin(angle) * i * SLITHER_SEGMENT_SPACING });
+        segments.push({
+          x: pos.x - Math.cos(angle) * i * SLITHER_SEGMENT_SPACING,
+          y: pos.y - Math.sin(angle) * i * SLITHER_SEGMENT_SPACING
+        });
       }
       return {
-        name, isBot, skin, angle, targetAngle: angle, segments,
-        score: SLITHER_INITIAL_LENGTH, radius: 11, boosting: false, alive: true,
-        boostFoodAccum: 0, aiTurnTimer: randRange(0.2, 1.0), aiDesiredDir: 1
+        name: name || 'Player',
+        isBot: Boolean(isBot),
+        skin,
+        angle,
+        targetAngle: angle,
+        segments,
+        score: SLITHER_INITIAL_LENGTH,
+        boosting: false,
+        alive: true,
+        aiTimer: 0,
+        aiTurnDir: 1
       };
     }
 
-    function spawnSlitherBot() {
-      const usedNames = new Set(slitherSnakes.map(s => s.name));
-      const available = SLITHER_BOT_NAMES.filter(n => !usedNames.has(n));
-      const name = available.length ? available[Math.floor(Math.random() * available.length)] : `Bot_${Math.floor(randRange(10, 99))}`;
-      const ang = randRange(0, Math.PI * 2);
-      const dist = randRange(250, SLITHER_WORLD_RADIUS - 350);
-      return createSlitherSnake({
-        name, isBot: true, skinIndex: Math.floor(Math.random() * SLITHER_SKINS.length),
-        startX: Math.cos(ang) * dist, startY: Math.sin(ang) * dist
-      });
-    }
+    function initSlitherMatch() {
+      const typedName = (slitherPlayerNameInput.value || '').trim();
+      const finalName = typedName || myName || 'ADAM GoGo';
+      slitherPlayerNameInput.value = finalName;
+      slitherBestDisplay.textContent = slitherBestScore;
 
-    function resetSlitherWorld(playerName) {
-      slitherFoods = [];
-      for (let i = 0; i < SLITHER_FOOD_COUNT; i++) slitherFoods.push(createSlitherFood());
+      populateSlitherFoods();
       slitherSnakes = [];
-      const cleanName = (playerName || '').trim() || myName || 'ADAM GoGo';
-      slitherPlayerSnake = createSlitherSnake({
-        name: cleanName, isBot: false, skinIndex: slitherSelectedSkin, startX: 0, startY: 0
+
+      slitherHuman = createSlitherSnake({
+        name: finalName,
+        skinIndex: slitherSelectedSkin,
+        isBot: false,
+        startPos: { x: 0, y: 0 }
       });
-      slitherSnakes.push(slitherPlayerSnake);
-      for (let i = 0; i < SLITHER_BOT_COUNT; i++) slitherSnakes.push(spawnSlitherBot());
-      slitherCamera.x = slitherPlayerSnake.segments[0].x;
-      slitherCamera.y = slitherPlayerSnake.segments[0].y;
-      slitherCamera.zoom = 1;
-      slitherBestDisplay.textContent = Math.floor(slitherBestScore);
-    }
+      slitherSnakes.push(slitherHuman);
 
-    function startSlitherMatch() {
-      resizeSlitherCanvas();
-      resetSlitherWorld(slitherPlayerNameInput.value);
-      slitherOverlay.style.display = 'none';
-      slitherHud.style.display = 'block';
-      slitherLastTime = performance.now();
-      slitherRunning = true;
-      if (!slitherRafId) slitherRafId = requestAnimationFrame(slitherLoop);
-    }
-
-    function closeSlitherOverlayOnly() {
-      slitherOverlay.style.display = 'none';
-      slitherHud.style.display = 'none';
-    }
-
-    function stopSlitherLoop() {
-      slitherRunning = false;
-      slitherBoostPressed = false;
-      if (slitherRafId) {
-        cancelAnimationFrame(slitherRafId);
-        slitherRafId = null;
+      for (let i = 0; i < SLITHER_BOT_COUNT; i++) {
+        slitherSnakes.push(createSlitherSnake({
+          name: SLITHER_BOT_NAMES[i % SLITHER_BOT_NAMES.length],
+          skinIndex: i + 1,
+          isBot: true
+        }));
       }
-    }
 
-    function openSlitherGame() {
-      if (typeof stopVeckLoop === 'function') stopVeckLoop();
-      if (typeof stopSuperGoalLoop === 'function') stopSuperGoalLoop();
-      document.getElementById('veck-container').style.display = 'none';
-      document.getElementById('supergoal-container').style.display = 'none';
-      showScreen(null);
-      currentGame = 'slither';
-      slitherContainer.style.display = 'block';
-      resizeSlitherCanvas();
-      if (!slitherPlayerNameInput.value) slitherPlayerNameInput.value = myName || 'ADAM GoGo';
-      slitherBestDisplay.textContent = Math.floor(slitherBestScore);
-      slitherOverlay.style.display = 'flex';
-      slitherHud.style.display = 'none';
-      if (!slitherFoods.length) {
-        resetSlitherWorld(slitherPlayerNameInput.value);
-      }
-      slitherLastTime = performance.now();
+      slitherCamera.x = slitherHuman.segments[0].x;
+      slitherCamera.y = slitherHuman.segments[0].y;
       slitherRunning = true;
-      if (!slitherRafId) slitherRafId = requestAnimationFrame(slitherLoop);
+      slitherLastTime = performance.now();
     }
 
-    function closeSlitherGame() {
-      stopSlitherLoop();
-      slitherContainer.style.display = 'none';
-      showScreen('games-screen');
-    }
-
-    function updateSlitherSnakeRadius(snake) {
-      snake.radius = Math.min(24, 11 + Math.max(0, snake.score - SLITHER_INITIAL_LENGTH) * 0.08);
-    }
-
-    function growSlitherSnake(snake, amount) {
+    function growSlitherSnake(snake, amount = 1) {
       snake.score += amount;
-      updateSlitherSnakeRadius(snake);
-      const targetSegments = Math.floor(snake.score);
-      while (snake.segments.length < targetSegments) {
-        const tail = snake.segments[snake.segments.length - 1];
+      const targetLen = Math.floor(snake.score);
+      const tail = snake.segments[snake.segments.length - 1];
+      while (snake.segments.length < targetLen) {
         snake.segments.push({ x: tail.x, y: tail.y });
       }
-      if (!snake.isBot && Math.floor(snake.score) > slitherBestScore) {
-        slitherBestScore = Math.floor(snake.score);
-        localStorage.setItem('slither_best_score_v1', String(slitherBestScore));
-        slitherBestDisplay.textContent = slitherBestScore;
+      if (!snake.isBot) {
+        myScore += amount * 2;
+        if (Math.random() < 0.35) myAdam += 1;
+        updateHudStats();
+        if (snake.score > slitherBestScore) {
+          slitherBestScore = snake.score;
+          localStorage.setItem('slitherBestScore', String(slitherBestScore));
+          slitherBestDisplay.textContent = slitherBestScore;
+        }
       }
+    }
+
+    function normalizeAngleDiff(target, current) {
+      let diff = target - current;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      return diff;
     }
 
     function updateSlitherBotAI(bot, dt) {
+      bot.aiTimer -= dt;
       const head = bot.segments[0];
-      bot.aiTurnTimer -= dt;
       const distFromCenter = Math.hypot(head.x, head.y);
-      if (distFromCenter > SLITHER_WORLD_RADIUS - 220) {
+
+      if (distFromCenter > SLITHER_WORLD_RADIUS - 240) {
         bot.targetAngle = Math.atan2(-head.y, -head.x);
         bot.boosting = false;
         return;
       }
-      let dangerX = 0, dangerY = 0, hasDanger = false;
-      for (const other of slitherSnakes) {
-        if (other === bot || !other.alive) continue;
-        for (let i = 0; i < other.segments.length; i += 2) {
-          const seg = other.segments[i];
-          const dx = head.x - seg.x, dy = head.y - seg.y;
-          const d = Math.hypot(dx, dy);
-          if (d < 115 && d > 0.001) {
-            dangerX += (dx / d) * (115 - d);
-            dangerY += (dy / d) * (115 - d);
-            hasDanger = true;
-          }
-        }
-      }
-      if (hasDanger) {
-        bot.targetAngle = Math.atan2(dangerY, dangerX);
-        bot.boosting = bot.score > 16 && Math.random() < 0.25;
-        return;
-      }
-      if (bot.aiTurnTimer <= 0) {
-        bot.aiTurnTimer = randRange(0.35, 1.1);
-        let bestFood = null, bestDist = 340;
+
+      if (bot.aiTimer <= 0) {
+        bot.aiTimer = 0.25 + Math.random() * 0.45;
+        let bestFood = null;
+        let bestScore = -Infinity;
         for (let i = 0; i < slitherFoods.length; i += 2) {
           const f = slitherFoods[i];
           const d = Math.hypot(f.x - head.x, f.y - head.y);
-          if (d < bestDist) { bestDist = d; bestFood = f; }
-        }
-        if (bestFood) bot.targetAngle = Math.atan2(bestFood.y - head.y, bestFood.x - head.x);
-        else {
-          if (Math.random() < 0.45) bot.aiDesiredDir *= -1;
-          bot.targetAngle = normalizeAngle(bot.angle + bot.aiDesiredDir * randRange(0.4, 1.1));
-        }
-        bot.boosting = false;
-      }
-    }
-
-    function stepSlitherSnake(snake, dt) {
-      if (!snake.alive) return;
-      if (!snake.isBot) {
-        if (slitherPointerActive) {
-          const head = snake.segments[0];
-          const headScreenX = (head.x - slitherCamera.x) * slitherCamera.zoom + slitherCanvas.width / 2;
-          const headScreenY = (head.y - slitherCamera.y) * slitherCamera.zoom + slitherCanvas.height / 2;
-          snake.targetAngle = Math.atan2(slitherPointerScreenY - headScreenY, slitherPointerScreenX - headScreenX);
-        }
-        snake.boosting = slitherBoostPressed && snake.score > SLITHER_INITIAL_LENGTH;
-      } else {
-        updateSlitherBotAI(snake, dt);
-      }
-
-      const diff = normalizeAngle(snake.targetAngle - snake.angle);
-      const maxTurn = SLITHER_TURN_SPEED * dt;
-      if (Math.abs(diff) <= maxTurn) snake.angle = snake.targetAngle;
-      else snake.angle = normalizeAngle(snake.angle + Math.sign(diff) * maxTurn);
-
-      let speed = snake.boosting ? SLITHER_BOOST_SPEED : SLITHER_BASE_SPEED;
-      if (snake.boosting) {
-        snake.boostFoodAccum += dt * 4.5;
-        if (snake.boostFoodAccum >= 1) {
-          const dropCount = Math.floor(snake.boostFoodAccum);
-          snake.boostFoodAccum -= dropCount;
-          if (snake.score > SLITHER_INITIAL_LENGTH) {
-            snake.score = Math.max(SLITHER_INITIAL_LENGTH, snake.score - dropCount * 0.5);
-            updateSlitherSnakeRadius(snake);
-            const tail = snake.segments[snake.segments.length - 1];
-            if (tail && slitherFoods.length < SLITHER_FOOD_COUNT + 250) {
-              slitherFoods.push(createSlitherFood(tail.x + randRange(-8, 8), tail.y + randRange(-8, 8), 1, snake.skin.colors[0]));
+          if (d < 460) {
+            const val = (f.value * 40) / (d + 25);
+            if (val > bestScore) {
+              bestScore = val;
+              bestFood = f;
             }
-            if (snake.segments.length > Math.floor(snake.score)) snake.segments.pop();
-          } else snake.boosting = false;
+          }
         }
-      }
-
-      const head = snake.segments[0];
-      const nextHead = { x: head.x + Math.cos(snake.angle) * speed * dt, y: head.y + Math.sin(snake.angle) * speed * dt };
-      nextHead.x = Math.round(nextHead.x * 100) / 100;
-      nextHead.y = Math.round(nextHead.y * 100) / 100;
-      snake.segments[0] = nextHead;
-
-      for (let i = 1; i < snake.segments.length; i++) {
-        const prev = snake.segments[i - 1], curr = snake.segments[i];
-        const dx = prev.x - curr.x, dy = prev.y - curr.y, dist = Math.hypot(dx, dy);
-        if (dist > SLITHER_SEGMENT_SPACING) {
-          const pull = (dist - SLITHER_SEGMENT_SPACING) / dist;
-          curr.x = Math.round((curr.x + dx * pull) * 100) / 100;
-          curr.y = Math.round((curr.y + dy * pull) * 100) / 100;
+        if (bestFood) {
+          bot.targetAngle = Math.atan2(bestFood.y - head.y, bestFood.x - head.x);
+        } else {
+          bot.targetAngle += (Math.random() - 0.5) * 1.4;
         }
+        bot.boosting = bot.score > 16 && Math.random() < 0.14;
       }
     }
 
     function killSlitherSnake(snake) {
       if (!snake.alive) return;
       snake.alive = false;
-      for (let i = 0; i < snake.segments.length; i += 2) {
+
+      const step = Math.max(1, Math.floor(snake.segments.length / 14));
+      for (let i = 0; i < snake.segments.length; i += step) {
         const seg = snake.segments[i];
-        if (slitherFoods.length < SLITHER_FOOD_COUNT + 350) {
-          slitherFoods.push(createSlitherFood(seg.x + randRange(-10, 10), seg.y + randRange(-10, 10), 2, snake.skin.colors[i % snake.skin.colors.length]));
-        }
+        spawnSlitherFood(
+          seg.x + (Math.random() - 0.5) * 18,
+          seg.y + (Math.random() - 0.5) * 18,
+          2,
+          snake.skin.primary
+        );
       }
+
       if (!snake.isBot) {
-        const finalScore = Math.floor(snake.score);
-        const earnedAdam = Math.max(5, Math.floor(finalScore / 5));
-        myScore += finalScore;
-        myAdam += earnedAdam;
-        updateHudStats();
+        slitherRunning = false;
         persistProfile();
         slitherDeathStats.style.display = 'block';
-        slitherDeathStats.innerHTML = `انتهت الجولة! طولك النهائي: <strong>${finalScore}</strong> • أفضل طول: <strong>${slitherBestScore}</strong> • ربحت <strong>+${earnedAdam} ADAM</strong>`;
-        slitherHud.style.display = 'none';
+        slitherDeathStats.innerHTML = `انتهت الجولة! طولك النهائي: <strong>${snake.score}</strong> • الأفضل: <strong>${slitherBestScore}</strong>`;
         slitherOverlay.style.display = 'flex';
+      } else {
+        setTimeout(() => {
+          if (currentGame === 'slither' && slitherRunning) {
+            const idx = slitherSnakes.indexOf(snake);
+            if (idx !== -1) {
+              slitherSnakes[idx] = createSlitherSnake({
+                name: snake.name,
+                skinIndex: Math.floor(Math.random() * SLITHER_SKINS.length),
+                isBot: true
+              });
+            }
+          }
+        }, 1400);
       }
     }
 
-    function checkSlitherCollisions() {
+    function stepSlither(dt) {
+      if (!slitherRunning) return;
+
+      while (slitherFoods.length < SLITHER_FOOD_COUNT) {
+        spawnSlitherFood();
+      }
+
       for (const snake of slitherSnakes) {
         if (!snake.alive) continue;
         const head = snake.segments[0];
-        if (Math.hypot(head.x, head.y) + snake.radius >= SLITHER_WORLD_RADIUS) {
+
+        if (!snake.isBot) {
+          if (slitherPointer.active) {
+            const worldTargetX = slitherCamera.x + (slitherPointer.screenX - slitherCanvas.width / 2);
+            const worldTargetY = slitherCamera.y + (slitherPointer.screenY - slitherCanvas.height / 2);
+            snake.targetAngle = Math.atan2(worldTargetY - head.y, worldTargetX - head.x);
+          }
+          snake.boosting = (slitherBoostKey || slitherPointer.active) && snake.score > SLITHER_INITIAL_LENGTH;
+        } else {
+          updateSlitherBotAI(snake, dt);
+          if (snake.boosting && snake.score <= SLITHER_INITIAL_LENGTH) snake.boosting = false;
+        }
+
+        const diff = normalizeAngleDiff(snake.targetAngle, snake.angle);
+        const maxTurn = SLITHER_TURN_SPEED * dt;
+        snake.angle += Math.max(-maxTurn, Math.min(maxTurn, diff));
+
+        const speed = snake.boosting ? SLITHER_BOOST_SPEED : SLITHER_BASE_SPEED;
+        const newHeadX = head.x + Math.cos(snake.angle) * speed * dt;
+        const newHeadY = head.y + Math.sin(snake.angle) * speed * dt;
+
+        if (Math.hypot(newHeadX, newHeadY) > SLITHER_WORLD_RADIUS) {
           killSlitherSnake(snake);
           continue;
         }
+
+        head.x = newHeadX;
+        head.y = newHeadY;
+
+        for (let i = 1; i < snake.segments.length; i++) {
+          const prev = snake.segments[i - 1];
+          const cur = snake.segments[i];
+          const dx = prev.x - cur.x;
+          const dy = prev.y - cur.y;
+          const dist = Math.hypot(dx, dy) || 0.0001;
+          if (dist > SLITHER_SEGMENT_SPACING) {
+            const pull = (dist - SLITHER_SEGMENT_SPACING) / dist;
+            cur.x += dx * pull;
+            cur.y += dy * pull;
+          }
+        }
+
+        const headRadius = Math.min(18, 9 + snake.score * 0.08);
         for (let i = slitherFoods.length - 1; i >= 0; i--) {
           const f = slitherFoods[i];
-          if (Math.hypot(head.x - f.x, head.y - f.y) <= snake.radius + f.radius + 4) {
+          if (Math.hypot(f.x - head.x, f.y - head.y) <= headRadius + f.radius + 4) {
             growSlitherSnake(snake, f.value);
             slitherFoods.splice(i, 1);
           }
         }
       }
-      while (slitherFoods.length < SLITHER_FOOD_COUNT) slitherFoods.push(createSlitherFood());
 
       for (const snake of slitherSnakes) {
         if (!snake.alive) continue;
         const head = snake.segments[0];
+        const headRadius = Math.min(18, 9 + snake.score * 0.08) * 0.78;
+
         for (const other of slitherSnakes) {
-          if (other === snake || !other.alive) continue;
-          for (let i = 0; i < other.segments.length; i++) {
+          if (!other.alive || other === snake) continue;
+          const bodyRadius = Math.min(17, 8.5 + other.score * 0.075) * 0.75;
+          for (let i = 1; i < other.segments.length; i += 2) {
             const seg = other.segments[i];
-            const segRadius = i === 0 ? other.radius : other.radius * 0.92;
-            if (Math.hypot(head.x - seg.x, head.y - seg.y) < snake.radius * 0.78 + segRadius * 0.78) {
+            if (Math.hypot(head.x - seg.x, head.y - seg.y) < headRadius + bodyRadius) {
               killSlitherSnake(snake);
               break;
             }
@@ -3394,1617 +2264,839 @@
           if (!snake.alive) break;
         }
       }
-      slitherSnakes = slitherSnakes.filter(s => s.alive || !s.isBot);
-      const currentBots = slitherSnakes.filter(s => s.isBot && s.alive).length;
-      for (let i = currentBots; i < SLITHER_BOT_COUNT; i++) slitherSnakes.push(spawnSlitherBot());
-    }
 
-    function updateSlitherHud() {
-      if (!slitherPlayerSnake) return;
-      slitherScoreDisplay.textContent = Math.floor(slitherPlayerSnake.score);
-      const sorted = [...slitherSnakes].filter(s => s.alive).sort((a, b) => b.score - a.score).slice(0, 7);
+      if (slitherHuman && slitherHuman.alive) {
+        slitherScoreDisplay.textContent = slitherHuman.score;
+        slitherCamera.x += (slitherHuman.segments[0].x - slitherCamera.x) * Math.min(1, dt * 10);
+        slitherCamera.y += (slitherHuman.segments[0].y - slitherCamera.y) * Math.min(1, dt * 10);
+      }
+
+      const sorted = [...slitherSnakes]
+        .filter(s => s.alive)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 6);
+
       slitherLeaderboardList.innerHTML = '';
       sorted.forEach((s, idx) => {
         const li = document.createElement('li');
         li.className = 'slither-lb-item' + (!s.isBot ? ' is-player' : '');
-        li.innerHTML = `<span>#${idx + 1} ${s.name}</span><span>${Math.floor(s.score)}</span>`;
+        li.innerHTML = `<span>${idx + 1}. ${s.name}</span><span>${s.score}</span>`;
         slitherLeaderboardList.appendChild(li);
       });
     }
 
-    function renderSlitherWorld(nowSec) {
-      const w = slitherCanvas.width, h = slitherCanvas.height;
+    function drawSlitherScene(now) {
+      const w = slitherCanvas.width;
+      const h = slitherCanvas.height;
       slitherCtx.clearRect(0, 0, w, h);
-      if (slitherPlayerSnake && slitherPlayerSnake.alive) {
-        const head = slitherPlayerSnake.segments[0];
-        slitherCamera.x += (head.x - slitherCamera.x) * 0.12;
-        slitherCamera.y += (head.y - slitherCamera.y) * 0.12;
-        const targetZoom = Math.max(0.62, Math.min(1.05, 1.05 - (slitherPlayerSnake.score - 10) * 0.0018));
-        slitherCamera.zoom += (targetZoom - slitherCamera.zoom) * 0.05;
-      }
+
+      slitherCtx.fillStyle = '#090d16';
+      slitherCtx.fillRect(0, 0, w, h);
 
       slitherCtx.save();
-      slitherCtx.translate(w / 2, h / 2);
-      slitherCtx.scale(slitherCamera.zoom, slitherCamera.zoom);
-      slitherCtx.translate(-slitherCamera.x, -slitherCamera.y);
+      slitherCtx.translate(w / 2 - slitherCamera.x, h / 2 - slitherCamera.y);
 
       const gridSize = 60;
-      const startX = Math.floor((slitherCamera.x - w / (2 * slitherCamera.zoom)) / gridSize) * gridSize;
-      const endX = Math.ceil((slitherCamera.x + w / (2 * slitherCamera.zoom)) / gridSize) * gridSize;
-      const startY = Math.floor((slitherCamera.y - h / (2 * slitherCamera.zoom)) / gridSize) * gridSize;
-      const endY = Math.ceil((slitherCamera.y + h / (2 * slitherCamera.zoom)) / gridSize) * gridSize;
+      const startX = Math.floor((slitherCamera.x - w / 2) / gridSize) * gridSize;
+      const endX = slitherCamera.x + w / 2;
+      const startY = Math.floor((slitherCamera.y - h / 2) / gridSize) * gridSize;
+      const endY = slitherCamera.y + h / 2;
 
       slitherCtx.strokeStyle = 'rgba(148, 163, 184, 0.08)';
       slitherCtx.lineWidth = 1;
       slitherCtx.beginPath();
-      for (let x = startX; x <= endX; x += gridSize) { slitherCtx.moveTo(x, startY); slitherCtx.lineTo(x, endY); }
-      for (let y = startY; y <= endY; y += gridSize) { slitherCtx.moveTo(startX, y); slitherCtx.lineTo(endX, y); }
+      for (let x = startX; x <= endX; x += gridSize) {
+        slitherCtx.moveTo(x, startY);
+        slitherCtx.lineTo(x, endY);
+      }
+      for (let y = startY; y <= endY; y += gridSize) {
+        slitherCtx.moveTo(startX, y);
+        slitherCtx.lineTo(endX, y);
+      }
       slitherCtx.stroke();
 
+      slitherCtx.strokeStyle = 'rgba(248, 113, 113, 0.55)';
+      slitherCtx.lineWidth = 4;
       slitherCtx.beginPath();
       slitherCtx.arc(0, 0, SLITHER_WORLD_RADIUS, 0, Math.PI * 2);
-      slitherCtx.strokeStyle = '#ef4444';
-      slitherCtx.lineWidth = 8;
       slitherCtx.stroke();
 
       for (const f of slitherFoods) {
-        const pulse = 1 + Math.sin(nowSec * 5 + f.pulseOffset) * 0.18;
+        const pulse = 1 + Math.sin(now * 0.005 + f.phase) * 0.14;
+        slitherCtx.fillStyle = f.color;
         slitherCtx.beginPath();
         slitherCtx.arc(f.x, f.y, f.radius * pulse, 0, Math.PI * 2);
-        slitherCtx.fillStyle = f.color;
         slitherCtx.fill();
       }
 
       for (const snake of slitherSnakes) {
         if (!snake.alive) continue;
+        const radius = Math.min(18, 9 + snake.score * 0.08);
         for (let i = snake.segments.length - 1; i >= 0; i--) {
           const seg = snake.segments[i];
-          const segR = i === 0 ? snake.radius : snake.radius * (0.94 - Math.min(0.25, i * 0.002));
+          const taper = i === 0 ? radius * 1.08 : radius * Math.max(0.52, 1 - (i / (snake.segments.length + 12)) * 0.42);
+          slitherCtx.fillStyle = i % 2 === 0 ? snake.skin.primary : snake.skin.secondary;
           slitherCtx.beginPath();
-          slitherCtx.arc(seg.x, seg.y, segR, 0, Math.PI * 2);
-          slitherCtx.fillStyle = snake.skin.colors[i % snake.skin.colors.length];
+          slitherCtx.arc(seg.x, seg.y, taper, 0, Math.PI * 2);
           slitherCtx.fill();
-          if (snake.boosting) {
-            slitherCtx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
-            slitherCtx.lineWidth = 2;
-            slitherCtx.stroke();
-          }
         }
+
         const head = snake.segments[0];
-        const eyeOffsetForward = snake.radius * 0.45, eyeOffsetSide = snake.radius * 0.42, eyeRadius = snake.radius * 0.24;
-        const perpX = -Math.sin(snake.angle), perpY = Math.cos(snake.angle);
-        const dirX = Math.cos(snake.angle), dirY = Math.sin(snake.angle);
-        [
-          { x: head.x + dirX * eyeOffsetForward + perpX * eyeOffsetSide, y: head.y + dirY * eyeOffsetForward + perpY * eyeOffsetSide },
-          { x: head.x + dirX * eyeOffsetForward - perpX * eyeOffsetSide, y: head.y + dirY * eyeOffsetForward - perpY * eyeOffsetSide }
-        ].forEach(pos => {
-          slitherCtx.beginPath(); slitherCtx.arc(pos.x, pos.y, eyeRadius, 0, Math.PI * 2); slitherCtx.fillStyle = '#ffffff'; slitherCtx.fill();
-          slitherCtx.beginPath(); slitherCtx.arc(pos.x + dirX * eyeRadius * 0.35, pos.y + dirY * eyeRadius * 0.35, eyeRadius * 0.55, 0, Math.PI * 2); slitherCtx.fillStyle = '#0f172a'; slitherCtx.fill();
-        });
-        slitherCtx.font = 'bold 13px Tahoma, sans-serif';
-        slitherCtx.textAlign = 'center';
         slitherCtx.fillStyle = '#f8fafc';
-        slitherCtx.fillText(snake.name, head.x, head.y - snake.radius - 10);
+        slitherCtx.font = 'bold 12px Tahoma, sans-serif';
+        slitherCtx.textAlign = 'center';
+        slitherCtx.fillText(snake.name, head.x, head.y - radius - 8);
       }
+
       slitherCtx.restore();
 
-      const mw = slitherMinimap.width, mh = slitherMinimap.height, mcx = mw / 2, mcy = mh / 2, mRadius = mw / 2 - 6;
+      const mw = slitherMinimap.width;
+      const mh = slitherMinimap.height;
+      const mr = mw / 2 - 4;
       slitherMinimapCtx.clearRect(0, 0, mw, mh);
-      slitherMinimapCtx.beginPath(); slitherMinimapCtx.arc(mcx, mcy, mRadius, 0, Math.PI * 2);
-      slitherMinimapCtx.strokeStyle = 'rgba(148, 163, 184, 0.45)'; slitherMinimapCtx.lineWidth = 1.5; slitherMinimapCtx.stroke();
+      slitherMinimapCtx.save();
+      slitherMinimapCtx.translate(mw / 2, mh / 2);
+
+      slitherMinimapCtx.strokeStyle = 'rgba(148, 163, 184, 0.35)';
+      slitherMinimapCtx.beginPath();
+      slitherMinimapCtx.arc(0, 0, mr, 0, Math.PI * 2);
+      slitherMinimapCtx.stroke();
+
       for (const snake of slitherSnakes) {
         if (!snake.alive) continue;
         const head = snake.segments[0];
-        const mx = mcx + (head.x / SLITHER_WORLD_RADIUS) * mRadius;
-        const my = mcy + (head.y / SLITHER_WORLD_RADIUS) * mRadius;
-        slitherMinimapCtx.beginPath(); slitherMinimapCtx.arc(mx, my, !snake.isBot ? 4 : 2.5, 0, Math.PI * 2);
-        slitherMinimapCtx.fillStyle = !snake.isBot ? '#38bdf8' : '#f87171'; slitherMinimapCtx.fill();
+        const mx = (head.x / SLITHER_WORLD_RADIUS) * mr;
+        const my = (head.y / SLITHER_WORLD_RADIUS) * mr;
+        slitherMinimapCtx.fillStyle = !snake.isBot ? '#4ade80' : '#f87171';
+        slitherMinimapCtx.beginPath();
+        slitherMinimapCtx.arc(mx, my, !snake.isBot ? 3.5 : 2.2, 0, Math.PI * 2);
+        slitherMinimapCtx.fill();
       }
+      slitherMinimapCtx.restore();
     }
 
     function slitherLoop(now) {
-      if (!slitherRunning) return;
-      const dt = Math.min(0.05, (now - slitherLastTime) / 1000 || 0.016);
+      if (currentGame !== 'slither') return;
+      const dt = Math.min(0.05, Math.max(0.001, (now - slitherLastTime) / 1000));
       slitherLastTime = now;
-      for (const snake of slitherSnakes) stepSlitherSnake(snake, dt);
-      checkSlitherCollisions();
-      updateSlitherHud();
-      renderSlitherWorld(now / 1000);
-      slitherRafId = requestAnimationFrame(slitherLoop);
+      stepSlither(dt);
+      drawSlitherScene(now);
+      slitherAnimId = requestAnimationFrame(slitherLoop);
     }
 
+    function stopSlitherLoop() {
+      slitherRunning = false;
+      if (slitherAnimId) {
+        cancelAnimationFrame(slitherAnimId);
+        slitherAnimId = null;
+      }
+    }
+
+    function closeSlitherOverlayOnly() {
+      slitherOverlay.style.display = 'none';
+      slitherHud.style.display = 'none';
+    }
+
+    function openSlitherGame() {
+      stopAllActiveGameLoops();
+      currentGame = 'slither';
+      hideOverlays();
+      setNavActive('btn-games');
+      refreshAllViewportSizes();
+      slitherContainer.style.display = 'block';
+      slitherHud.style.display = 'block';
+      slitherOverlay.style.display = 'flex';
+      slitherDeathStats.style.display = 'none';
+      slitherPlayerNameInput.value = myName || 'ADAM GoGo';
+      slitherBestDisplay.textContent = slitherBestScore;
+      buildSlitherSkinsUI();
+      slitherLastTime = performance.now();
+      slitherAnimId = requestAnimationFrame(slitherLoop);
+    }
+
+    function closeSlitherGame() {
+      stopSlitherLoop();
+      slitherContainer.style.display = 'none';
+      persistProfile();
+      showScreen('games-screen');
+    }
+
+    slitherPlayBtn.addEventListener('click', () => {
+      slitherOverlay.style.display = 'none';
+      slitherDeathStats.style.display = 'none';
+      initSlitherMatch();
+    });
+
+    slitherCanvas.addEventListener('pointerdown', (e) => {
+      slitherPointer.active = true;
+      const rect = slitherCanvas.getBoundingClientRect();
+      slitherPointer.screenX = e.clientX - rect.left;
+      slitherPointer.screenY = e.clientY - rect.top;
+    });
     slitherCanvas.addEventListener('pointermove', (e) => {
       const rect = slitherCanvas.getBoundingClientRect();
-      slitherPointerScreenX = e.clientX - rect.left;
-      slitherPointerScreenY = e.clientY - rect.top;
-      slitherPointerActive = true;
+      slitherPointer.screenX = e.clientX - rect.left;
+      slitherPointer.screenY = e.clientY - rect.top;
     });
-    slitherCanvas.addEventListener('pointerdown', (e) => {
-      const rect = slitherCanvas.getBoundingClientRect();
-      slitherPointerScreenX = e.clientX - rect.left;
-      slitherPointerScreenY = e.clientY - rect.top;
-      slitherPointerActive = true;
-      if (e.button === 0) slitherBoostPressed = true;
-    });
-    window.addEventListener('pointerup', () => { slitherBoostPressed = false; });
+    window.addEventListener('pointerup', () => { slitherPointer.active = false; });
     window.addEventListener('keydown', (e) => {
-      if (currentGame === 'slither' && e.code === 'Space') { e.preventDefault(); slitherBoostPressed = true; }
+      if (currentGame === 'slither' && e.code === 'Space') {
+        e.preventDefault();
+        slitherBoostKey = true;
+      }
     });
     window.addEventListener('keyup', (e) => {
-      if (currentGame === 'slither' && e.code === 'Space') slitherBoostPressed = false;
+      if (e.code === 'Space') slitherBoostKey = false;
     });
-    slitherPlayBtn.addEventListener('click', startSlitherMatch);
-    initSlitherSkinPicker();
 
+    // ================= محرك Veck.io 3D =================
     const veckContainer = document.getElementById('veck-container');
     const veckCanvasWrap = document.getElementById('veck-canvas-wrap');
-    const veckMenuOverlay = document.getElementById('veck-menu-overlay');
-    const veckHud = document.getElementById('veck-hud');
-    const veckHitmarker = document.getElementById('veck-hitmarker');
-    const veckDamageOverlay = document.getElementById('veck-damage-overlay');
-    const veckToastBanner = document.getElementById('veck-toast-banner');
-    const veckKillfeed = document.getElementById('veck-killfeed');
-    const veckModeDisplay = document.getElementById('veck-mode-display');
-    const veckZoneName = document.getElementById('veck-zone-name');
-    const veckScoreEl = document.getElementById('veck-score');
-    const veckStreakEl = document.getElementById('veck-streak');
-    const veckEnemiesLeftEl = document.getElementById('veck-enemies-left');
-    const veckHpText = document.getElementById('veck-hp-text');
-    const veckShieldText = document.getElementById('veck-shield-text');
-    const veckHealthBar = document.getElementById('veck-health-bar');
-    const veckShieldBar = document.getElementById('veck-shield-bar');
-    const veckBoostStatus = document.getElementById('veck-boost-status');
-    const veckWeaponNameEl = document.getElementById('veck-weapon-name');
-    const veckAmmoCountEl = document.getElementById('veck-ammo-count');
-    const veckWeaponSlots = document.querySelectorAll('.veck-slot');
-    const veckModeBtns = document.querySelectorAll('.veck-mode-btn');
-    const veckPlayBtn = document.getElementById('veck-play-btn');
-
-    const VECK_WEAPONS = [
-      { id: 1, name: 'X-9 PULSE RIFLE', type: 'hitscan', damage: 24, fireRate: 0.11, magSize: 32, reloadTime: 1.2, spread: 0.015, pellets: 1, color: 0x00ffcc },
-      { id: 2, name: 'V-88 RAIL SNIPER', type: 'hitscan', damage: 110, fireRate: 0.85, magSize: 5, reloadTime: 1.8, spread: 0.001, pellets: 1, color: 0xff0055 },
-      { id: 3, name: 'SG-12 BREACH SHOTGUN', type: 'hitscan', damage: 18, fireRate: 0.65, magSize: 8, reloadTime: 1.6, spread: 0.09, pellets: 7, color: 0xffaa00 },
-      { id: 4, name: 'RK-7 ROCKET LAUNCHER', type: 'projectile', damage: 95, fireRate: 0.9, magSize: 3, reloadTime: 2.0, spread: 0.01, pellets: 1, speed: 55, splash: 7.5, color: 0xff4400 },
-      { id: 5, name: 'PL-4 PLASMA CARBINE', type: 'projectile', damage: 34, fireRate: 0.18, magSize: 24, reloadTime: 1.35, spread: 0.02, pellets: 1, speed: 68, splash: 0, color: 0x38bdf8 },
-      { id: 6, name: 'KT-0 CYBER KATANA', type: 'melee', damage: 85, fireRate: 0.42, magSize: 99, reloadTime: 0.4, spread: 0, pellets: 1, range: 4.5, color: 0xe879f9 }
-    ];
 
     const veckScene = new THREE.Scene();
-    veckScene.background = new THREE.Color(0x090d16);
-    veckScene.fog = new THREE.FogExp2(0x090d16, 0.011);
+    veckScene.background = new THREE.Color(0x0b1220);
+    veckScene.fog = new THREE.FogExp2(0x0b1220, 0.012);
 
-    const veckCamera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-    const veckRenderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
-    veckRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    const veckCamera = new THREE.PerspectiveCamera(70, window.innerWidth / Math.max(1, window.innerHeight - 56), 0.1, 300);
+    const veckRenderer = new THREE.WebGLRenderer({ antialias: true });
+    veckRenderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2));
+    veckRenderer.setSize(window.innerWidth, Math.max(1, window.innerHeight - 56));
     veckRenderer.shadowMap.enabled = true;
     veckCanvasWrap.appendChild(veckRenderer.domElement);
 
-    veckScene.add(new THREE.HemisphereLight(0x88ccff, 0x111827, 0.85));
-    const veckDirLight = new THREE.DirectionalLight(0xffffff, 1.1);
-    veckDirLight.position.set(35, 60, 25);
-    veckDirLight.castShadow = true;
-    veckScene.add(veckDirLight);
+    veckScene.add(new THREE.HemisphereLight(0xe2e8f0, 0x1e293b, 0.9));
+    const veckDir = new THREE.DirectionalLight(0xffffff, 0.9);
+    veckDir.position.set(20, 35, 20);
+    veckDir.castShadow = true;
+    veckScene.add(veckDir);
 
     const veckArenaGroup = new THREE.Group();
     veckScene.add(veckArenaGroup);
-    const veckColliders = [];
 
-    function addVeckBox(x, y, z, w, h, d, color, emissive = 0x000000) {
-      const mesh = new THREE.Mesh(
+    const veckFloor = new THREE.Mesh(
+      new THREE.BoxGeometry(70, 1, 70),
+      new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.75 })
+    );
+    veckFloor.position.y = -0.5;
+    veckFloor.receiveShadow = true;
+    veckArenaGroup.add(veckFloor);
+
+    [
+      [0, 1.5, 0, 5, 3, 5],
+      [-12, 1.5, -10, 6, 3, 2],
+      [12, 1.5, -10, 6, 3, 2],
+      [-12, 1.5, 10, 6, 3, 2],
+      [12, 1.5, 10, 6, 3, 2],
+      [0, 2, -20, 10, 4, 2]
+    ].forEach(([x, y, z, w, h, d]) => {
+      const m = new THREE.Mesh(
         new THREE.BoxGeometry(w, h, d),
-        new THREE.MeshStandardMaterial({ color, emissive, roughness: 0.45, metalness: 0.25 })
+        new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.5 })
       );
-      mesh.position.set(x, y, z);
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      veckArenaGroup.add(mesh);
-      veckColliders.push(new THREE.Box3().setFromObject(mesh));
-      return mesh;
-    }
-
-    function buildVeckArena() {
-      while (veckArenaGroup.children.length > 0) veckArenaGroup.remove(veckArenaGroup.children[0]);
-      veckColliders.length = 0;
-
-      const floor = new THREE.Mesh(
-        new THREE.PlaneGeometry(140, 140),
-        new THREE.MeshStandardMaterial({ color: 0x131b2e, roughness: 0.8, metalness: 0.1 })
-      );
-      floor.rotation.x = -Math.PI / 2;
-      floor.receiveShadow = true;
-      veckArenaGroup.add(floor);
-
-      const grid = new THREE.GridHelper(140, 35, 0x00ffcc, 0x1e293b);
-      grid.position.y = 0.02;
-      veckArenaGroup.add(grid);
-
-      addVeckBox(0, 3, -70, 140, 6, 2, 0x1e293b, 0x06283d);
-      addVeckBox(0, 3, 70, 140, 6, 2, 0x1e293b, 0x06283d);
-      addVeckBox(-70, 3, 0, 2, 6, 140, 0x1e293b, 0x06283d);
-      addVeckBox(70, 3, 0, 2, 6, 140, 0x1e293b, 0x06283d);
-
-      addVeckBox(0, 1.5, 0, 10, 3, 10, 0x1e293b, 0x0f172a);
-      addVeckBox(0, 5.2, 0, 5, 1.2, 5, 0x00ffcc, 0x004d40);
-      addVeckBox(-18, 2, -18, 7, 4, 7, 0x1e293b);
-      addVeckBox(18, 2, -18, 7, 4, 7, 0x1e293b);
-      addVeckBox(-18, 2, 18, 7, 4, 7, 0x1e293b);
-      addVeckBox(18, 2, 18, 7, 4, 7, 0x1e293b);
-      addVeckBox(0, 1.5, -28, 12, 3, 3, 0x2563eb);
-      addVeckBox(0, 1.5, 28, 12, 3, 3, 0x2563eb);
-      addVeckBox(-28, 1.5, 0, 3, 3, 12, 0x7c3aed);
-      addVeckBox(28, 1.5, 0, 3, 3, 12, 0x7c3aed);
-      addVeckBox(-36, 2.2, -36, 9, 4.4, 5, 0x334155);
-      addVeckBox(36, 2.2, 36, 9, 4.4, 5, 0x334155);
-    }
-    buildVeckArena();
-
-    const veckGunGroup = new THREE.Group();
-    veckCamera.add(veckGunGroup);
-    veckScene.add(veckCamera);
-
-    const veckGunBody = new THREE.Mesh(
-      new THREE.BoxGeometry(0.16, 0.18, 0.65),
-      new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.7, roughness: 0.25 })
-    );
-    veckGunBody.position.set(0.32, -0.26, -0.55);
-    veckGunGroup.add(veckGunBody);
-
-    const veckGunAccent = new THREE.Mesh(
-      new THREE.BoxGeometry(0.17, 0.05, 0.45),
-      new THREE.MeshBasicMaterial({ color: 0x00ffcc })
-    );
-    veckGunAccent.position.set(0.32, -0.16, -0.52);
-    veckGunGroup.add(veckGunAccent);
-
-    let veckMode = 'ffa';
-    let veckRunning = false;
-    let veckInMatch = false;
-    let veckRafId = null;
-    let veckPrevTime = performance.now();
-    let veckScore = 0;
-    let veckStreak = 0;
+      m.position.set(x, y, z);
+      m.castShadow = true;
+      m.receiveShadow = true;
+      veckArenaGroup.add(m);
+    });
 
     const veckPlayer = {
-      pos: new THREE.Vector3(0, 2.2, 22),
-      vel: new THREE.Vector3(),
-      yaw: 0, pitch: 0,
-      hp: 100, maxHp: 100, shield: 50, maxShield: 100,
-      isGrounded: false, isSliding: false, slideTimer: 0,
-      weaponIdx: 0, ammo: [], maxAmmo: [],
-      reloading: false, reloadTimer: 0, fireCooldown: 0,
-      damageBoostTimer: 0, speedBoostTimer: 0
+      x: 0,
+      y: 1.7,
+      z: 22,
+      vy: 0,
+      yaw: 0,
+      pitch: 0,
+      onGround: true
     };
 
-    const veckKeys = {};
-    let veckMouseDown = false;
-    const veckProjectiles = [];
-    const veckEffects = [];
-    const veckPickups = [];
-    const veckEnemies = [];
+    const gunGroup = new THREE.Group();
+    const gunBody = new THREE.Mesh(
+      new THREE.BoxGeometry(0.14, 0.16, 0.65),
+      new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.7, roughness: 0.25 })
+    );
+    gunBody.position.set(0.32, -0.26, -0.55);
+    gunGroup.add(gunBody);
+    veckCamera.add(gunGroup);
+    veckScene.add(veckCamera);
 
-    function resizeVeckRenderer() {
-      const vp = getViewportDimensions();
-      const isLandscapeNow = vp.width > vp.height;
-      const navHeight = (vp.width <= 900 && isLandscapeNow) ? 46 : 56;
-      veckCamera.aspect = vp.width / Math.max(1, vp.height - navHeight);
-      veckCamera.updateProjectionMatrix();
-      veckRenderer.setSize(vp.width, Math.max(1, vp.height - navHeight));
-    }
-
-    function showVeckBanner(text) {
-      veckToastBanner.textContent = text;
-      veckToastBanner.classList.add('show');
-      clearTimeout(veckToastBanner._timer);
-      veckToastBanner._timer = setTimeout(() => veckToastBanner.classList.remove('show'), 1800);
-    }
-
-    function addVeckKillfeed(text) {
-      const item = document.createElement('div');
-      item.className = 'veck-kill-item';
-      item.textContent = text;
-      veckKillfeed.prepend(item);
-      while (veckKillfeed.children.length > 4) veckKillfeed.removeChild(veckKillfeed.lastChild);
-      setTimeout(() => item.remove(), 3500);
-    }
-
-    function updateVeckHud() {
-      veckHpText.textContent = Math.max(0, Math.ceil(veckPlayer.hp));
-      veckShieldText.textContent = Math.max(0, Math.ceil(veckPlayer.shield));
-      veckHealthBar.style.width = `${Math.max(0, Math.min(100, (veckPlayer.hp / veckPlayer.maxHp) * 100))}%`;
-      veckShieldBar.style.width = `${Math.max(0, Math.min(100, (veckPlayer.shield / veckPlayer.maxShield) * 100))}%`;
-      veckScoreEl.textContent = veckScore;
-      veckStreakEl.textContent = veckStreak;
-      veckEnemiesLeftEl.textContent = veckEnemies.filter(e => e.alive).length;
-
-      const w = VECK_WEAPONS[veckPlayer.weaponIdx];
-      veckWeaponNameEl.textContent = w.name;
-      veckAmmoCountEl.textContent = veckPlayer.reloading ? 'RELOADING...' : (w.type === 'melee' ? '∞' : `${veckPlayer.ammo[veckPlayer.weaponIdx]} / ${veckPlayer.maxAmmo[veckPlayer.weaponIdx]}`);
-      veckWeaponSlots.forEach((el, i) => el.classList.toggle('active', i === veckPlayer.weaponIdx));
-
-      const boosts = [];
-      if (veckPlayer.damageBoostTimer > 0) boosts.push(`⚡ ضرر مضاعف (${veckPlayer.damageBoostTimer.toFixed(1)}s)`);
-      if (veckPlayer.speedBoostTimer > 0) boosts.push(`🚀 سرعة فائقة (${veckPlayer.speedBoostTimer.toFixed(1)}s)`);
-      veckBoostStatus.textContent = boosts.join(' • ');
-
-      const p = veckPlayer.pos;
-      if (Math.hypot(p.x, p.z) < 8) veckZoneName.textContent = 'البرج المركزي';
-      else if (p.z < -18) veckZoneName.textContent = 'الجسر الشمالي';
-      else if (p.z > 18) veckZoneName.textContent = 'الجسر الجنوبي';
-      else if (p.x < -18) veckZoneName.textContent = 'الرواق الغربي';
-      else if (p.x > 18) veckZoneName.textContent = 'الرواق الشرقي';
-      else veckZoneName.textContent = 'الساحة الرئيسية';
-    }
-
-    function selectVeckWeapon(idx) {
-      if (idx < 0 || idx >= VECK_WEAPONS.length) return;
-      veckPlayer.weaponIdx = idx;
-      veckPlayer.reloading = false;
-      veckPlayer.reloadTimer = 0;
-      veckGunAccent.material.color.setHex(VECK_WEAPONS[idx].color);
-      updateVeckHud();
-    }
-
-    function triggerVeckReload() {
-      const w = VECK_WEAPONS[veckPlayer.weaponIdx];
-      if (w.type === 'melee' || veckPlayer.reloading || veckPlayer.ammo[veckPlayer.weaponIdx] === veckPlayer.maxAmmo[veckPlayer.weaponIdx]) return;
-      veckPlayer.reloading = true;
-      veckPlayer.reloadTimer = w.reloadTime;
-      updateVeckHud();
-    }
-
-    function clearVeckEntities() {
-      veckProjectiles.forEach(p => veckScene.remove(p.mesh));
-      veckProjectiles.length = 0;
-      veckEffects.forEach(e => veckScene.remove(e.mesh));
-      veckEffects.length = 0;
-      veckPickups.forEach(pk => veckScene.remove(pk.mesh));
-      veckPickups.length = 0;
-      veckEnemies.forEach(en => veckScene.remove(en.group));
-      veckEnemies.length = 0;
-    }
-
-    function spawnVeckPickup(x, z, type) {
-      const colorMap = { health: 0x00ffcc, shield: 0x38bdf8, damage: 0xff3355, speed: 0xfbbf24 };
+    const veckBots = [];
+    function spawnVeckBot() {
       const mesh = new THREE.Mesh(
-        new THREE.OctahedronGeometry(0.85, 0),
-        new THREE.MeshStandardMaterial({ color: colorMap[type] || 0x00ffcc, emissive: colorMap[type] || 0x00ffcc, emissiveIntensity: 0.45 })
+        new THREE.BoxGeometry(1.4, 2.2, 1.4),
+        new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.45 })
       );
-      mesh.position.set(x, 1.3, z);
-      veckScene.add(mesh);
-      veckPickups.push({ mesh, type, bobPhase: Math.random() * Math.PI * 2 });
-    }
-
-    function spawnVeckEnemy(index) {
-      const group = new THREE.Group();
-      const body = new THREE.Mesh(
-        new THREE.BoxGeometry(1.4, 2.2, 1.2),
-        new THREE.MeshStandardMaterial({ color: 0xff3355, roughness: 0.4, metalness: 0.3 })
-      );
-      body.position.y = 1.1;
-      body.castShadow = true;
-      const head = new THREE.Mesh(
-        new THREE.BoxGeometry(1.0, 1.0, 1.0),
-        new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 })
-      );
-      head.position.y = 2.75;
-      head.castShadow = true;
-      group.add(body, head);
-
-      const angle = (index / 6) * Math.PI * 2 + Math.random() * 0.5;
-      const radius = 24 + Math.random() * 24;
-      group.position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
-      veckScene.add(group);
-
-      veckEnemies.push({
-        group, hp: 100, maxHp: 100, alive: true,
-        speed: 7.5 + Math.random() * 2.5,
-        fireTimer: 1.0 + Math.random() * 1.5,
-        strafeDir: Math.random() < 0.5 ? -1 : 1,
-        strafeTimer: 1.0 + Math.random() * 1.5,
-        respawnTimer: 0,
-        name: `BOT-${index + 1}`
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 12 + Math.random() * 18;
+      mesh.position.set(Math.cos(angle) * dist, 1.1, Math.sin(angle) * dist);
+      mesh.castShadow = true;
+      veckArenaGroup.add(mesh);
+      veckBots.push({
+        mesh,
+        hp: 50,
+        vx: (Math.random() - 0.5) * 6,
+        vz: (Math.random() - 0.5) * 6,
+        changeDirTimer: 1 + Math.random() * 2
       });
     }
 
-    function resetVeckPlayerState() {
-      veckPlayer.pos.set(0, 2.2, 22);
-      veckPlayer.vel.set(0, 0, 0);
-      veckPlayer.yaw = 0;
-      veckPlayer.pitch = 0;
-      veckPlayer.hp = 100;
-      veckPlayer.shield = 50;
-      veckPlayer.isSliding = false;
-      veckPlayer.slideTimer = 0;
-      veckPlayer.weaponIdx = 0;
-      veckPlayer.ammo = VECK_WEAPONS.map(w => w.magSize);
-      veckPlayer.maxAmmo = VECK_WEAPONS.map(w => w.magSize);
-      veckPlayer.reloading = false;
-      veckPlayer.reloadTimer = 0;
-      veckPlayer.fireCooldown = 0;
-      veckPlayer.damageBoostTimer = 0;
-      veckPlayer.speedBoostTimer = 0;
-      veckScore = 0;
-      veckStreak = 0;
-      veckKillfeed.innerHTML = '';
-      veckCamera.position.copy(veckPlayer.pos);
-      veckCamera.rotation.order = 'YXZ';
-      veckCamera.rotation.set(0, 0, 0);
-      selectVeckWeapon(0);
+    function resetVeckBots() {
+      veckBots.forEach(b => veckArenaGroup.remove(b.mesh));
+      veckBots.length = 0;
+      for (let i = 0; i < 6; i++) spawnVeckBot();
     }
 
-    function resetVeckEnemies() {
-      clearVeckEntities();
-      const count = veckMode === 'duel' ? 1 : 5;
-      for (let i = 0; i < count; i++) spawnVeckEnemy(i);
-      spawnVeckPickup(0, 0, 'damage');
-      spawnVeckPickup(-18, -18, 'health');
-      spawnVeckPickup(18, -18, 'shield');
-      spawnVeckPickup(-18, 18, 'speed');
-      spawnVeckPickup(18, 18, 'health');
-      updateVeckHud();
-    }
-
-    function spawnVeckBeam(start, end, color) {
-      const dir = new THREE.Vector3().subVectors(end, start);
-      const len = dir.length();
-      if (len < 0.05) return;
-      const mesh = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.05, 0.05, len, 6),
-        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.85 })
+    const veckProjectiles = [];
+    function fireVeckShot() {
+      if (currentGame !== 'veck') return;
+      const dir = new THREE.Vector3(0, 0, -1).applyEuler(veckCamera.rotation).normalize();
+      const bullet = new THREE.Mesh(
+        new THREE.SphereGeometry(0.16, 10, 10),
+        new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
       );
-      mesh.position.copy(start).addScaledVector(dir, 0.5);
-      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.normalize());
-      veckScene.add(mesh);
-      veckEffects.push({ mesh, life: 0.12 });
+      bullet.position.copy(veckCamera.position).addScaledVector(dir, 1.1);
+      veckScene.add(bullet);
+      veckProjectiles.push({
+        mesh: bullet,
+        vel: dir.multiplyScalar(68),
+        life: 1.4
+      });
+      gunBody.position.z = -0.42;
     }
 
-    function showVeckHitmarker() {
-      veckHitmarker.style.opacity = '1';
-      clearTimeout(veckHitmarker._t);
-      veckHitmarker._t = setTimeout(() => { veckHitmarker.style.opacity = '0'; }, 110);
-    }
+    let veckAnimId = null;
+    let veckLastTime = 0;
 
-    function damageVeckEnemy(enemy, dmg, hitPos) {
-      if (!enemy.alive) return;
-      enemy.hp -= dmg;
-      showVeckHitmarker();
-      if (hitPos) {
-        const spark = new THREE.Mesh(
-          new THREE.SphereGeometry(0.25, 8, 8),
-          new THREE.MeshBasicMaterial({ color: 0xff3355 })
-        );
-        spark.position.copy(hitPos);
-        veckScene.add(spark);
-        veckEffects.push({ mesh: spark, life: 0.14 });
-      }
-      if (enemy.hp <= 0) {
-        enemy.alive = false;
-        enemy.group.visible = false;
-        enemy.respawnTimer = 3.5;
-        veckStreak += 1;
-        const pts = 100 + (veckStreak - 1) * 25;
-        veckScore += pts;
-        myScore += pts;
-        myAdam += 10;
-        updateHudStats();
-        persistProfile();
-        addVeckKillfeed(`${myName || 'ADAM GoGo'} قضى على ${enemy.name} (+${pts})`);
-        showVeckBanner(`🔥 سلسلة القضاء: ${veckStreak}x`);
-        if (veckMode === 'gungame') {
-          const nextW = (veckPlayer.weaponIdx + 1) % VECK_WEAPONS.length;
-          selectVeckWeapon(nextW);
-          showVeckBanner(`🔫 السلاح التالي: ${VECK_WEAPONS[nextW].name}`);
-        }
-        if (Math.random() < 0.65) {
-          const types = ['health', 'shield', 'damage', 'speed'];
-          spawnVeckPickup(enemy.group.position.x, enemy.group.position.z, types[Math.floor(Math.random() * types.length)]);
-        }
-        updateVeckHud();
-      }
-    }
+    function stepVeck(dt) {
+      let moveForward = 0;
+      let moveRight = 0;
+      if (keys['w'] || keys['z'] || keys['arrowup']) moveForward += 1;
+      if (keys['s'] || keys['arrowdown']) moveForward -= 1;
+      if (keys['d'] || keys['arrowright']) moveRight += 1;
+      if (keys['a'] || keys['q'] || keys['arrowleft']) moveRight -= 1;
 
-    function damageVeckPlayer(amount) {
-      if (!veckInMatch) return;
-      let rem = amount;
-      if (veckPlayer.shield > 0) {
-        const absorbed = Math.min(veckPlayer.shield, rem);
-        veckPlayer.shield -= absorbed;
-        rem -= absorbed;
-      }
-      if (rem > 0) veckPlayer.hp -= rem;
-      veckDamageOverlay.style.boxShadow = 'inset 0 0 110px rgba(255, 0, 40, 0.65)';
-      setTimeout(() => { veckDamageOverlay.style.boxShadow = 'inset 0 0 100px rgba(255, 0, 40, 0)'; }, 160);
-      updateVeckHud();
-      if (veckPlayer.hp <= 0) {
-        veckPlayer.hp = veckPlayer.maxHp;
-        veckPlayer.shield = 50;
-        veckStreak = 0;
-        veckPlayer.pos.set(0, 2.2, 24);
-        veckPlayer.vel.set(0, 0, 0);
-        showVeckBanner('💀 تمت إعادتك إلى ساحة القتال');
-        updateVeckHud();
-      }
-    }
+      if (keys['q']) veckPlayer.yaw += 2.2 * dt;
+      if (keys['e']) veckPlayer.yaw -= 2.2 * dt;
 
-    function fireVeckWeapon() {
-      if (!veckInMatch || veckPlayer.reloading || veckPlayer.fireCooldown > 0) return;
-      const w = VECK_WEAPONS[veckPlayer.weaponIdx];
-      if (w.type !== 'melee' && veckPlayer.ammo[veckPlayer.weaponIdx] <= 0) {
-        triggerVeckReload();
-        return;
-      }
-      veckPlayer.fireCooldown = w.fireRate;
-      if (w.type !== 'melee') veckPlayer.ammo[veckPlayer.weaponIdx] -= 1;
-      veckGunBody.position.z = -0.44;
-      const dmgMult = veckPlayer.damageBoostTimer > 0 ? 1.5 : 1.0;
+      const forwardX = -Math.sin(veckPlayer.yaw);
+      const forwardZ = -Math.cos(veckPlayer.yaw);
+      const rightX = Math.cos(veckPlayer.yaw);
+      const rightZ = -Math.sin(veckPlayer.yaw);
 
-      if (w.type === 'melee') {
-        const origin = veckCamera.position.clone();
-        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(veckCamera.quaternion);
-        const slashTip = origin.clone().addScaledVector(forward, w.range);
-        spawnVeckBeam(origin.clone().add(new THREE.Vector3(0.3, -0.2, -0.3)), slashTip, w.color);
-        for (const en of veckEnemies) {
-          if (!en.alive) continue;
-          const ePos = en.group.position.clone().add(new THREE.Vector3(0, 1.5, 0));
-          if (ePos.distanceTo(origin) <= w.range + 1.2) damageVeckEnemy(en, w.damage * dmgMult, ePos);
-        }
-      } else if (w.type === 'hitscan') {
-        const raycaster = new THREE.Raycaster();
-        const enemyMeshes = [];
-        veckEnemies.forEach(en => {
-          if (en.alive) en.group.traverse(c => { if (c.isMesh) { c.userData.enemyRef = en; enemyMeshes.push(c); } });
-        });
-        for (let p = 0; p < w.pellets; p++) {
-          const dir = new THREE.Vector3((Math.random() - 0.5) * w.spread, (Math.random() - 0.5) * w.spread, -1)
-            .normalize().applyQuaternion(veckCamera.quaternion);
-          raycaster.set(veckCamera.position, dir);
-          raycaster.far = 140;
-          const hits = raycaster.intersectObjects(enemyMeshes, false);
-          const endPt = veckCamera.position.clone().addScaledVector(dir, hits.length ? hits[0].distance : 90);
-          spawnVeckBeam(veckCamera.position.clone().add(new THREE.Vector3(0.25, -0.18, -0.4).applyQuaternion(veckCamera.quaternion)), endPt, w.color);
-          if (hits.length && hits[0].object.userData.enemyRef) {
-            damageVeckEnemy(hits[0].object.userData.enemyRef, w.damage * dmgMult, hits[0].point);
-          }
-        }
-      } else if (w.type === 'projectile') {
-        const dir = new THREE.Vector3(0, 0, -1).applyQuaternion(veckCamera.quaternion).normalize();
-        const startPos = veckCamera.position.clone().addScaledVector(dir, 1.1);
-        const mesh = new THREE.Mesh(
-          new THREE.SphereGeometry(w.splash > 0 ? 0.35 : 0.2, 10, 10),
-          new THREE.MeshBasicMaterial({ color: w.color })
-        );
-        mesh.position.copy(startPos);
-        veckScene.add(mesh);
-        veckProjectiles.push({ mesh, vel: dir.multiplyScalar(w.speed), damage: w.damage * dmgMult, splash: w.splash, life: 2.2, fromEnemy: false });
-      }
-      if (w.type !== 'melee' && veckPlayer.ammo[veckPlayer.weaponIdx] <= 0) triggerVeckReload();
-      updateVeckHud();
-    }
+      const vx = (forwardX * moveForward + rightX * moveRight) * 13;
+      const vz = (forwardZ * moveForward + rightZ * moveRight) * 13;
 
-    function updateVeckPlayer(dt, now) {
-      if (!veckInMatch) return;
-      if (veckPlayer.fireCooldown > 0) veckPlayer.fireCooldown -= dt;
-      if (veckPlayer.damageBoostTimer > 0) veckPlayer.damageBoostTimer = Math.max(0, veckPlayer.damageBoostTimer - dt);
-      if (veckPlayer.speedBoostTimer > 0) veckPlayer.speedBoostTimer = Math.max(0, veckPlayer.speedBoostTimer - dt);
-      if (veckPlayer.reloading) {
-        veckPlayer.reloadTimer -= dt;
-        if (veckPlayer.reloadTimer <= 0) {
-          veckPlayer.reloading = false;
-          veckPlayer.ammo[veckPlayer.weaponIdx] = veckPlayer.maxAmmo[veckPlayer.weaponIdx];
-          updateVeckHud();
-        }
+      veckPlayer.x = Math.max(-32, Math.min(32, veckPlayer.x + vx * dt));
+      veckPlayer.z = Math.max(-32, Math.min(32, veckPlayer.z + vz * dt));
+
+      veckPlayer.vy -= 26 * dt;
+      veckPlayer.y += veckPlayer.vy * dt;
+      if (veckPlayer.y <= 1.7) {
+        veckPlayer.y = 1.7;
+        veckPlayer.vy = 0;
+        veckPlayer.onGround = true;
       }
 
-      const moveForward = (veckKeys['KeyW'] || veckKeys['ArrowUp'] ? 1 : 0) - (veckKeys['KeyS'] || veckKeys['ArrowDown'] ? 1 : 0);
-      const moveRight = (veckKeys['KeyD'] || veckKeys['ArrowRight'] ? 1 : 0) - (veckKeys['KeyA'] || veckKeys['ArrowLeft'] ? 1 : 0);
-      const forwardVec = new THREE.Vector3(-Math.sin(veckPlayer.yaw), 0, -Math.cos(veckPlayer.yaw));
-      const rightVec = new THREE.Vector3(Math.cos(veckPlayer.yaw), 0, -Math.sin(veckPlayer.yaw));
-      const wishDir = new THREE.Vector3().addScaledVector(forwardVec, moveForward).addScaledVector(rightVec, moveRight);
-      if (wishDir.lengthSq() > 0) wishDir.normalize();
-
-      if ((veckKeys['ShiftLeft'] || veckKeys['ShiftRight'] || veckKeys['KeyC']) && veckPlayer.isGrounded && !veckPlayer.isSliding && wishDir.lengthSq() > 0) {
-        veckPlayer.isSliding = true;
-        veckPlayer.slideTimer = 0.55;
-        veckPlayer.vel.x = wishDir.x * 24;
-        veckPlayer.vel.z = wishDir.z * 24;
-      }
-      if (veckPlayer.isSliding) {
-        veckPlayer.slideTimer -= dt;
-        if (veckPlayer.slideTimer <= 0) veckPlayer.isSliding = false;
-      } else {
-        const baseSpeed = veckPlayer.speedBoostTimer > 0 ? 19.5 : 13.5;
-        veckPlayer.vel.x = wishDir.x * baseSpeed;
-        veckPlayer.vel.z = wishDir.z * baseSpeed;
-      }
-
-      if (veckKeys['Space'] && veckPlayer.isGrounded) {
-        veckPlayer.vel.y = 11.2;
-        veckPlayer.isGrounded = false;
-      }
-      veckPlayer.vel.y -= 28 * dt;
-
-      veckPlayer.pos.x = Math.max(-68, Math.min(68, veckPlayer.pos.x + veckPlayer.vel.x * dt));
-      veckPlayer.pos.z = Math.max(-68, Math.min(68, veckPlayer.pos.z + veckPlayer.vel.z * dt));
-      for (const box of veckColliders) {
-        if (veckPlayer.pos.y > box.min.y + 0.3 && veckPlayer.pos.y - 1.7 < box.max.y) {
-          if (Math.abs(veckPlayer.pos.x - (box.min.x + box.max.x) * 0.5) < (box.max.x - box.min.x) * 0.5 + 0.65 &&
-              Math.abs(veckPlayer.pos.z - (box.min.z + box.max.z) * 0.5) < (box.max.z - box.min.z) * 0.5 + 0.65) {
-            veckPlayer.pos.x -= veckPlayer.vel.x * dt;
-            veckPlayer.pos.z -= veckPlayer.vel.z * dt;
-          }
-        }
-      }
-
-      veckPlayer.pos.y += veckPlayer.vel.y * dt;
-      let groundHeight = 2.0;
-      for (const box of veckColliders) {
-        if (veckPlayer.pos.x >= box.min.x - 0.5 && veckPlayer.pos.x <= box.max.x + 0.5 &&
-            veckPlayer.pos.z >= box.min.z - 0.5 && veckPlayer.pos.z <= box.max.z + 0.5 &&
-            veckPlayer.pos.y - 2.0 >= box.max.y - 0.5 && veckPlayer.vel.y <= 0) {
-          groundHeight = Math.max(groundHeight, box.max.y + 2.0);
-        }
-      }
-      if (veckPlayer.pos.y <= groundHeight) {
-        veckPlayer.pos.y = groundHeight;
-        veckPlayer.vel.y = 0;
-        veckPlayer.isGrounded = true;
-      }
-
-      const targetEyeY = veckPlayer.isSliding ? veckPlayer.pos.y - 0.85 : veckPlayer.pos.y;
-      veckCamera.position.x = veckPlayer.pos.x;
-      veckCamera.position.z = veckPlayer.pos.z;
-      veckCamera.position.y += (targetEyeY - veckCamera.position.y) * 0.25;
+      veckCamera.position.set(veckPlayer.x, veckPlayer.y, veckPlayer.z);
+      veckCamera.rotation.order = 'YXZ';
       veckCamera.rotation.y = veckPlayer.yaw;
       veckCamera.rotation.x = veckPlayer.pitch;
-      veckGunBody.position.z += (-0.55 - veckGunBody.position.z) * 0.22;
 
-      if (veckMouseDown) fireVeckWeapon();
-
-      for (let i = veckPickups.length - 1; i >= 0; i--) {
-        const pk = veckPickups[i];
-        pk.mesh.rotation.y += 2.2 * dt;
-        pk.mesh.position.y = 1.3 + Math.sin(now * 0.004 + pk.bobPhase) * 0.22;
-        if (pk.mesh.position.distanceTo(veckPlayer.pos) < 2.4) {
-          if (pk.type === 'health') { veckPlayer.hp = Math.min(veckPlayer.maxHp, veckPlayer.hp + 35); showVeckBanner('+35 صحة'); }
-          else if (pk.type === 'shield') { veckPlayer.shield = Math.min(veckPlayer.maxShield, veckPlayer.shield + 40); showVeckBanner('+40 درع'); }
-          else if (pk.type === 'damage') { veckPlayer.damageBoostTimer = 10; showVeckBanner('⚡ ضرر مضاعف 10 ثوانٍ'); }
-          else if (pk.type === 'speed') { veckPlayer.speedBoostTimer = 8; showVeckBanner('🚀 سرعة فائقة 8 ثوانٍ'); }
-          veckScene.remove(pk.mesh);
-          veckPickups.splice(i, 1);
-          updateVeckHud();
-        }
-      }
+      gunBody.position.z += (-0.55 - gunBody.position.z) * Math.min(1, dt * 18);
 
       for (let i = veckProjectiles.length - 1; i >= 0; i--) {
-        const pr = veckProjectiles[i];
-        pr.life -= dt;
-        pr.mesh.position.addScaledVector(pr.vel, dt);
+        const p = veckProjectiles[i];
+        p.life -= dt;
+        p.mesh.position.addScaledVector(p.vel, dt);
+
         let hit = false;
-        if (pr.mesh.position.y <= 0.1) hit = true;
-        if (!hit) {
-          for (const box of veckColliders) {
-            if (box.containsPoint(pr.mesh.position)) { hit = true; break; }
+        for (let j = veckBots.length - 1; j >= 0; j--) {
+          const b = veckBots[j];
+          if (p.mesh.position.distanceTo(b.mesh.position) < 1.55) {
+            b.hp -= 25;
+            hit = true;
+            if (b.hp <= 0) {
+              veckArenaGroup.remove(b.mesh);
+              veckBots.splice(j, 1);
+              myScore += 25;
+              myAdam += 5;
+              updateHudStats();
+              persistProfile();
+              showToast('🎯 إصابة ناجحة! +25 نقاط و +5 ADAM');
+              spawnVeckBot();
+            }
+            break;
           }
         }
-        if (!pr.fromEnemy && !hit) {
-          for (const en of veckEnemies) {
-            if (en.alive && pr.mesh.position.distanceTo(en.group.position.clone().add(new THREE.Vector3(0, 1.5, 0))) < 1.8) {
-              hit = true;
-              break;
-            }
-          }
-        }
-        if (pr.fromEnemy && !hit && pr.mesh.position.distanceTo(veckPlayer.pos) < 1.5) {
-          damageVeckPlayer(pr.damage);
-          hit = true;
-        }
-        if (hit || pr.life <= 0) {
-          if (!pr.fromEnemy && pr.splash > 0) {
-            for (const en of veckEnemies) {
-              if (en.alive) {
-                const eCenter = en.group.position.clone().add(new THREE.Vector3(0, 1.5, 0));
-                const d = pr.mesh.position.distanceTo(eCenter);
-                if (d <= pr.splash) damageVeckEnemy(en, pr.damage * (1 - d / (pr.splash + 1)), eCenter);
-              }
-            }
-          } else if (!pr.fromEnemy && hit) {
-            for (const en of veckEnemies) {
-              if (en.alive) {
-                const eCenter = en.group.position.clone().add(new THREE.Vector3(0, 1.5, 0));
-                if (pr.mesh.position.distanceTo(eCenter) < 2.3) damageVeckEnemy(en, pr.damage, eCenter);
-              }
-            }
-          }
-          veckScene.remove(pr.mesh);
+
+        if (hit || p.life <= 0) {
+          veckScene.remove(p.mesh);
           veckProjectiles.splice(i, 1);
         }
       }
 
-      for (let i = veckEffects.length - 1; i >= 0; i--) {
-        veckEffects[i].life -= dt;
-        if (veckEffects[i].life <= 0) {
-          veckScene.remove(veckEffects[i].mesh);
-          veckEffects.splice(i, 1);
+      veckBots.forEach(b => {
+        b.changeDirTimer -= dt;
+        if (b.changeDirTimer <= 0) {
+          b.changeDirTimer = 1 + Math.random() * 2;
+          const ang = Math.random() * Math.PI * 2;
+          b.vx = Math.cos(ang) * 5.5;
+          b.vz = Math.sin(ang) * 5.5;
         }
-      }
-      updateVeckHud();
+        b.mesh.position.x = Math.max(-30, Math.min(30, b.mesh.position.x + b.vx * dt));
+        b.mesh.position.z = Math.max(-30, Math.min(30, b.mesh.position.z + b.vz * dt));
+      });
     }
 
-    function updateVeckEnemies(dt) {
-      if (!veckInMatch) return;
-      for (const en of veckEnemies) {
-        if (!en.alive) {
-          en.respawnTimer -= dt;
-          if (en.respawnTimer <= 0) {
-            en.alive = true;
-            en.hp = en.maxHp;
-            en.group.visible = true;
-            const ang = Math.random() * Math.PI * 2;
-            en.group.position.set(Math.cos(ang) * 32, 0, Math.sin(ang) * 32);
-          }
-          continue;
-        }
-        const toPlayer = new THREE.Vector3().subVectors(veckPlayer.pos, en.group.position);
-        toPlayer.y = 0;
-        const dist = toPlayer.length();
-        if (dist > 0.01) toPlayer.normalize();
-        en.group.rotation.y = Math.atan2(toPlayer.x, toPlayer.z);
-
-        en.strafeTimer -= dt;
-        if (en.strafeTimer <= 0) {
-          en.strafeTimer = 1.0 + Math.random() * 1.5;
-          en.strafeDir *= -1;
-        }
-        const strafeVec = new THREE.Vector3(-toPlayer.z * en.strafeDir, 0, toPlayer.x * en.strafeDir);
-        const moveVec = new THREE.Vector3();
-        if (dist > 14) moveVec.addScaledVector(toPlayer, 0.75);
-        moveVec.addScaledVector(strafeVec, 0.55);
-        if (moveVec.lengthSq() > 0) moveVec.normalize();
-
-        en.group.position.x = Math.max(-65, Math.min(65, en.group.position.x + moveVec.x * en.speed * dt));
-        en.group.position.z = Math.max(-65, Math.min(65, en.group.position.z + moveVec.z * en.speed * dt));
-
-        en.fireTimer -= dt;
-        if (en.fireTimer <= 0 && dist < 55) {
-          en.fireTimer = 1.35 + Math.random() * 1.1;
-          const start = en.group.position.clone().add(new THREE.Vector3(0, 1.8, 0));
-          const aim = new THREE.Vector3().subVectors(veckPlayer.pos, start).normalize();
-          const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff3355 }));
-          mesh.position.copy(start);
-          veckScene.add(mesh);
-          veckProjectiles.push({ mesh, vel: aim.multiplyScalar(36), damage: 11, splash: 0, life: 2.5, fromEnemy: true });
-        }
-      }
+    function veckLoop(now) {
+      if (currentGame !== 'veck') return;
+      const dt = Math.min(0.05, Math.max(0.001, (now - veckLastTime) / 1000));
+      veckLastTime = now;
+      stepVeck(dt);
+      veckRenderer.render(veckScene, veckCamera);
+      veckAnimId = requestAnimationFrame(veckLoop);
     }
 
-    function enterVeckMatch() {
-      veckInMatch = true;
-      veckMenuOverlay.style.display = 'none';
-      veckHud.style.display = 'flex';
-      resetVeckPlayerState();
-      resetVeckEnemies();
-      if (veckRenderer.domElement.requestPointerLock) {
-        try { veckRenderer.domElement.requestPointerLock(); } catch (_) {}
+    function stopVeckLoop() {
+      if (veckAnimId) {
+        cancelAnimationFrame(veckAnimId);
+        veckAnimId = null;
+      }
+      if (document.pointerLockElement === veckRenderer.domElement) {
+        document.exitPointerLock();
       }
     }
 
     function closeVeckOverlayOnly() {
-      veckInMatch = false;
-      veckHud.style.display = 'none';
-    }
-
-    function stopVeckLoop() {
-      veckRunning = false;
-      veckInMatch = false;
-      veckMouseDown = false;
-      if (veckRafId) {
-        cancelAnimationFrame(veckRafId);
-        veckRafId = null;
-      }
-      if (document.pointerLockElement && document.exitPointerLock) {
-        try { document.exitPointerLock(); } catch (_) {}
-      }
-    }
-
-    function openVeckGame() {
-      if (typeof stopSlitherLoop === 'function') stopSlitherLoop();
-      if (typeof stopVeckLoop === 'function') stopVeckLoop();
-      if (typeof stopSuperGoalLoop === 'function') stopSuperGoalLoop();
-      window.location.href = VECK_EXTERNAL_URL;
-    }
-
-    function closeVeckGame() {
-      stopVeckLoop();
       veckContainer.style.display = 'none';
-      showScreen('games-screen');
     }
 
-    veckModeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        veckModeBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        veckMode = btn.dataset.mode;
-        veckModeDisplay.textContent = veckMode.toUpperCase();
-      });
+    function openVeckInternalArena() {
+      stopAllActiveGameLoops();
+      currentGame = 'veck';
+      hideOverlays();
+      setNavActive('btn-games');
+      refreshAllViewportSizes();
+      veckContainer.style.display = 'block';
+      veckPlayer.x = 0;
+      veckPlayer.y = 1.7;
+      veckPlayer.z = 22;
+      veckPlayer.yaw = 0;
+      veckPlayer.pitch = 0;
+      resetVeckBots();
+      veckLastTime = performance.now();
+      veckAnimId = requestAnimationFrame(veckLoop);
+      showToast('🎯 Veck.io 3D جاهز • كليك للتصويب • WASD للحركة');
+    }
+
+    veckRenderer.domElement.addEventListener('pointerdown', () => {
+      if (currentGame !== 'veck') return;
+      if (!isMobileDevice && document.pointerLockElement !== veckRenderer.domElement && veckRenderer.domElement.requestPointerLock) {
+        veckRenderer.domElement.requestPointerLock();
+      }
+      fireVeckShot();
     });
-    veckPlayBtn.addEventListener('click', enterVeckMatch);
+
+    window.addEventListener('mousemove', (e) => {
+      if (currentGame !== 'veck') return;
+      if (document.pointerLockElement === veckRenderer.domElement) {
+        veckPlayer.yaw -= e.movementX * 0.0025;
+        veckPlayer.pitch = Math.max(-1.1, Math.min(1.1, veckPlayer.pitch - e.movementY * 0.0025));
+      }
+    });
 
     window.addEventListener('keydown', (e) => {
-      if (currentGame !== 'veck') return;
-      veckKeys[e.code] = true;
-      if (e.code === 'KeyR') triggerVeckReload();
-      if (e.code.startsWith('Digit')) {
-        const num = parseInt(e.code.replace('Digit', ''), 10);
-        if (num >= 1 && num <= VECK_WEAPONS.length) selectVeckWeapon(num - 1);
-      }
-    });
-    window.addEventListener('keyup', (e) => {
-      if (currentGame === 'veck') veckKeys[e.code] = false;
-    });
-    window.addEventListener('mousemove', (e) => {
-      if (currentGame !== 'veck' || !veckInMatch) return;
-      if (document.pointerLockElement === veckRenderer.domElement) {
-        veckPlayer.yaw -= e.movementX * 0.0022;
-        veckPlayer.pitch = Math.max(-1.45, Math.min(1.45, veckPlayer.pitch - e.movementY * 0.0022));
-      }
-    });
-    veckRenderer.domElement.addEventListener('mousedown', (e) => {
-      if (currentGame !== 'veck' || !veckInMatch) return;
-      if (e.button === 0) {
-        veckMouseDown = true;
-        if (document.pointerLockElement !== veckRenderer.domElement && veckRenderer.domElement.requestPointerLock) {
-          try { veckRenderer.domElement.requestPointerLock(); } catch (_) {}
+      if (currentGame === 'veck' && e.code === 'Space') {
+        e.preventDefault();
+        if (veckPlayer.onGround) {
+          veckPlayer.vy = 10.5;
+          veckPlayer.onGround = false;
         }
       }
     });
-    window.addEventListener('mouseup', (e) => { if (e.button === 0) veckMouseDown = false; });
 
-    function veckGameLoop(now) {
-      if (!veckRunning) return;
-      const dt = Math.min(0.05, (now - veckPrevTime) / 1000 || 0.016);
-      veckPrevTime = now;
-      updateVeckPlayer(dt, now);
-      updateVeckEnemies(dt, now);
-      veckRenderer.render(veckScene, veckCamera);
-      veckRafId = requestAnimationFrame(veckGameLoop);
-    }
-
+    // ================= محرك Super Goal 3D =================
     const supergoalContainer = document.getElementById('supergoal-container');
     const supergoalCanvasWrap = document.getElementById('supergoal-canvas-wrap');
     const sgLevelText = document.getElementById('sgLevelText');
     const sgScoreText = document.getElementById('sgScoreText');
-    const sgResetBtn = document.getElementById('sgResetBtn');
-    const sgCamBtn = document.getElementById('sgCamBtn');
-    const sgExitBtn = document.getElementById('sgExitBtn');
     const sgBanner = document.getElementById('sgBanner');
     const sgBannerTitle = document.getElementById('sgBannerTitle');
     const sgBannerSub = document.getElementById('sgBannerSub');
-    const sgNextBtn = document.getElementById('sgNextBtn');
 
     const supergoalScene = new THREE.Scene();
     supergoalScene.background = new THREE.Color(0x0b132b);
-    supergoalScene.fog = new THREE.Fog(0x0b132b, 38, 85);
-
-    const supergoalCamera = new THREE.PerspectiveCamera(50, 1, 0.1, 120);
-    const sgCamViews = [
-      { pos: [0, 19.5, 22.5], target: [0, 0.5, -3.5] },
-      { pos: [0, 26, 12], target: [0, 0, -3] }
-    ];
-    let sgCamIndex = 0;
-
-    function applySuperGoalCameraView() {
-      const v = sgCamViews[sgCamIndex];
-      supergoalCamera.position.set(v.pos[0], v.pos[1], v.pos[2]);
-      supergoalCamera.lookAt(v.target[0], v.target[1], v.target[2]);
-    }
-    applySuperGoalCameraView();
-
-    sgCamBtn.addEventListener('click', () => {
-      sgCamIndex = (sgCamIndex + 1) % sgCamViews.length;
-      applySuperGoalCameraView();
-    });
-
+    const supergoalCamera = new THREE.PerspectiveCamera(55, window.innerWidth / Math.max(1, window.innerHeight - 56), 0.1, 200);
     const supergoalRenderer = new THREE.WebGLRenderer({ antialias: true });
-    supergoalRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    supergoalRenderer.setPixelRatio(isMobileDevice ? Math.min(window.devicePixelRatio || 1, 1.5) : Math.min(window.devicePixelRatio || 1, 2));
+    supergoalRenderer.setSize(window.innerWidth, Math.max(1, window.innerHeight - 56));
     supergoalRenderer.shadowMap.enabled = true;
-    supergoalRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
     supergoalCanvasWrap.appendChild(supergoalRenderer.domElement);
 
-    function resizeSuperGoalRenderer() {
-      const vp = getViewportDimensions();
-      const isLandscapeNow = vp.width > vp.height;
-      const navHeight = (vp.width <= 900 && isLandscapeNow) ? 46 : 56;
-      supergoalCamera.aspect = vp.width / Math.max(1, vp.height - navHeight);
-      supergoalCamera.updateProjectionMatrix();
-      supergoalRenderer.setSize(vp.width, Math.max(1, vp.height - navHeight));
-    }
+    supergoalScene.add(new THREE.HemisphereLight(0xffffff, 0x1e293b, 0.95));
+    const sgDir = new THREE.DirectionalLight(0xffffff, 0.85);
+    sgDir.position.set(15, 25, 15);
+    sgDir.castShadow = true;
+    supergoalScene.add(sgDir);
 
-    supergoalScene.add(new THREE.AmbientLight(0xffffff, 0.72));
-    const sgDirLight = new THREE.DirectionalLight(0xffffff, 0.95);
-    sgDirLight.position.set(10, 25, 16);
-    sgDirLight.castShadow = true;
-    sgDirLight.shadow.mapSize.width = 2048;
-    sgDirLight.shadow.mapSize.height = 2048;
-    const sgShadowBounds = 22;
-    sgDirLight.shadow.camera.left = -sgShadowBounds;
-    sgDirLight.shadow.camera.right = sgShadowBounds;
-    sgDirLight.shadow.camera.top = sgShadowBounds;
-    sgDirLight.shadow.camera.bottom = -sgShadowBounds;
-    supergoalScene.add(sgDirLight);
+    const sgPitch = new THREE.Mesh(
+      new THREE.BoxGeometry(22, 0.6, 36),
+      new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.7 })
+    );
+    sgPitch.position.y = -0.3;
+    sgPitch.receiveShadow = true;
+    supergoalScene.add(sgPitch);
 
-    (function createSuperGoalPitch() {
-      const pitchGroup = new THREE.Group();
-      const stripes = 12;
-      const width = 18;
-      const length = 32;
-      const stripeLen = length / stripes;
+    const sgGoalGroup = new THREE.Group();
+    const postMat = new THREE.MeshStandardMaterial({ color: 0xffffff, metalness: 0.4, roughness: 0.2 });
+    const leftPost = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3.2, 12), postMat);
+    leftPost.position.set(-3.4, 1.6, -14);
+    const rightPost = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3.2, 12), postMat);
+    rightPost.position.set(3.4, 1.6, -14);
+    const crossBar = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 6.9, 12), postMat);
+    crossBar.rotation.z = Math.PI / 2;
+    crossBar.position.set(0, 3.2, -14);
+    sgGoalGroup.add(leftPost, rightPost, crossBar);
+    supergoalScene.add(sgGoalGroup);
 
-      for (let i = 0; i < stripes; i++) {
-        const stripe = new THREE.Mesh(
-          new THREE.PlaneGeometry(width, stripeLen),
-          new THREE.MeshStandardMaterial({
-            color: i % 2 === 0 ? 0x16a34a : 0x15803d,
-            roughness: 0.85
-          })
+    const sgBall = new THREE.Mesh(
+      new THREE.SphereGeometry(0.55, 20, 20),
+      new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.3 })
+    );
+    sgBall.position.set(0, 0.55, 10);
+    sgBall.castShadow = true;
+    supergoalScene.add(sgBall);
+
+    const sgBallVel = new THREE.Vector3();
+    const sgDefenders = [];
+    function buildSgDefenders(level) {
+      sgDefenders.forEach(d => supergoalScene.remove(d.mesh));
+      sgDefenders.length = 0;
+      const count = Math.min(5, 1 + level);
+      for (let i = 0; i < count; i++) {
+        const m = new THREE.Mesh(
+          new THREE.BoxGeometry(1.1, 2.1, 0.8),
+          new THREE.MeshStandardMaterial({ color: 0xef4444 })
         );
-        stripe.rotation.x = -Math.PI / 2;
-        stripe.position.z = -length / 2 + stripeLen * (i + 0.5);
-        stripe.receiveShadow = true;
-        pitchGroup.add(stripe);
+        const zPos = 2 - i * 3.2;
+        const xPos = (i % 2 === 0 ? -1 : 1) * (2.5 + (i % 3));
+        m.position.set(xPos, 1.05, zPos);
+        m.castShadow = true;
+        supergoalScene.add(m);
+        sgDefenders.push({
+          mesh: m,
+          baseX: xPos,
+          speed: 1.4 + level * 0.25,
+          phase: i * 1.2
+        });
       }
-
-      const lineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      function addLine(w, l, x, z) {
-        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, l), lineMat);
-        mesh.rotation.x = -Math.PI / 2;
-        mesh.position.set(x, 0.03, z);
-        pitchGroup.add(mesh);
-      }
-
-      addLine(16, 0.16, 0, -14);
-      addLine(16, 0.16, 0, 14);
-      addLine(0.16, 28, -8, 0);
-      addLine(0.16, 28, 8, 0);
-      addLine(16, 0.16, 0, 1);
-      addLine(9, 0.16, 0, -8.5);
-      addLine(0.16, 5.5, -4.5, -11.25);
-      addLine(0.16, 5.5, 4.5, -11.25);
-
-      supergoalScene.add(pitchGroup);
-    })();
-
-    const sgGoalWidth = 6.4;
-    const sgGoalHeight = 2.4;
-    const sgGoalDepth = 1.8;
-    const sgGoalZ = -14;
-
-    (function createSuperGoalNet() {
-      const goalGroup = new THREE.Group();
-      const postMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.25, metalness: 0.2 });
-
-      const leftPost = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, sgGoalHeight, 16), postMat);
-      leftPost.position.set(-sgGoalWidth / 2, sgGoalHeight / 2, sgGoalZ);
-      leftPost.castShadow = true;
-
-      const rightPost = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, sgGoalHeight, 16), postMat);
-      rightPost.position.set(sgGoalWidth / 2, sgGoalHeight / 2, sgGoalZ);
-      rightPost.castShadow = true;
-
-      const crossbar = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, sgGoalWidth + 0.24, 16), postMat);
-      crossbar.rotation.z = Math.PI / 2;
-      crossbar.position.set(0, sgGoalHeight, sgGoalZ);
-      crossbar.castShadow = true;
-
-      const netMesh = new THREE.Mesh(
-        new THREE.BoxGeometry(sgGoalWidth, sgGoalHeight, sgGoalDepth, 14, 6, 5),
-        new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.35 })
-      );
-      netMesh.position.set(0, sgGoalHeight / 2, sgGoalZ - sgGoalDepth / 2);
-
-      goalGroup.add(leftPost, rightPost, crossbar, netMesh);
-      supergoalScene.add(goalGroup);
-    })();
-
-    function createSuperGoalPlayer(shirtColor, shortsColor, numberText, isKeeper = false) {
-      const player = new THREE.Group();
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xf1c27d, roughness: 0.55 });
-      const shirtMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.5 });
-      const shortsMat = new THREE.MeshStandardMaterial({ color: shortsColor, roughness: 0.65 });
-      const sockMat = new THREE.MeshStandardMaterial({ color: shirtColor, roughness: 0.7 });
-      const bootMat = new THREE.MeshStandardMaterial({ color: 0x111827, roughness: 0.4 });
-      const hairMat = new THREE.MeshStandardMaterial({ color: 0x1f2937, roughness: 0.8 });
-
-      function makeLeg(xOffset) {
-        const legPivot = new THREE.Group();
-        legPivot.position.set(xOffset, 0.78, 0);
-
-        const thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.36, 12), shortsMat);
-        thigh.position.y = -0.18;
-        thigh.castShadow = true;
-
-        const calf = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.08, 0.36, 12), sockMat);
-        calf.position.y = -0.52;
-        calf.castShadow = true;
-
-        const boot = new THREE.Mesh(new THREE.BoxGeometry(0.16, 0.11, 0.28), bootMat);
-        boot.position.set(0, -0.72, 0.05);
-        boot.castShadow = true;
-
-        legPivot.add(thigh, calf, boot);
-        return legPivot;
-      }
-
-      const leftLeg = makeLeg(-0.17);
-      const rightLeg = makeLeg(0.17);
-      player.add(leftLeg, rightLeg);
-
-      const pelvis = new THREE.Mesh(new THREE.CylinderGeometry(0.28, 0.29, 0.26, 16), shortsMat);
-      pelvis.position.y = 0.85;
-      pelvis.castShadow = true;
-      player.add(pelvis);
-
-      const torso = new THREE.Mesh(new THREE.CylinderGeometry(0.33, 0.27, 0.72, 16), shirtMat);
-      torso.position.y = 1.32;
-      torso.castShadow = true;
-      player.add(torso);
-
-      const numCanvas = document.createElement('canvas');
-      numCanvas.width = 128;
-      numCanvas.height = 128;
-      const nCtx = numCanvas.getContext('2d');
-      nCtx.fillStyle = '#ffffff';
-      nCtx.font = 'bold 76px sans-serif';
-      nCtx.textAlign = 'center';
-      nCtx.textBaseline = 'middle';
-      nCtx.fillText(numberText, 64, 64);
-      const numTex = new THREE.CanvasTexture(numCanvas);
-      const backNumber = new THREE.Mesh(
-        new THREE.PlaneGeometry(0.38, 0.38),
-        new THREE.MeshBasicMaterial({ map: numTex, transparent: true })
-      );
-      backNumber.position.set(0, 1.35, 0.31);
-      player.add(backNumber);
-
-      function makeArm(xOffset) {
-        const armPivot = new THREE.Group();
-        armPivot.position.set(xOffset, 1.6, 0);
-
-        const sleeve = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.09, 0.25, 12), shirtMat);
-        sleeve.position.y = -0.12;
-        sleeve.castShadow = true;
-
-        const forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.07, 0.35, 12), skinMat);
-        forearm.position.y = -0.4;
-        forearm.castShadow = true;
-
-        const handMat = isKeeper
-          ? new THREE.MeshStandardMaterial({ color: 0xfacc15, roughness: 0.4 })
-          : skinMat;
-        const hand = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 10), handMat);
-        hand.position.y = -0.6;
-
-        armPivot.add(sleeve, forearm, hand);
-        return armPivot;
-      }
-
-      const leftArm = makeArm(-0.41);
-      const rightArm = makeArm(0.41);
-      if (isKeeper) {
-        leftArm.rotation.z = 0.45;
-        rightArm.rotation.z = -0.45;
-      }
-      player.add(leftArm, rightArm);
-
-      const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.11, 0.14, 12), skinMat);
-      neck.position.y = 1.73;
-      player.add(neck);
-
-      const head = new THREE.Mesh(new THREE.SphereGeometry(0.24, 18, 18), skinMat);
-      head.position.y = 1.97;
-      head.castShadow = true;
-      player.add(head);
-
-      const hair = new THREE.Mesh(
-        new THREE.SphereGeometry(0.25, 18, 18, 0, Math.PI * 2, 0, Math.PI * 0.55),
-        hairMat
-      );
-      hair.position.y = 1.99;
-      hair.rotation.x = -0.2;
-      player.add(hair);
-
-      const ring = new THREE.Mesh(
-        new THREE.RingGeometry(0.46, 0.56, 24),
-        new THREE.MeshBasicMaterial({ color: shirtColor, side: THREE.DoubleSide, transparent: true, opacity: 0.65 })
-      );
-      ring.rotation.x = -Math.PI / 2;
-      ring.position.y = 0.05;
-      player.add(ring);
-
-      player.userData = { leftLeg, rightLeg, leftArm, rightArm, isKeeper, phase: Math.random() * 6 };
-      return player;
     }
 
-    function createSuperGoalBallTexture() {
-      const c = document.createElement('canvas');
-      c.width = 512;
-      c.height = 256;
-      const g = c.getContext('2d');
-      g.fillStyle = '#ffffff';
-      g.fillRect(0, 0, c.width, c.height);
-      g.fillStyle = '#111827';
-      const spots = [
-        [64, 64], [192, 64], [320, 64], [448, 64],
-        [128, 128], [256, 128], [384, 128], [0, 128], [512, 128],
-        [64, 192], [192, 192], [320, 192], [448, 192]
-      ];
-      spots.forEach(([cx, cy]) => {
-        g.beginPath();
-        for (let i = 0; i < 5; i++) {
-          const angle = (i * 2 * Math.PI) / 5 - Math.PI / 2;
-          const x = cx + Math.cos(angle) * 32;
-          const y = cy + Math.sin(angle) * 32;
-          if (i === 0) g.moveTo(x, y);
-          else g.lineTo(x, y);
-        }
-        g.closePath();
-        g.fill();
-      });
-      return new THREE.CanvasTexture(c);
-    }
-
-    const sgBallRadius = 0.54;
-    const sgBallStart = new THREE.Vector3(0, sgBallRadius + 0.05, 7.8);
-
-    const sgBallMesh = new THREE.Mesh(
-      new THREE.SphereGeometry(sgBallRadius, 32, 32),
-      new THREE.MeshStandardMaterial({
-        map: createSuperGoalBallTexture(),
-        roughness: 0.25,
-        metalness: 0.05,
-        emissive: 0xfacc15,
-        emissiveIntensity: 0.12
-      })
-    );
-    sgBallMesh.position.copy(sgBallStart);
-    sgBallMesh.castShadow = true;
-    supergoalScene.add(sgBallMesh);
-
-    const sgBallGlowRing = new THREE.Mesh(
-      new THREE.RingGeometry(0.62, 0.96, 32),
-      new THREE.MeshBasicMaterial({
-        color: 0xfacc15,
-        side: THREE.DoubleSide,
-        transparent: true,
-        opacity: 0.92,
-        depthWrite: false
-      })
-    );
-    sgBallGlowRing.rotation.x = -Math.PI / 2;
-    sgBallGlowRing.position.set(sgBallStart.x, 0.09, sgBallStart.z);
-    supergoalScene.add(sgBallGlowRing);
-
-    const sgKeeperMesh = createSuperGoalPlayer(0xf59e0b, 0x0f172a, '1', true);
-    sgKeeperMesh.position.set(0, 0, -13.1);
-    supergoalScene.add(sgKeeperMesh);
-
-    let sgKeeperDir = 1;
-    let sgKeeperSpeed = 0.045;
-    let sgDefenders = [];
     let sgLevel = 1;
     let sgScore = 0;
-    let sgIsDrawing = false;
-    let sgIsMoving = false;
-    let sgWonCurrentLevel = false;
-    let sgPathPoints = [];
-    let sgPathIndex = 0;
-    let sgPathLineMesh = null;
-    let sgRunning = false;
-    let sgRafId = null;
+    let sgCamAlt = false;
+    let sgDrawing = false;
+    let sgPoints = [];
+    let sgBallMoving = false;
+    let sgAnimId = null;
+    let sgLastTime = 0;
 
-    const sgRaycaster = new THREE.Raycaster();
-    const sgMouse = new THREE.Vector2();
-    const sgGroundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -0.08);
-    const sgClock = new THREE.Clock();
-
-    function updateSuperGoalPathVisual() {
-      if (sgPathLineMesh) {
-        supergoalScene.remove(sgPathLineMesh);
-        sgPathLineMesh.geometry.dispose();
-        sgPathLineMesh = null;
-      }
-      if (sgPathPoints.length < 2) return;
-      const curvePoints = sgPathPoints.map(p => new THREE.Vector3(p.x, 0.16, p.z));
-      const curve = new THREE.CatmullRomCurve3(curvePoints);
-      const tubeGeo = new THREE.TubeGeometry(curve, Math.max(sgPathPoints.length * 2, 12), 0.13, 8, false);
-      sgPathLineMesh = new THREE.Mesh(tubeGeo, new THREE.MeshBasicMaterial({ color: 0xfacc15 }));
-      supergoalScene.add(sgPathLineMesh);
-    }
-
-    function setupSuperGoalLevel(lvl) {
-      sgIsDrawing = false;
-      sgIsMoving = false;
-      sgWonCurrentLevel = false;
-      sgPathPoints = [];
-      sgPathIndex = 0;
-      updateSuperGoalPathVisual();
+    function resetSuperGoalRound() {
       sgBanner.classList.remove('show');
-
-      sgBallMesh.position.copy(sgBallStart);
-      sgBallMesh.rotation.set(0.3, 0.5, 0);
-      sgBallGlowRing.visible = true;
-      sgBallGlowRing.position.set(sgBallStart.x, 0.09, sgBallStart.z);
-
-      sgKeeperMesh.position.set(0, 0, -13.1);
-      sgKeeperSpeed = Math.min(0.04 + lvl * 0.008, 0.11);
-
-      sgDefenders.forEach(d => supergoalScene.remove(d.mesh));
-      sgDefenders = [];
-
-      const numbers = ['4', '5', '2', '3', '6'];
-      if (lvl === 1) {
-        const m = createSuperGoalPlayer(0xef4444, 0xffffff, '4');
-        m.position.set(0, 0, -2);
-        supergoalScene.add(m);
-        sgDefenders.push({ mesh: m, vx: 0, minX: -6, maxX: 6 });
-      } else if (lvl === 2) {
-        [
-          { x: -2.2, z: 1, vx: 0.045, num: '4' },
-          { x: 2.2, z: -5.5, vx: -0.045, num: '5' }
-        ].forEach(p => {
-          const m = createSuperGoalPlayer(0xef4444, 0xffffff, p.num);
-          m.position.set(p.x, 0, p.z);
-          supergoalScene.add(m);
-          sgDefenders.push({ mesh: m, vx: p.vx, minX: -6.2, maxX: 6.2 });
-        });
-      } else {
-        const count = Math.min(2 + Math.floor(lvl / 2), 5);
-        for (let i = 0; i < count; i++) {
-          const zPos = 3 - i * (12 / count);
-          const dir = i % 2 === 0 ? 1 : -1;
-          const m = createSuperGoalPlayer(0xef4444, 0xffffff, numbers[i % numbers.length]);
-          m.position.set(((i * 2.5) % 6) - 3, 0, zPos);
-          supergoalScene.add(m);
-          sgDefenders.push({
-            mesh: m,
-            vx: dir * (0.04 + lvl * 0.005),
-            minX: -6.5,
-            maxX: 6.5
-          });
-        }
-      }
-
-      sgLevelText.textContent = lvl;
+      sgBall.position.set(0, 0.55, 10);
+      sgBallVel.set(0, 0, 0);
+      sgBallMoving = false;
+      sgPoints = [];
+      sgLevelText.textContent = sgLevel;
       sgScoreText.textContent = sgScore;
+      buildSgDefenders(sgLevel);
     }
 
-    function getSuperGoalGroundHit(clientX, clientY) {
-      const rect = supergoalRenderer.domElement.getBoundingClientRect();
-      sgMouse.x = ((clientX - rect.left) / Math.max(1, rect.width)) * 2 - 1;
-      sgMouse.y = -((clientY - rect.top) / Math.max(1, rect.height)) * 2 + 1;
-      sgRaycaster.setFromCamera(sgMouse, supergoalCamera);
-      const target = new THREE.Vector3();
-      sgRaycaster.ray.intersectPlane(sgGroundPlane, target);
-      return target;
-    }
+    function stepSuperGoal(dt, now) {
+      sgDefenders.forEach(d => {
+        d.mesh.position.x = d.baseX + Math.sin(now * 0.0018 * d.speed + d.phase) * 3.2;
+      });
 
-    function onSuperGoalPointerDown(e) {
-      if (currentGame !== 'supergoal' || sgIsMoving || sgBanner.classList.contains('show')) return;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      const hit = getSuperGoalGroundHit(clientX, clientY);
-      if (!hit) return;
-
-      const dist = Math.hypot(hit.x - sgBallMesh.position.x, hit.z - sgBallMesh.position.z);
-      if (dist <= 2.6) {
-        sgIsDrawing = true;
-        sgPathPoints = [{ x: sgBallMesh.position.x, z: sgBallMesh.position.z }];
-        updateSuperGoalPathVisual();
-      }
-    }
-
-    function onSuperGoalPointerMove(e) {
-      if (currentGame !== 'supergoal' || !sgIsDrawing) return;
-      if (e.cancelable) e.preventDefault();
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-      const hit = getSuperGoalGroundHit(clientX, clientY);
-      if (!hit) return;
-
-      const clampedX = Math.max(-7.8, Math.min(7.8, hit.x));
-      const clampedZ = Math.max(-15.2, Math.min(13.5, hit.z));
-      const last = sgPathPoints[sgPathPoints.length - 1];
-      if (Math.hypot(clampedX - last.x, clampedZ - last.z) >= 0.35 && sgPathPoints.length < 140) {
-        sgPathPoints.push({ x: clampedX, z: clampedZ });
-        updateSuperGoalPathVisual();
-      }
-    }
-
-    function onSuperGoalPointerUp() {
-      if (!sgIsDrawing) return;
-      sgIsDrawing = false;
-      if (sgPathPoints.length > 3) {
-        sgIsMoving = true;
-        sgBallGlowRing.visible = false;
-        sgPathIndex = 1;
-      } else {
-        sgPathPoints = [];
-        updateSuperGoalPathVisual();
-      }
-    }
-
-    supergoalCanvasWrap.addEventListener('mousedown', onSuperGoalPointerDown);
-    window.addEventListener('mousemove', onSuperGoalPointerMove);
-    window.addEventListener('mouseup', onSuperGoalPointerUp);
-    supergoalCanvasWrap.addEventListener('touchstart', onSuperGoalPointerDown, { passive: false });
-    window.addEventListener('touchmove', onSuperGoalPointerMove, { passive: false });
-    window.addEventListener('touchend', onSuperGoalPointerUp);
-
-    sgResetBtn.addEventListener('click', () => setupSuperGoalLevel(sgLevel));
-    sgNextBtn.addEventListener('click', () => {
-      if (sgWonCurrentLevel) sgLevel++;
-      setupSuperGoalLevel(sgLevel);
-    });
-
-    function showSuperGoalResult(win, title, sub) {
-      sgIsMoving = false;
-      sgWonCurrentLevel = win;
-      sgBannerTitle.textContent = title;
-      sgBannerTitle.style.color = win ? '#4ade80' : '#f87171';
-      sgBannerSub.textContent = sub;
-      sgNextBtn.textContent = win ? 'المرحلة التالية' : 'حاول مجدداً';
-      sgBanner.classList.add('show');
-    }
-
-    function animateSuperGoalLimbs(player, speedVal, time) {
-      const { leftLeg, rightLeg, leftArm, rightArm, isKeeper, phase } = player.userData;
-      if (Math.abs(speedVal) > 0.001) {
-        const swing = Math.sin(time * 12 + phase) * 0.55;
-        leftLeg.rotation.x = swing;
-        rightLeg.rotation.x = -swing;
-        if (!isKeeper) {
-          leftArm.rotation.x = -swing * 0.7;
-          rightArm.rotation.x = swing * 0.7;
-        }
-      } else {
-        const idle = Math.sin(time * 4 + phase) * 0.08;
-        leftLeg.rotation.x = 0;
-        rightLeg.rotation.x = 0;
-        if (isKeeper) {
-          leftArm.rotation.z = 0.45 + idle;
-          rightArm.rotation.z = -0.45 - idle;
-        }
-      }
-    }
-
-    function updateSuperGoalGame() {
-      const elapsed = sgClock.getElapsedTime();
-
-      if (sgBallGlowRing.visible) {
-        const pulse = 1 + Math.sin(elapsed * 5) * 0.16;
-        sgBallGlowRing.scale.set(pulse, pulse, 1);
-      }
-
-      sgKeeperMesh.position.x += sgKeeperSpeed * sgKeeperDir;
-      if (sgKeeperMesh.position.x > 2.6 || sgKeeperMesh.position.x < -2.6) {
-        sgKeeperDir *= -1;
-      }
-      animateSuperGoalLimbs(sgKeeperMesh, sgKeeperSpeed, elapsed);
-
-      for (const d of sgDefenders) {
-        d.mesh.position.x += d.vx;
-        if (d.mesh.position.x > d.maxX || d.mesh.position.x < d.minX) {
-          d.vx *= -1;
-        }
-        animateSuperGoalLimbs(d.mesh, d.vx, elapsed);
-      }
-
-      if (sgIsMoving && sgPathIndex < sgPathPoints.length) {
-        const target = sgPathPoints[sgPathIndex];
-        const dx = target.x - sgBallMesh.position.x;
-        const dz = target.z - sgBallMesh.position.z;
-        const dist = Math.hypot(dx, dz);
-        const sgBallSpeed = 0.28;
-
-        if (dist <= sgBallSpeed) {
-          sgBallMesh.position.x = target.x;
-          sgBallMesh.position.z = target.z;
-          sgPathIndex++;
-        } else {
-          const vx = (dx / dist) * sgBallSpeed;
-          const vz = (dz / dist) * sgBallSpeed;
-          sgBallMesh.position.x += vx;
-          sgBallMesh.position.z += vz;
-          sgBallMesh.rotation.x += vz * 2.2;
-          sgBallMesh.rotation.z -= vx * 2.2;
-        }
-
-        const progress = sgPathIndex / sgPathPoints.length;
-        sgBallMesh.position.y = sgBallRadius + 0.05 + Math.sin(progress * Math.PI) * 0.7;
-
-        if (
-          sgBallMesh.position.z <= sgGoalZ + 0.1 &&
-          Math.abs(sgBallMesh.position.x) < sgGoalWidth / 2 - 0.25
-        ) {
-          sgScore += 10;
-          sgScoreText.textContent = sgScore;
-          myScore += 10;
-          myAdam += 10;
-          updateHudStats();
-          persistProfile();
-          showSuperGoalResult(true, 'هدف رائع! ⚽🔥', 'تسديدة متقنة في الشباك (+10 ADAM)');
-          return;
-        }
-
-        if (Math.hypot(sgBallMesh.position.x - sgKeeperMesh.position.x, sgBallMesh.position.z - sgKeeperMesh.position.z) < sgBallRadius + 0.52) {
-          showSuperGoalResult(false, 'تصدى لها الحارس! 🧤', 'وجّه المسار نحو الزاوية البعيدة');
-          return;
-        }
+      if (sgBallMoving) {
+        sgBall.position.addScaledVector(sgBallVel, dt);
+        sgBallVel.multiplyScalar(0.988);
 
         for (const d of sgDefenders) {
-          if (Math.hypot(sgBallMesh.position.x - d.mesh.position.x, sgBallMesh.position.z - d.mesh.position.z) < sgBallRadius + 0.52) {
-            showSuperGoalResult(false, 'اعترضها المدافع! 🛡️', 'ارسم قوساً للالتفاف حول الدفاع');
-            return;
+          if (Math.abs(sgBall.position.x - d.mesh.position.x) < 1.05 && Math.abs(sgBall.position.z - d.mesh.position.z) < 0.95) {
+            sgBallVel.x = -sgBallVel.x * 0.65;
+            sgBallVel.z = Math.abs(sgBallVel.z) * 0.55;
+            showToast('🛡️ اصطدمت الكرة بالمدافع!');
           }
         }
 
-        if (sgPathIndex >= sgPathPoints.length) {
-          showSuperGoalResult(false, 'ضاعت الفرصة! ❌', 'ارسم المسار ليصل إلى داخل المرمى');
+        if (sgBall.position.z <= -14 && Math.abs(sgBall.position.x) <= 3.35) {
+          sgBallMoving = false;
+          sgScore += 50 * sgLevel;
+          myScore += 30;
+          myAdam += 10;
+          updateHudStats();
+          persistProfile();
+          sgScoreText.textContent = sgScore;
+          sgBannerTitle.textContent = '⚽ هدف رائع!';
+          sgBannerSub.textContent = `+${50 * sgLevel} نقاط • +10 ADAM`;
+          sgBanner.classList.add('show');
+        } else if (sgBall.position.z < -17 || Math.abs(sgBall.position.x) > 11.5 || sgBallVel.length() < 0.45) {
+          sgBallMoving = false;
+          showToast('ضاعت التسديدة! حاول مجدداً');
+          setTimeout(resetSuperGoalRound, 700);
         }
+      }
+
+      if (sgCamAlt) {
+        supergoalCamera.position.lerp(new THREE.Vector3(0, 17, 15), 0.1);
+        supergoalCamera.lookAt(0, 0.5, -4);
+      } else {
+        supergoalCamera.position.lerp(new THREE.Vector3(sgBall.position.x * 0.45, 7.5, sgBall.position.z + 11), 0.1);
+        supergoalCamera.lookAt(0, 1.2, -10);
       }
     }
 
-    function superGoalLoop() {
-      if (!sgRunning) return;
-      updateSuperGoalGame();
+    function superGoalLoop(now) {
+      if (currentGame !== 'supergoal') return;
+      const dt = Math.min(0.05, Math.max(0.001, (now - sgLastTime) / 1000));
+      sgLastTime = now;
+      stepSuperGoal(dt, now);
       supergoalRenderer.render(supergoalScene, supergoalCamera);
-      sgRafId = requestAnimationFrame(superGoalLoop);
-    }
-
-    function closeSuperGoalOverlayOnly() {
-      sgIsDrawing = false;
-      sgIsMoving = false;
-      sgBanner.classList.remove('show');
+      sgAnimId = requestAnimationFrame(superGoalLoop);
     }
 
     function stopSuperGoalLoop() {
-      sgRunning = false;
-      sgIsDrawing = false;
-      if (sgRafId) {
-        cancelAnimationFrame(sgRafId);
-        sgRafId = null;
+      if (sgAnimId) {
+        cancelAnimationFrame(sgAnimId);
+        sgAnimId = null;
       }
+    }
+
+    function closeSuperGoalOverlayOnly() {
+      sgBanner.classList.remove('show');
     }
 
     function openSuperGoalGame() {
-      if (typeof stopSlitherLoop === 'function') stopSlitherLoop();
-      if (typeof stopVeckLoop === 'function') stopVeckLoop();
-      document.getElementById('slither-container').style.display = 'none';
-      document.getElementById('veck-container').style.display = 'none';
-
-      showScreen(null);
+      stopAllActiveGameLoops();
       currentGame = 'supergoal';
+      hideOverlays();
+      setNavActive('btn-games');
+      refreshAllViewportSizes();
       supergoalContainer.style.display = 'block';
-      resizeSuperGoalRenderer();
-      setupSuperGoalLevel(sgLevel);
-      sgRunning = true;
-      if (!sgRafId) sgRafId = requestAnimationFrame(superGoalLoop);
+      resetSuperGoalRound();
+      sgLastTime = performance.now();
+      sgAnimId = requestAnimationFrame(superGoalLoop);
     }
 
-    sgExitBtn.addEventListener('click', () => {
+    supergoalCanvasWrap.addEventListener('pointerdown', (e) => {
+      if (currentGame !== 'supergoal' || sgBallMoving) return;
+      sgDrawing = true;
+      sgPoints = [{ x: e.clientX, y: e.clientY }];
+    });
+    supergoalCanvasWrap.addEventListener('pointermove', (e) => {
+      if (!sgDrawing) return;
+      sgPoints.push({ x: e.clientX, y: e.clientY });
+    });
+    window.addEventListener('pointerup', (e) => {
+      if (!sgDrawing) return;
+      sgDrawing = false;
+      if (sgPoints.length >= 2) {
+        const start = sgPoints[0];
+        const end = sgPoints[sgPoints.length - 1];
+        const dx = (end.x - start.x) * 0.08;
+        const dy = Math.min(-14, (end.y - start.y) * 0.14 - 16);
+        sgBallVel.set(Math.max(-14, Math.min(14, dx)), 0, Math.max(-28, dy));
+        sgBallMoving = true;
+      }
+    });
+
+    document.getElementById('sgResetBtn').onclick = resetSuperGoalRound;
+    document.getElementById('sgCamBtn').onclick = () => { sgCamAlt = !sgCamAlt; };
+    document.getElementById('sgNextBtn').onclick = () => {
+      sgLevel += 1;
+      resetSuperGoalRound();
+    };
+    document.getElementById('sgExitBtn').onclick = () => {
       stopSuperGoalLoop();
       supergoalContainer.style.display = 'none';
       showScreen('games-screen');
-    });
+    };
 
-    function animateCharacterLimbs(rig, speedRatio, dt) {
-      if (!rig) return;
-      if (speedRatio > 0.08) {
-        rig.walkPhase += dt * (8 + speedRatio * 7);
-        const swing = Math.sin(rig.walkPhase) * 0.65 * Math.min(1, speedRatio);
-        rig.leftArmPivot.rotation.x = swing;
-        rig.rightArmPivot.rotation.x = -swing;
-        rig.leftLegPivot.rotation.x = -swing;
-        rig.rightLegPivot.rotation.x = swing;
-      } else {
-        rig.leftArmPivot.rotation.x *= 0.8;
-        rig.rightArmPivot.rotation.x *= 0.8;
-        rig.leftLegPivot.rotation.x *= 0.8;
-        rig.rightLegPivot.rotation.x *= 0.8;
-      }
+    // ================= وضع eFootball 26 3D المدمج =================
+    function stopEfootballLoop() {
+      const wrap = document.getElementById('efootball-container');
+      if (wrap) wrap.style.display = 'none';
     }
 
-    let lastTime = performance.now();
+    function openEfootballGame() {
+      stopAllActiveGameLoops();
+      hideOverlays();
+      currentGame = 'efootball';
+      setNavActive('btn-games');
+      const wrap = document.getElementById('efootball-container');
+      const frame = document.getElementById('efootball-frame');
+      if (wrap && frame) {
+        frame.src = 'https://www.crazygames.com/game/efootball-2025';
+        wrap.style.display = 'block';
+      }
+      myScore += 10;
+      myAdam += 5;
+      updateHudStats();
+      persistProfile();
+      showToast('⚽ تم فتح eFootball 26 3D');
+    }
+
+    // ================= حلقة التحريك الرئيسية للعالم الثلاثي الأبعاد =================
+    let mainLastTime = performance.now();
+
     function mainAnimate(now) {
       requestAnimationFrame(mainAnimate);
-      const dt = Math.min(0.05, (now - lastTime) / 1000 || 0.016);
-      lastTime = now;
+      const dt = Math.min(0.05, Math.max(0.001, (now - mainLastTime) / 1000));
+      mainLastTime = now;
 
-      if (currentGame === 'slither' || currentGame === 'veck' || currentGame === 'supergoal') return;
+      if (currentGame === 'slither' || currentGame === 'veck' || currentGame === 'supergoal' || currentGame === 'efootball') {
+        return;
+      }
 
-      if (speedBoostTimer > 0) speedBoostTimer = Math.max(0, speedBoostTimer - dt);
+      if (speedBoostTimer > 0) {
+        speedBoostTimer = Math.max(0, speedBoostTimer - dt);
+      }
+
+      coins.forEach(c => {
+        if (!c.collected) {
+          c.mesh.rotation.z += 2.4 * dt;
+          c.mesh.position.y = c.baseY + Math.sin(now * 0.004 + c.mesh.position.x) * 0.18;
+          if (player.position.distanceTo(c.mesh.position) < 1.95) {
+            c.collected = true;
+            c.mesh.visible = false;
+            myScore += 15;
+            myAdam += 3;
+            updateHudStats();
+            persistProfile();
+            showToast('🪙 +15 نقاط و +3 ADAM');
+          }
+        }
+      });
+
+      if (finishObj && !reachedFinish && player.position.distanceTo(finishObj.position) < 2.8) {
+        reachedFinish = true;
+        myScore += 50;
+        myAdam += 15;
+        updateHudStats();
+        persistProfile();
+        showToast('🏁 وصلت إلى النهاية! +50 نقطة و +15 ADAM');
+      }
 
       let moveX = joyX;
       let moveZ = joyY;
-      if (keys['w'] || keys['arrowup']) moveZ -= 1;
+      if (keys['w'] || keys['z'] || keys['arrowup']) moveZ -= 1;
       if (keys['s'] || keys['arrowdown']) moveZ += 1;
-      if (keys['a'] || keys['arrowleft']) moveX -= 1;
+      if (keys['a'] || keys['q'] || keys['arrowleft']) moveX -= 1;
       if (keys['d'] || keys['arrowright']) moveX += 1;
 
-      const len = Math.hypot(moveX, moveZ);
-      if (len > 1) { moveX /= len; moveZ /= len; }
+      const moveLen = Math.hypot(moveX, moveZ);
+      const baseSpeed = speedBoostTimer > 0 ? 15.5 : 10.5;
 
-      const activeSpeed = speedBoostTimer > 0 ? 15.5 : 10;
-      playerVel.x = moveX * activeSpeed;
-      playerVel.z = moveZ * activeSpeed;
-      playerVel.y -= 28 * dt;
+      if (moveLen > 0.05) {
+        const nx = moveX / Math.max(1, moveLen);
+        const nz = moveZ / Math.max(1, moveLen);
+        player.position.x += nx * baseSpeed * dt;
+        player.position.z += nz * baseSpeed * dt;
+        player.rotation.y = Math.atan2(-nx, -nz);
 
-      player.position.x += playerVel.x * dt;
-      player.position.z += playerVel.z * dt;
+        playerRig.walkPhase += dt * (speedBoostTimer > 0 ? 16 : 11);
+        const swing = Math.sin(playerRig.walkPhase) * 0.65;
+        playerRig.leftLegPivot.rotation.x = swing;
+        playerRig.rightLegPivot.rotation.x = -swing;
+        playerRig.leftArmPivot.rotation.x = -swing * 0.8;
+        playerRig.rightArmPivot.rotation.x = swing * 0.8;
+      } else {
+        playerRig.leftLegPivot.rotation.x *= 0.8;
+        playerRig.rightLegPivot.rotation.x *= 0.8;
+        playerRig.leftArmPivot.rotation.x *= 0.8;
+        playerRig.rightArmPivot.rotation.x *= 0.8;
+      }
+
+      playerVel.y -= 26 * dt;
       player.position.y += playerVel.y * dt;
 
-      if (len > 0.05) {
-        const targetRot = Math.atan2(moveX, moveZ);
-        player.rotation.y = targetRot;
-      }
-      animateCharacterLimbs(playerRig, len, dt);
-
-      canJump = false;
-      const playerBox = new THREE.Box3().setFromCenterAndSize(
-        new THREE.Vector3(player.position.x, player.position.y + 1.4, player.position.z),
-        new THREE.Vector3(1.1, 2.8, 1.1)
+      const playerBox = new THREE.Box3(
+        new THREE.Vector3(player.position.x - 0.45, player.position.y, player.position.z - 0.45),
+        new THREE.Vector3(player.position.x + 0.45, player.position.y + 3.2, player.position.z + 0.45)
       );
 
-      for (const p of platforms) {
-        if (playerVel.y <= 0 && playerBox.intersectsBox(p.box)) {
-          if (player.position.y >= p.box.max.y - 0.8) {
-            player.position.y = p.box.max.y;
+      canJump = false;
+      for (const plat of platforms) {
+        if (playerBox.intersectsBox(plat.box)) {
+          if (plat.type === 'lava') {
+            showToast('🔥 لمست الحمم! إعادة المحاولة...');
+            buildGame(currentGame);
+            return;
+          }
+          if (playerVel.y <= 0 && player.position.y >= plat.box.max.y - 0.9) {
+            player.position.y = plat.box.max.y;
             playerVel.y = 0;
             canJump = true;
-            if (p.type === 'lava') {
-              showToast('🔥 سقطت في الحمم!');
-              buildGame(currentGame);
-              return;
-            } else if (p.type === 'bounce') {
-              playerVel.y = 18.5;
+
+            if (plat.type === 'bounce') {
+              playerVel.y = 19.5;
               canJump = false;
               showToast('🚀 قفزة عالية!');
-            } else if (p.type === 'speed') {
-              speedBoostTimer = 4;
-              showToast('⚡ تعزيز سرعة!');
+            } else if (plat.type === 'speed') {
+              speedBoostTimer = Math.max(speedBoostTimer, 4);
             }
           }
         }
       }
 
-      if (player.position.y < -12) {
-        showToast('سقطت! إعادة المحاولة...');
+      if (player.position.y < -14) {
         buildGame(currentGame);
-        return;
       }
 
-      for (const c of coins) {
-        if (!c.collected) {
-          c.mesh.rotation.z += 3.5 * dt;
-          c.mesh.position.y = c.baseY + Math.sin(now * 0.005 + c.baseY) * 0.2;
-          if (player.position.distanceTo(c.mesh.position) < 2.1) {
-            c.collected = true;
-            c.mesh.visible = false;
-            myScore += 10;
-            myAdam += 5;
-            updateHudStats();
-            persistProfile();
-            showToast('+10 نقاط و +5 ADAM! 🪙');
-          }
+      if (currentGame === 'horror') {
+        if (!window._horrorGhost) {
+          const ghostGroup = new THREE.Group();
+          const bodyMat = new THREE.MeshStandardMaterial({
+            color: 0xf8fafc,
+            emissive: 0x991b1b,
+            emissiveIntensity: 0.45,
+            roughness: 0.4
+          });
+          const body = new THREE.Mesh(new THREE.SphereGeometry(1.05, 18, 18), bodyMat);
+          body.position.y = 2.1;
+
+          const eyeMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+          const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), eyeMat);
+          leftEye.position.set(-0.32, 2.25, 0.9);
+          const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), eyeMat);
+          rightEye.position.set(0.32, 2.25, 0.9);
+
+          ghostGroup.add(body, leftEye, rightEye);
+          ghostGroup.position.set(0, 0, -10);
+          worldGroup.add(ghostGroup);
+          window._horrorGhost = ghostGroup;
         }
-      }
 
-      if (finishObj && !reachedFinish && player.position.distanceTo(finishObj.position) < 3.2) {
-        reachedFinish = true;
-        myScore += 50;
-        myAdam += 25;
-        updateHudStats();
-        persistProfile();
-        showToast('🏆 مبروك! وصلت إلى نقطة النهاية (+50 نقطة و +25 ADAM)');
+        const ghost = window._horrorGhost;
+        const toPlayer = new THREE.Vector3(
+          player.position.x - ghost.position.x,
+          0,
+          player.position.z - ghost.position.z
+        );
+        const distToPlayer = toPlayer.length();
+        if (distToPlayer > 0.05) {
+          toPlayer.normalize();
+          ghost.position.x += toPlayer.x * 4.5 * dt;
+          ghost.position.z += toPlayer.z * 4.5 * dt;
+          ghost.rotation.y = Math.atan2(toPlayer.x, toPlayer.z);
+        }
+        ghost.position.y = Math.sin(now * 0.006) * 0.25;
+
+        if (distToPlayer < 1.85) {
+          showToast('👻 أمسك بك الشبح! إعادة المحاولة...');
+          window._horrorGhost = null;
+          buildGame('horror');
+          return;
+        }
       }
 
       if (currentGame === 'studio') {
@@ -5012,14 +3104,16 @@
       }
 
       const camOffset = new THREE.Vector3(0, 7.5, 12);
-      camera.position.lerp(player.position.clone().add(camOffset), 0.14);
-      camera.lookAt(player.position.x, player.position.y + 2.2, player.position.z);
+      const desiredCamPos = player.position.clone().add(camOffset);
+      camera.position.lerp(desiredCamPos, Math.min(1, dt * 8));
+      camera.lookAt(player.position.x, player.position.y + 2.1, player.position.z);
 
       renderer.render(scene, camera);
     }
 
-    (function initSharedMapFromUrl() {
-      injectDefaultSharedMaps();
+    window.addEventListener('resize', refreshAllViewportSizes);
+
+    (function initSharedMapFromQuery() {
       try {
         const params = new URLSearchParams(window.location.search);
         const token = params.get('shared_map');
@@ -5027,37 +3121,34 @@
         const decoded = decodeMapPayload(token);
         if (!decoded || !Array.isArray(decoded.blocks)) return;
 
-        const importedMap = {
-          id: decoded.id || `shared_${Date.now()}`,
-          title: decoded.title || 'ماب مشترك',
-          description: decoded.description || 'ماب مستورد عبر رابط مشاركة.',
-          author: decoded.author || myName,
+        const sharedId = decoded.id ? `shared_${decoded.id}` : `shared_${Date.now()}`;
+        const existingIdx = mapsLibrary.findIndex(m => m.id === sharedId);
+        const sharedMapObj = {
+          id: sharedId,
+          title: decoded.title || 'ماب مستقل مشترك',
+          description: decoded.description || 'ماب تمت مشاركته معك عبر رابط.',
+          author: decoded.author || 'لاعب',
           blocks: cloneBlocks(decoded.blocks)
         };
 
-        const existingIndex = mapsLibrary.findIndex(m => m.id === importedMap.id);
-        if (existingIndex >= 0) {
-          mapsLibrary[existingIndex] = importedMap;
+        if (existingIdx !== -1) {
+          mapsLibrary[existingIdx] = sharedMapObj;
         } else {
-          mapsLibrary.push(importedMap);
+          mapsLibrary.push(sharedMapObj);
         }
-        activeMapId = importedMap.id;
-        savedStudioBlocks = cloneBlocks(importedMap.blocks);
-        document.getElementById('custom-game-title').value = importedMap.title;
-        document.getElementById('custom-game-desc').value = importedMap.description;
+
+        activeMapId = sharedMapObj.id;
+        savedStudioBlocks = cloneBlocks(sharedMapObj.blocks);
+        document.getElementById('custom-game-title').value = sharedMapObj.title;
+        document.getElementById('custom-game-desc').value = sharedMapObj.description;
         saveMapsLibrary();
-        updateStudioLabels();
-        showToast(`تم تحميل الماب المشترك: ${importedMap.title}`);
+        enterGame('custom');
+        showToast(`تم تحميل الماب المشترك: ${sharedMapObj.title}`);
       } catch (_) {}
     })();
 
     buildGame('lobby');
-    renderSkinsStore();
     requestAnimationFrame(mainAnimate);
-
-    window.addEventListener('resize', () => {
-      refreshAllViewportSizes();
-    });
   </script>
 </body>
 </html>
